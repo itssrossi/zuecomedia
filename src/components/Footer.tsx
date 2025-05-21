@@ -9,9 +9,10 @@ const Footer = () => {
           <div className="md:col-span-1">
             <a href="/" className="inline-block mb-4 flex items-center">
               <img 
-                src="/lovable-uploads/1f60c519-5cc4-433f-959d-216e2788bfb0.png" 
+                src="/lovable-uploads/cde7ae4e-a980-4846-b771-5014756bb26a.png" 
                 alt="Zue Co Media Logo" 
                 className="h-10 mr-2" 
+                style={{ filter: 'drop-shadow(0 0 8px rgba(0, 153, 255, 0.5))' }}
               />
               <span className="font-bold text-2xl text-white">Zue<span className="text-zue-blue">Co</span> Media</span>
             </a>
