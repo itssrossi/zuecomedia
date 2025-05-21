@@ -7,7 +7,12 @@ const Footer = () => {
       <div className="container-custom py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="md:col-span-1">
-            <a href="/" className="inline-block mb-4">
+            <a href="/" className="inline-block mb-4 flex items-center">
+              <img 
+                src="/lovable-uploads/1f60c519-5cc4-433f-959d-216e2788bfb0.png" 
+                alt="Zue Co Media Logo" 
+                className="h-10 mr-2" 
+              />
               <span className="font-bold text-2xl text-white">Zue<span className="text-zue-blue">Co</span> Media</span>
             </a>
             <p className="text-gray-400 mb-6">

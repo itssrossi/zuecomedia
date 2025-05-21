@@ -1,9 +1,12 @@
+
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Menu, X } from 'lucide-react';
+
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 10) {
@@ -12,16 +15,24 @@ const Navbar = () => {
         setIsScrolled(false);
       }
     };
+    
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
+
   return <header className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${isScrolled ? 'bg-zue-dark/90 backdrop-blur-md shadow-md' : 'bg-transparent'}`}>
       <div className="container-custom flex items-center justify-between py-4 px-0 mx-[20px]">
         <div className="flex items-center">
           <a href="/" className="flex items-center">
+            <img 
+              src="/lovable-uploads/1f60c519-5cc4-433f-959d-216e2788bfb0.png" 
+              alt="Zue Co Media Logo" 
+              className="h-12 mr-2"
+            />
             <span className="font-bold text-2xl text-white">Zue<span className="text-zue-blue">Co</span> Media</span>
           </a>
         </div>
@@ -59,4 +70,5 @@ const Navbar = () => {
         </div>}
     </header>;
 };
+
 export default Navbar;
