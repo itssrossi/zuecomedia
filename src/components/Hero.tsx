@@ -1,16 +1,10 @@
-
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-
 const Hero = () => {
-  return (
-    <section id="home" className="min-h-screen bg-zue-dark flex items-center relative overflow-hidden">
-      <div 
-        className="absolute inset-0 bg-gradient-to-b from-zue-blue/10 to-transparent z-0"
-        style={{ 
-          backgroundImage: "radial-gradient(circle at 25% 10%, rgba(14, 165, 233, 0.15) 0%, transparent 50%)" 
-        }}
-      />
+  return <section id="home" className="min-h-screen bg-zue-dark flex items-center relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-b from-zue-blue/10 to-transparent z-0" style={{
+      backgroundImage: "radial-gradient(circle at 25% 10%, rgba(14, 165, 233, 0.15) 0%, transparent 50%)"
+    }} />
       
       <div className="container-custom relative z-10 pt-28">
         <div className="flex flex-col items-center text-center md:text-left md:items-start">
@@ -20,7 +14,7 @@ const Hero = () => {
               Digital Marketing Solutions
             </p>
           </div>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 md:max-w-2xl animate-fade-in">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 md:max-w-2xl animate-fade-in px-0 mx-[10px]">
             Elevate <span className="text-zue-blue">your brand</span> with creative marketing excellence
           </h1>
           <p className="text-lg text-gray-300 mb-8 max-w-xl opacity-90">
@@ -39,19 +33,13 @@ const Hero = () => {
         </div>
         
         <div className="mt-20 grid grid-cols-2 md:grid-cols-6 gap-4 md:gap-8">
-          {['Brand', 'Design', 'Strategy', 'Technology', 'Campaigns', 'Analytics'].map((item, index) => (
-            <div 
-              key={index} 
-              className="flex items-center justify-center p-4 bg-zue-dark-light/50 backdrop-blur-sm rounded-lg border border-white/10 animate-fade-in"
-              style={{ animationDelay: `${index * 0.1}s` }}
-            >
+          {['Brand', 'Design', 'Strategy', 'Technology', 'Campaigns', 'Analytics'].map((item, index) => <div key={index} className="flex items-center justify-center p-4 bg-zue-dark-light/50 backdrop-blur-sm rounded-lg border border-white/10 animate-fade-in" style={{
+          animationDelay: `${index * 0.1}s`
+        }}>
               <span className="text-white font-medium">{item}</span>
-            </div>
-          ))}
+            </div>)}
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default Hero;
