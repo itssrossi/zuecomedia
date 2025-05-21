@@ -1,5 +1,5 @@
 
-import { AreaChart, Layers, Code, Megaphone, PenTool, LineChart } from "lucide-react";
+import { AreaChart, Layers, Code, Megaphone, PenTool, LineChart, ArrowRight } from "lucide-react";
 
 const services = [
   {
