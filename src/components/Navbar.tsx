@@ -39,7 +39,7 @@ const Navbar = () => {
               />
             ) : (
               <img 
-                src="/lovable-uploads/d341fa26-afd0-418c-9c97-902fff2b93e2.png" 
+                src="/lovable-uploads/7ae353e4-9833-4708-a345-e1195eaace46.png" 
                 alt="Zue Co Media Dark Logo" 
                 className="h-12 mr-2"
               />
