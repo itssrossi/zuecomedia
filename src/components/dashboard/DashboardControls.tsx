@@ -3,6 +3,7 @@ import { RefreshCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import DateRangeSelector from "@/components/dashboard/DateRangeSelector";
 import { useIsMobile } from "@/hooks/use-mobile";
+import ThemeToggle from "@/components/dashboard/ThemeToggle";
 
 interface DashboardControlsProps {
   startDate: Date | undefined;
@@ -36,13 +37,16 @@ const DashboardControls = ({
           </span>
         )}
         
-        <Button
-          onClick={onRefreshData}
-          className="flex items-center space-x-2 bg-zue-blue hover:bg-blue-700"
-        >
-          <RefreshCcw size={16} />
-          <span>Sync Data</span>
-        </Button>
+        <div className="flex items-center space-x-2">
+          <ThemeToggle />
+          <Button
+            onClick={onRefreshData}
+            className="flex items-center space-x-2 bg-zue-blue hover:bg-blue-700"
+          >
+            <RefreshCcw size={16} />
+            <span>Sync Data</span>
+          </Button>
+        </div>
       </div>
     </div>
   );
