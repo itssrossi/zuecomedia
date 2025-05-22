@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Session, User } from "@supabase/supabase-js";
@@ -44,10 +43,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const { error, data } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
-      toast.success("Signed in successfully");
-      navigate("/dashboard");
+
+      // Check if this user has completed onboarding
+      if (data.user) {
+        const { data: onboardingData, error: onboardingError } = await supabase
+          .from('user_onboarding')
+          .select('completed')
+          .eq('user_id', data.user.id)
+          .single();
+          
+        if (onboardingError && onboardingError.code !== 'PGRST116') {
+          console.error("Error checking onboarding status:", onboardingError);
+        }
+        
+        toast.success("Signed in successfully");
+        
+        // If onboarding exists and is not completed, or doesn't exist yet, redirect to onboarding
+        if (!onboardingData || !onboardingData.completed) {
+          navigate("/onboarding");
+        } else {
+          // Otherwise go to dashboard
+          navigate("/dashboard");
+        }
+      } else {
+        // Fallback to dashboard if we can't determine onboarding status
+        navigate("/dashboard");
+      }
     } catch (error: any) {
       toast.error(error.message || "Failed to sign in");
     }
