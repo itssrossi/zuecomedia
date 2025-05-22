@@ -33,13 +33,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .eq('user_id', userId)
         .single();
         
-      if (error) {
+      if (error && error.code !== 'PGRST116') { // PGRST116 is "no rows returned" error
         console.error("Error checking onboarding status:", error);
         return false;
       }
       
-      // Check if any data was returned and if completion status is true
-      const completed = data && data.completed || false;
+      // Check if data was returned and completion status
+      const completed = data?.completed || false;
       setIsOnboardingCompleted(completed);
       return completed;
     } catch (error) {

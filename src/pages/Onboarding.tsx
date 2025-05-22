@@ -177,7 +177,7 @@ const Onboarding = () => {
             // Redirect directly to dashboard when all tasks are completed
             navigate("/dashboard");
             toast.success("Onboarding completed! Welcome to your dashboard.");
-          }, 100);
+          }, 300); // Increased timeout to ensure state updates properly
         } catch (error) {
           console.error('Error completing onboarding:', error);
           toast.error("There was an error completing onboarding. Please try again.");
