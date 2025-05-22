@@ -33,7 +33,7 @@ const About = () => {
                   <div className="bg-zue-blue rounded-full p-1 mr-3 mt-1">
                     <Check className="h-3 w-3 text-white" />
                   </div>
-                  <span className="text-gray-900">{item}</span>
+                  <span className="text-lg text-slate-600">{item}</span>
                 </div>)}
             </div>
             
