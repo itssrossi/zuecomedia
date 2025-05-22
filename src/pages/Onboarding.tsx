@@ -11,7 +11,7 @@ import OnboardingActions from "@/components/onboarding/OnboardingActions";
 import { ChecklistItemType } from "@/components/onboarding/ChecklistItem";
 
 const Onboarding = () => {
-  const { user } = useAuth();
+  const { user, checkOnboardingStatus } = useAuth();
   const navigate = useNavigate();
   const [checklistItems, setChecklistItems] = useState<ChecklistItemType[]>([
     {
@@ -130,32 +130,58 @@ const Onboarding = () => {
     // Save progress to database if user is logged in
     if (user) {
       try {
+        const allCompleted = updatedItems.every(item => item.completed);
+        
         const { error } = await supabase
           .from('user_onboarding')
           .upsert({
             user_id: user.id,
             onboarding_data: updatedItems as unknown as Json,
-            completed: updatedItems.every(item => item.completed)
+            completed: allCompleted
           });
           
         if (error) throw error;
+        
+        // Update the onboarding status in Auth context
+        if (allCompleted) {
+          await checkOnboardingStatus(user.id);
+        }
       } catch (error) {
         console.error('Error saving onboarding progress:', error);
       }
     }
   };
 
-  const handleComplete = () => {
+  const handleComplete = async () => {
     const allCompleted = checklistItems.every(item => item.completed);
     
     if (allCompleted) {
+      // Set onboarding as completed
+      if (user) {
+        try {
+          const { error } = await supabase
+            .from('user_onboarding')
+            .upsert({
+              user_id: user.id,
+              onboarding_data: checklistItems as unknown as Json,
+              completed: true
+            });
+            
+          if (error) throw error;
+          
+          // Update status in context
+          await checkOnboardingStatus(user.id);
+        } catch (error) {
+          console.error('Error completing onboarding:', error);
+        }
+      }
+      
       // Redirect to Facebook account setup page when all tasks are completed
       navigate("/dashboard/facebook-setup");
       toast.success("Onboarding completed! Let's connect your Facebook Ad Account.");
     } else {
-      // Continue to dashboard if not all tasks are completed
-      navigate("/dashboard");
-      toast.info("You can complete the remaining tasks later.");
+      // Show warning that not all tasks are completed
+      toast.warning("Please complete all onboarding tasks before proceeding.");
     }
   };
 

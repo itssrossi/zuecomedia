@@ -26,7 +26,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
             <Route path="/onboarding" element={
-              <ProtectedRoute>
+              <ProtectedRoute requireOnboarding={false}>
                 <Onboarding />
               </ProtectedRoute>
             } />
