@@ -45,7 +45,7 @@ const Hero = () => {
               style={{ animationDelay: `${index * 0.1}s` }} 
               className="flex items-center justify-center p-4 bg-zue-dark-light/50 backdrop-blur-sm rounded-lg border border-white/10 animate-fade-in mx-[10px]"
             >
-              <span className="text-white font-medium drop-shadow-md light:text-zue-dark light:font-semibold light:drop-shadow-lg">
+              <span className="text-white font-medium drop-shadow-md light:text-gray-800 light:font-semibold light:drop-shadow-lg">
                 {item}
               </span>
             </div>
