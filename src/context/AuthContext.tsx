@@ -27,18 +27,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const checkOnboardingStatus = async (userId: string): Promise<boolean> => {
     try {
-      const { data: onboardingData, error } = await supabase
+      const { data, error } = await supabase
         .from('user_onboarding')
         .select('completed')
-        .eq('user_id', userId)
-        .single();
+        .eq('user_id', userId);
         
-      if (error && error.code !== 'PGRST116') {
+      if (error) {
         console.error("Error checking onboarding status:", error);
         return false;
       }
       
-      const completed = onboardingData?.completed || false;
+      // Check if any data was returned and if completion status is true
+      const completed = data && data.length > 0 ? data[0].completed || false : false;
       setIsOnboardingCompleted(completed);
       return completed;
     } catch (error) {
@@ -56,7 +56,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         
         // Check onboarding status whenever auth state changes
         if (currentSession?.user) {
-          await checkOnboardingStatus(currentSession.user.id);
+          // Use setTimeout to prevent potential deadlocks with Supabase client
+          setTimeout(async () => {
+            await checkOnboardingStatus(currentSession.user.id);
+          }, 0);
         } else {
           setIsOnboardingCompleted(false);
         }
@@ -83,6 +86,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     try {
+      setIsLoading(true);
       const { error, data } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
 
@@ -102,11 +106,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     } catch (error: any) {
       toast.error(error.message || "Failed to sign in");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const signUp = async (email: string, password: string, fullName: string) => {
     try {
+      setIsLoading(true);
       const { error, data } = await supabase.auth.signUp({
         email,
         password,
@@ -158,6 +165,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     } catch (error: any) {
       toast.error(error.message || "Failed to sign up");
+    } finally {
+      setIsLoading(false);
     }
   };
 

@@ -10,7 +10,6 @@ const Login = () => {
   // Login state
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
   
   // Signup state
   const [signupEmail, setSignupEmail] = useState("");
@@ -19,13 +18,11 @@ const Login = () => {
   const [fullName, setFullName] = useState("");
   const [signupLoading, setSignupLoading] = useState(false);
 
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, isLoading } = useAuth();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     await signIn(email, password);
-    setLoading(false);
   };
 
   const handleSignup = async (e: React.FormEvent) => {
@@ -101,9 +98,9 @@ const Login = () => {
                 <Button
                   type="submit"
                   className="w-full bg-zue-blue hover:bg-zue-blue-dark text-white"
-                  disabled={loading}
+                  disabled={isLoading}
                 >
-                  {loading ? "Logging in..." : "Login"}
+                  {isLoading ? "Logging in..." : "Login"}
                 </Button>
               </form>
             </TabsContent>
@@ -179,9 +176,9 @@ const Login = () => {
                 <Button
                   type="submit"
                   className="w-full bg-zue-blue hover:bg-zue-blue-dark text-white"
-                  disabled={signupLoading}
+                  disabled={signupLoading || isLoading}
                 >
-                  {signupLoading ? "Creating account..." : "Sign Up"}
+                  {signupLoading || isLoading ? "Creating account..." : "Sign Up"}
                 </Button>
               </form>
             </TabsContent>
