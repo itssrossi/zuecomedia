@@ -71,7 +71,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(data.user);
         setSession(data.session);
         
-        // Create entry in profiles table (assuming this exists)
+        // Create entry in profiles table
         try {
           await supabase.from('profiles').insert({
             id: data.user.id,
@@ -84,11 +84,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         
         // Create entry in user_onboarding table
         try {
-          const initialOnboardingItems = [
-            // Initial onboarding checklist data structure
-            // This matches the structure in Onboarding.tsx
-          ];
-          
           const { error: onboardingError } = await supabase
             .from('user_onboarding')
             .insert({
@@ -103,7 +98,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
         
         toast.success("Signed up successfully");
-        // Redirect to onboarding page instead of dashboard for new users
+        // Redirect to onboarding page for new users
         navigate("/onboarding");
       } else {
         toast.success("Signed up successfully. Please check your email for verification.");
