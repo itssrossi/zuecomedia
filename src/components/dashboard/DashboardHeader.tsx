@@ -4,7 +4,6 @@ import { CheckCircle } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
-import ThemeToggle from "./ThemeToggle";
 import { useTheme } from "@/context/ThemeContext";
 
 const DashboardHeader = () => {
@@ -39,7 +38,6 @@ const DashboardHeader = () => {
           </h1>
         </div>
         <div className={`flex items-center ${isMobile ? 'gap-2' : 'gap-4'}`}>
-          <ThemeToggle />
           <Button
             variant="outline"
             className={`
