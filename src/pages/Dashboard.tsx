@@ -17,13 +17,16 @@ import {
   TrendingUp, 
   LineChart, 
   MousePointerClick,
-  RefreshCcw
+  RefreshCcw,
+  CheckCircle
 } from "lucide-react";
 import { format, subDays } from "date-fns";
 import { toast } from "@/components/ui/sonner";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   const [startDate, setStartDate] = useState<Date | undefined>(subDays(new Date(), 30));
   const [endDate, setEndDate] = useState<Date | undefined>(new Date());
   const [selectedCampaigns, setSelectedCampaigns] = useState<string[]>([]);
@@ -50,6 +53,10 @@ const Dashboard = () => {
 
   const handleRefreshData = () => {
     triggerSync();
+  };
+
+  const goToOnboarding = () => {
+    navigate('/onboarding');
   };
 
   // Sample trend data (in a production app, this would come from the actual metrics)
@@ -113,6 +120,14 @@ const Dashboard = () => {
             </h1>
           </div>
           <div className="flex items-center gap-4">
+            <Button
+              variant="outline"
+              className="border-zue-blue text-white hover:bg-zue-blue/20 flex items-center gap-2"
+              onClick={goToOnboarding}
+            >
+              <CheckCircle size={16} />
+              Onboarding Checklist
+            </Button>
             {user && (
               <span className="text-sm text-gray-300">
                 {user.email}
