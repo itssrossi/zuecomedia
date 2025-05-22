@@ -1,9 +1,11 @@
 
-import { RefreshCcw } from "lucide-react";
+import { RefreshCcw, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import DateRangeSelector from "@/components/dashboard/DateRangeSelector";
 import { useIsMobile } from "@/hooks/use-mobile";
 import ThemeToggle from "@/components/dashboard/ThemeToggle";
+import { useNavigate } from "react-router-dom";
+import { useTheme } from "@/context/ThemeContext";
 
 interface DashboardControlsProps {
   startDate: Date | undefined;
@@ -21,6 +23,12 @@ const DashboardControls = ({
   syncStatus
 }: DashboardControlsProps) => {
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
+  const { theme } = useTheme();
+  
+  const goToOnboarding = () => {
+    navigate('/onboarding');
+  };
   
   return (
     <div className={`${isMobile ? 'flex-col space-y-4' : 'flex justify-between items-center'} mb-8`}>
@@ -38,6 +46,19 @@ const DashboardControls = ({
         )}
         
         <div className="flex items-center space-x-2">
+          <Button
+            variant="outline"
+            className={`
+              ${theme === 'light' 
+                ? 'border-zue-blue text-gray-800 hover:bg-zue-blue/10' 
+                : 'border-zue-blue text-white hover:bg-zue-blue/20'}
+              flex items-center gap-2
+            `}
+            onClick={goToOnboarding}
+          >
+            <CheckCircle size={16} />
+            {isMobile ? '' : 'Onboarding Checklist'}
+          </Button>
           <ThemeToggle />
           <Button
             onClick={onRefreshData}
