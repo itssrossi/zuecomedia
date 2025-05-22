@@ -3,10 +3,12 @@ import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Menu, X, LogIn } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useTheme } from "@/context/ThemeContext";
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { theme } = useTheme();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -29,11 +31,19 @@ const Navbar = () => {
       <div className="container-custom flex items-center justify-between py-4 px-0 mx-[20px]">
         <div className="flex items-center">
           <a href="/" className="flex items-center">
-            <img 
-              src="/lovable-uploads/d341fa26-afd0-418c-9c97-902fff2b93e2.png" 
-              alt="Zue Co Media Logo" 
-              className="h-12 mr-2"
-            />
+            {theme === 'light' ? (
+              <img 
+                src="/lovable-uploads/c5a928fa-35df-4bf0-b39d-7b83e2cbc714.png" 
+                alt="Zue Co Media Light Logo" 
+                className="h-12 mr-2"
+              />
+            ) : (
+              <img 
+                src="/lovable-uploads/d341fa26-afd0-418c-9c97-902fff2b93e2.png" 
+                alt="Zue Co Media Dark Logo" 
+                className="h-12 mr-2"
+              />
+            )}
             <span className="font-bold text-2xl text-slate-50">Zue<span className="text-zue-blue">Co</span> Media</span>
           </a>
         </div>

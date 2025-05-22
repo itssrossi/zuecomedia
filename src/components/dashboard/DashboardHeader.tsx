@@ -21,11 +21,19 @@ const DashboardHeader = () => {
     <header className={`${theme === 'light' ? 'bg-white shadow-sm' : 'bg-zue-dark-light shadow-md'} py-4 px-6 sticky top-0 z-10 transition-colors duration-300`}>
       <div className="container mx-auto flex justify-between items-center">
         <div className="flex items-center space-x-4">
-          <img
-            src="/lovable-uploads/d341fa26-afd0-418c-9c97-902fff2b93e2.png"
-            alt="Zue Co Media Logo"
-            className="h-8"
-          />
+          {theme === 'light' ? (
+            <img
+              src="/lovable-uploads/c5a928fa-35df-4bf0-b39d-7b83e2cbc714.png"
+              alt="Zue Co Media Light Logo"
+              className="h-8"
+            />
+          ) : (
+            <img
+              src="/lovable-uploads/d341fa26-afd0-418c-9c97-902fff2b93e2.png"
+              alt="Zue Co Media Dark Logo"
+              className="h-8"
+            />
+          )}
           <h1 className={`text-xl font-bold ${theme === 'light' ? 'text-gray-800' : 'text-white'}`}>
             Zue<span className="text-zue-blue">Co</span> Analytics Dashboard
           </h1>

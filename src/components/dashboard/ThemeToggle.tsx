@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Lightbulb } from "lucide-react";
+import { Lightbulb, LightbulbOff } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
 
 const ThemeToggle = () => {
@@ -27,15 +27,27 @@ const ThemeToggle = () => {
       onClick={handleToggle}
       title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
     >
-      <Lightbulb 
-        className={`
-          ${theme === 'light' ? 'text-yellow-500' : 'text-gray-400'}
-          ${isAnimating ? 'animate-pulse' : ''}
-          transition-all duration-300
-        `}
-        size={18}
-        strokeWidth={theme === 'light' ? 2.5 : 1.5}
-      />
+      {theme === 'light' ? (
+        <Lightbulb 
+          className={`
+            text-yellow-500
+            ${isAnimating ? 'animate-pulse' : ''}
+            transition-all duration-300
+          `}
+          size={18}
+          strokeWidth={2.5}
+        />
+      ) : (
+        <LightbulbOff 
+          className={`
+            text-gray-400
+            ${isAnimating ? 'animate-pulse' : ''}
+            transition-all duration-300
+          `}
+          size={18}
+          strokeWidth={1.5}
+        />
+      )}
       {isAnimating && (
         <span className={`absolute inset-0 rounded-full ${theme === 'light' ? 'animate-ping bg-yellow-400/20' : 'animate-ping bg-gray-400/20'}`}></span>
       )}
