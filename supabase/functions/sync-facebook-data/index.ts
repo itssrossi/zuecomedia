@@ -76,6 +76,7 @@ serve(async (req: Request) => {
 
     return new Response(JSON.stringify({ message: 'Sync completed successfully', results }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 200
     });
 
   } catch (error) {

@@ -140,13 +140,25 @@ export const saveAdAccount = async (
 };
 
 export const triggerFacebookDataSync = async (): Promise<void> => {
-  const { data, error } = await supabase.functions.invoke('sync-facebook-data', {
-    method: 'POST',
-  });
-  
-  if (error) {
-    throw new Error(`Error syncing data: ${error.message}`);
+  try {
+    const { data, error } = await supabase.functions.invoke('sync-facebook-data', {
+      method: 'POST',
+      body: {} // Add an empty body to avoid potential issues
+    });
+    
+    if (error) {
+      console.error("Error from edge function:", error);
+      throw new Error(`Error syncing data: ${error.message}`);
+    }
+    
+    if (!data) {
+      throw new Error("No data returned from sync function");
+    }
+    
+    console.log("Sync response:", data);
+    return data;
+  } catch (err) {
+    console.error("Error in triggerFacebookDataSync:", err);
+    throw err;
   }
-  
-  return data;
 };
