@@ -43,11 +43,16 @@ const Dashboard = () => {
   // Effect to auto-refresh when an account is connected
   useEffect(() => {
     if (accountConnected) {
+      console.log("Account connected flag detected, triggering sync");
+      
       // Reset the flag
       setAccountConnected(false);
       
-      // Trigger a sync to fetch data
-      triggerSync();
+      // Use a small delay to ensure the backend has processed the new account
+      setTimeout(() => {
+        // Trigger a sync to fetch data
+        triggerSync();
+      }, 500);
     }
   }, [accountConnected, triggerSync]);
 
@@ -61,6 +66,8 @@ const Dashboard = () => {
   };
 
   const handleAccountConnected = () => {
+    console.log("Account connection successful, setting accountConnected flag");
+    
     // Set the flag to trigger the useEffect
     setAccountConnected(true);
     

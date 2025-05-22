@@ -43,7 +43,12 @@ const FacebookAccountSetup = () => {
       );
       
       toast.success("Facebook Ad Account connected successfully!");
-      navigate("/dashboard");
+      
+      // Add a small delay before navigation to ensure the toast is visible
+      setTimeout(() => {
+        // Navigate to dashboard which will then fetch the updated data
+        navigate("/dashboard");
+      }, 1000);
     } catch (error: any) {
       console.error("Error saving Facebook Ad Account:", error);
       toast.error(error.message || "Failed to connect Facebook Ad Account");
