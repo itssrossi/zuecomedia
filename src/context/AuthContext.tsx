@@ -71,12 +71,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(data.user);
         setSession(data.session);
         
+        // Create entry in profiles table (assuming this exists)
+        try {
+          await supabase.from('profiles').insert({
+            id: data.user.id,
+            full_name: fullName,
+            email: email,
+          });
+        } catch (profileError) {
+          console.error("Error creating profile:", profileError);
+        }
+        
         // Create entry in user_onboarding table
-        await supabase.from('user_onboarding').insert({
-          user_id: data.user.id,
-          onboarding_data: [],
-          completed: false
-        });
+        try {
+          const initialOnboardingItems = [
+            // Initial onboarding checklist data structure
+            // This matches the structure in Onboarding.tsx
+          ];
+          
+          const { error: onboardingError } = await supabase
+            .from('user_onboarding')
+            .insert({
+              user_id: data.user.id,
+              onboarding_data: [],
+              completed: false
+            });
+            
+          if (onboardingError) throw onboardingError;
+        } catch (onboardingError) {
+          console.error("Error creating onboarding record:", onboardingError);
+        }
         
         toast.success("Signed up successfully");
         // Redirect to onboarding page instead of dashboard for new users

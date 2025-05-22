@@ -1,5 +1,6 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { CheckCircle2, Circle, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -7,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/components/ui/sonner";
 
 interface ChecklistItem {
   id: number;
@@ -19,6 +21,7 @@ interface ChecklistItem {
 
 const Onboarding = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [checklistItems, setChecklistItems] = useState<ChecklistItem[]>([
     {
       id: 1,
@@ -89,6 +92,38 @@ const Onboarding = () => {
       completed: false,
     },
   ]);
+  
+  // Load saved onboarding progress
+  useEffect(() => {
+    const loadOnboardingProgress = async () => {
+      if (!user) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from('user_onboarding')
+          .select('onboarding_data')
+          .eq('user_id', user.id)
+          .single();
+          
+        if (error && error.code !== 'PGRST116') { // PGRST116 is "no rows returned" error
+          throw error;
+        }
+        
+        if (data && data.onboarding_data && Array.isArray(data.onboarding_data)) {
+          setChecklistItems(prevItems => {
+            return prevItems.map(item => {
+              const savedItem = data.onboarding_data.find((i: ChecklistItem) => i.id === item.id);
+              return savedItem ? { ...item, completed: savedItem.completed } : item;
+            });
+          });
+        }
+      } catch (error) {
+        console.error('Error loading onboarding progress:', error);
+      }
+    };
+    
+    loadOnboardingProgress();
+  }, [user]);
 
   const toggleItem = async (id: number) => {
     const updatedItems = checklistItems.map(item => 
@@ -111,6 +146,20 @@ const Onboarding = () => {
       } catch (error) {
         console.error('Error saving onboarding progress:', error);
       }
+    }
+  };
+
+  const handleComplete = () => {
+    const allCompleted = checklistItems.every(item => item.completed);
+    
+    if (allCompleted) {
+      // Redirect to Facebook account setup page when all tasks are completed
+      navigate("/dashboard/facebook-setup");
+      toast.success("Onboarding completed! Let's connect your Facebook Ad Account.");
+    } else {
+      // Continue to dashboard if not all tasks are completed
+      navigate("/dashboard");
+      toast.info("You can complete the remaining tasks later.");
     }
   };
 
@@ -189,14 +238,13 @@ const Onboarding = () => {
             Back
           </Button>
           
-          <Link to="/dashboard">
-            <Button 
-              variant="default"
-              className="bg-zue-blue hover:bg-zue-blue-dark text-white"
-            >
-              {progress === 100 ? "Complete Onboarding" : "Continue to Dashboard"}
-            </Button>
-          </Link>
+          <Button 
+            variant="default"
+            className="bg-zue-blue hover:bg-zue-blue-dark text-white"
+            onClick={handleComplete}
+          >
+            {progress === 100 ? "Complete Onboarding" : "Continue to Dashboard"}
+          </Button>
         </div>
       </div>
     </div>
