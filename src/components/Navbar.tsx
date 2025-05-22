@@ -44,7 +44,9 @@ const Navbar = () => {
                 className="h-12 mr-2"
               />
             )}
-            <span className="font-bold text-2xl text-slate-50">Zue<span className="text-zue-blue">Co</span> Media</span>
+            <span className={`font-bold text-2xl ${theme === 'light' ? 'text-slate-900 drop-shadow-md' : 'text-slate-50'}`}>
+              Zue<span className="text-zue-blue">Co</span> Media
+            </span>
           </a>
         </div>
 
@@ -93,3 +95,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
