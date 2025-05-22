@@ -9,6 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/sonner";
+import { Json } from "@/integrations/supabase/types";
 
 interface ChecklistItem {
   id: number;
@@ -109,13 +110,18 @@ const Onboarding = () => {
           throw error;
         }
         
-        if (data && data.onboarding_data && Array.isArray(data.onboarding_data)) {
-          setChecklistItems(prevItems => {
-            return prevItems.map(item => {
-              const savedItem = data.onboarding_data.find((i: ChecklistItem) => i.id === item.id);
-              return savedItem ? { ...item, completed: savedItem.completed } : item;
+        if (data && data.onboarding_data) {
+          // Type assertion to handle Json type
+          const savedData = data.onboarding_data as unknown as ChecklistItem[];
+          
+          if (Array.isArray(savedData)) {
+            setChecklistItems(prevItems => {
+              return prevItems.map(item => {
+                const savedItem = savedData.find(i => i.id === item.id);
+                return savedItem ? { ...item, completed: savedItem.completed } : item;
+              });
             });
-          });
+          }
         }
       } catch (error) {
         console.error('Error loading onboarding progress:', error);
@@ -138,7 +144,7 @@ const Onboarding = () => {
           .from('user_onboarding')
           .upsert({
             user_id: user.id,
-            onboarding_data: updatedItems,
+            onboarding_data: updatedItems as unknown as Json,
             completed: updatedItems.every(item => item.completed)
           });
           
