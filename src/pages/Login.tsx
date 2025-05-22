@@ -1,28 +1,42 @@
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { toast } from "@/components/ui/sonner";
+import { useAuth } from "@/context/AuthContext";
+import { Link } from "react-router-dom";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Login = () => {
+  // Login state
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  
+  // Signup state
+  const [signupEmail, setSignupEmail] = useState("");
+  const [signupPassword, setSignupPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [signupLoading, setSignupLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const { signIn, signUp } = useAuth();
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    await signIn(email, password);
+    setLoading(false);
+  };
 
-    // This is a simple authentication without actual backend
-    // In a real app, you'd want to validate with a proper backend
-    setTimeout(() => {
-      setLoading(false);
-      localStorage.setItem("isAuthenticated", "true");
-      toast.success("Login successful");
-      navigate("/dashboard");
-    }, 1000);
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (signupPassword !== confirmPassword) {
+      alert("Passwords don't match");
+      return;
+    }
+    setSignupLoading(true);
+    await signUp(signupEmail, signupPassword, fullName);
+    setSignupLoading(false);
   };
 
   return (
@@ -42,55 +56,136 @@ const Login = () => {
         </div>
 
         <div className="bg-zue-dark-light rounded-lg shadow-xl p-8 border border-gray-800">
-          <h2 className="text-2xl font-bold text-white mb-6 text-center">
-            Log In to Analytics Dashboard
-          </h2>
+          <Tabs defaultValue="login" className="space-y-6">
+            <TabsList className="grid grid-cols-2 w-full">
+              <TabsTrigger value="login">Login</TabsTrigger>
+              <TabsTrigger value="signup">Sign Up</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="login">
+              <h2 className="text-2xl font-bold text-white mb-6 text-center">
+                Login to Your Analytics Dashboard
+              </h2>
+              
+              <form onSubmit={handleLogin} className="space-y-6">
+                <div className="space-y-2">
+                  <label htmlFor="email" className="text-white text-sm">
+                    Email
+                  </label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="your@email.com"
+                    className="bg-zue-dark border-gray-700 text-white"
+                    required
+                  />
+                </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <label htmlFor="email" className="text-white text-sm">
-                Email
-              </label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="your@email.com"
-                className="bg-zue-dark border-gray-700 text-white"
-                required
-              />
-            </div>
+                <div className="space-y-2">
+                  <label htmlFor="password" className="text-white text-sm">
+                    Password
+                  </label>
+                  <Input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="bg-zue-dark border-gray-700 text-white"
+                    required
+                  />
+                </div>
 
-            <div className="space-y-2">
-              <label htmlFor="password" className="text-white text-sm">
-                Password
-              </label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="bg-zue-dark border-gray-700 text-white"
-                required
-              />
-            </div>
+                <Button
+                  type="submit"
+                  className="w-full bg-zue-blue hover:bg-zue-blue-dark text-white"
+                  disabled={loading}
+                >
+                  {loading ? "Logging in..." : "Login"}
+                </Button>
+              </form>
+            </TabsContent>
+            
+            <TabsContent value="signup">
+              <h2 className="text-2xl font-bold text-white mb-6 text-center">
+                Create an Account
+              </h2>
+              
+              <form onSubmit={handleSignup} className="space-y-4">
+                <div className="space-y-2">
+                  <label htmlFor="full-name" className="text-white text-sm">
+                    Full Name
+                  </label>
+                  <Input
+                    id="full-name"
+                    type="text"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    placeholder="John Doe"
+                    className="bg-zue-dark border-gray-700 text-white"
+                    required
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <label htmlFor="signup-email" className="text-white text-sm">
+                    Email
+                  </label>
+                  <Input
+                    id="signup-email"
+                    type="email"
+                    value={signupEmail}
+                    onChange={(e) => setSignupEmail(e.target.value)}
+                    placeholder="your@email.com"
+                    className="bg-zue-dark border-gray-700 text-white"
+                    required
+                  />
+                </div>
 
-            <Button
-              type="submit"
-              className="w-full bg-zue-blue hover:bg-zue-blue-dark text-white"
-              disabled={loading}
-            >
-              {loading ? "Logging in..." : "Log In"}
-            </Button>
-          </form>
+                <div className="space-y-2">
+                  <label htmlFor="signup-password" className="text-white text-sm">
+                    Password
+                  </label>
+                  <Input
+                    id="signup-password"
+                    type="password"
+                    value={signupPassword}
+                    onChange={(e) => setSignupPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="bg-zue-dark border-gray-700 text-white"
+                    required
+                    minLength={6}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <label htmlFor="confirm-password" className="text-white text-sm">
+                    Confirm Password
+                  </label>
+                  <Input
+                    id="confirm-password"
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="bg-zue-dark border-gray-700 text-white"
+                    required
+                    minLength={6}
+                  />
+                </div>
 
-          <div className="mt-6 text-center">
-            <p className="text-gray-400 text-sm">
-              For demo purposes, any email/password combination will work
-            </p>
-          </div>
+                <Button
+                  type="submit"
+                  className="w-full bg-zue-blue hover:bg-zue-blue-dark text-white"
+                  disabled={signupLoading}
+                >
+                  {signupLoading ? "Creating account..." : "Sign Up"}
+                </Button>
+              </form>
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </div>

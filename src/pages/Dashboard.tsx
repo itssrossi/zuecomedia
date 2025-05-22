@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import DashboardCard from "@/components/dashboard/DashboardCard";
 import CampaignTable from "@/components/dashboard/CampaignTable";
@@ -8,106 +8,94 @@ import PerformanceChart from "@/components/dashboard/PerformanceChart";
 import CampaignPieChart from "@/components/dashboard/CampaignPieChart";
 import MetricPieChart from "@/components/dashboard/MetricPieChart";
 import CampaignTrendChart from "@/components/dashboard/CampaignTrendChart";
-import { fetchAdMetrics, fetchTotalStats, AdMetric } from "@/services/airtableService";
-import { toast } from "@/components/ui/sonner";
+import FacebookAccountSetup from "@/components/dashboard/FacebookAccountSetup";
+import DateRangeSelector from "@/components/dashboard/DateRangeSelector";
+import { useFacebookData } from "@/hooks/useFacebookData";
 import { 
   BarChart4, 
   DollarSign, 
   TrendingUp, 
   LineChart, 
-  BarChart, 
-  PieChart,
-  Users, 
-  MousePointerClick
+  MousePointerClick,
+  RefreshCcw
 } from "lucide-react";
+import { format, subDays } from "date-fns";
+import { toast } from "@/components/ui/sonner";
 
 const Dashboard = () => {
-  const navigate = useNavigate();
-  const [campaigns, setCampaigns] = useState<AdMetric[]>([]);
-  const [stats, setStats] = useState({
-    totalSpend: 0,
-    totalRevenue: 0,
-    averageRoas: 0,
-    totalImpressions: 0,
-    totalClicks: 0,
-    averageCtr: 0,
-  });
-  const [isLoading, setIsLoading] = useState(true);
+  const { user, signOut } = useAuth();
+  const [startDate, setStartDate] = useState<Date | undefined>(subDays(new Date(), 30));
+  const [endDate, setEndDate] = useState<Date | undefined>(new Date());
+  const [selectedCampaigns, setSelectedCampaigns] = useState<string[]>([]);
 
-  // Sample trend data
-  const spendTrendData = [
-    { name: "Jan", value: 1000 },
-    { name: "Feb", value: 1200 },
-    { name: "Mar", value: 900 },
-    { name: "Apr", value: 1500 },
-    { name: "May", value: 1700 },
-    { name: "Jun", value: 1400 },
-    { name: "Jul", value: 1800 },
-  ];
+  // Format dates for API calls
+  const formattedStartDate = startDate ? format(startDate, 'yyyy-MM-dd') : undefined;
+  const formattedEndDate = endDate ? format(endDate, 'yyyy-MM-dd') : undefined;
 
-  const revenueTrendData = [
-    { name: "Jan", value: 3000 },
-    { name: "Feb", value: 3600 },
-    { name: "Mar", value: 2700 },
-    { name: "Apr", value: 5200 },
-    { name: "May", value: 6800 },
-    { name: "Jun", value: 7000 },
-    { name: "Jul", value: 8500 },
-  ];
+  // Use our custom hook to fetch Facebook data
+  const { 
+    accounts,
+    campaigns, 
+    metrics, 
+    stats, 
+    syncStatus,
+    isLoading, 
+    triggerSync
+  } = useFacebookData(formattedStartDate, formattedEndDate, selectedCampaigns);
 
-  const roasTrendData = [
-    { name: "Jan", value: 3.0 },
-    { name: "Feb", value: 3.2 },
-    { name: "Mar", value: 3.0 },
-    { name: "Apr", value: 3.5 },
-    { name: "May", value: 4.0 },
-    { name: "Jun", value: 5.0 },
-    { name: "Jul", value: 4.8 },
-  ];
-
-  const ctrTrendData = [
-    { name: "Jan", value: 2.1 },
-    { name: "Feb", value: 2.5 },
-    { name: "Mar", value: 3.0 },
-    { name: "Apr", value: 3.8 },
-    { name: "May", value: 4.2 },
-    { name: "Jun", value: 3.9 },
-    { name: "Jul", value: 4.5 },
-  ];
-
-  useEffect(() => {
-    const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
-    if (!isAuthenticated) {
-      toast.error("Please log in to access the dashboard");
-      navigate("/login");
-      return;
-    }
-
-    const loadData = async () => {
-      setIsLoading(true);
-      try {
-        const [metricsData, statsData] = await Promise.all([
-          fetchAdMetrics(),
-          fetchTotalStats(),
-        ]);
-        setCampaigns(metricsData);
-        setStats(statsData);
-      } catch (error) {
-        console.error("Error loading dashboard data:", error);
-        toast.error("Failed to load dashboard data");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadData();
-  }, [navigate]);
-
-  const handleLogout = () => {
-    localStorage.removeItem("isAuthenticated");
-    toast.success("Logged out successfully");
-    navigate("/login");
+  const handleDateRangeChange = (start: Date | undefined, end: Date | undefined) => {
+    setStartDate(start);
+    setEndDate(end);
   };
+
+  const handleRefreshData = () => {
+    triggerSync();
+  };
+
+  // Sample trend data (in a production app, this would come from the actual metrics)
+  const getTrendData = (metric: 'spend' | 'revenue' | 'ctr' | 'roas') => {
+    if (!metrics || metrics.length === 0) return [];
+    
+    // Group metrics by date
+    const groupedByDate: Record<string, any> = {};
+    
+    metrics.forEach(item => {
+      if (!groupedByDate[item.date]) {
+        groupedByDate[item.date] = { 
+          spend: 0, 
+          revenue: 0, 
+          clicks: 0, 
+          impressions: 0 
+        };
+      }
+      groupedByDate[item.date].spend += Number(item.spend);
+      groupedByDate[item.date].revenue += Number(item.revenue);
+      groupedByDate[item.date].clicks += item.clicks;
+      groupedByDate[item.date].impressions += item.impressions;
+    });
+    
+    // Convert to array and sort by date
+    const sortedDates = Object.keys(groupedByDate).sort();
+    
+    return sortedDates.map(date => {
+      const data = groupedByDate[date];
+      const ctr = data.impressions > 0 ? (data.clicks / data.impressions) * 100 : 0;
+      const roas = data.spend > 0 ? data.revenue / data.spend : 0;
+      
+      return {
+        name: date.slice(5), // Format as "MM-DD"
+        value: metric === 'spend' ? data.spend :
+               metric === 'revenue' ? data.revenue :
+               metric === 'ctr' ? ctr :
+               roas
+      };
+    });
+  };
+
+  const spendTrendData = getTrendData('spend');
+  const revenueTrendData = getTrendData('revenue');
+  const roasTrendData = getTrendData('roas');
+  const ctrTrendData = getTrendData('ctr');
 
   return (
     <div className="min-h-screen bg-zue-dark text-white">
@@ -125,10 +113,15 @@ const Dashboard = () => {
             </h1>
           </div>
           <div className="flex items-center gap-4">
+            {user && (
+              <span className="text-sm text-gray-300">
+                {user.email}
+              </span>
+            )}
             <Button
               variant="outline"
               className="border-gray-600 text-white hover:bg-zue-dark hover:text-white"
-              onClick={handleLogout}
+              onClick={signOut}
             >
               Logout
             </Button>
@@ -138,91 +131,125 @@ const Dashboard = () => {
 
       {/* Dashboard Content */}
       <main className="container mx-auto px-4 py-8">
-        {/* Key Metrics Section */}
-        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <DashboardCard
-            title="Total Ad Spend"
-            value={`$${stats.totalSpend.toLocaleString()}`}
-            icon={<DollarSign size={20} />}
-            trend={{ value: 12.5, isPositive: true }}
-            chartComponent={<CampaignTrendChart data={spendTrendData} color="#3182CE" />}
+        {/* Date Range and Sync Controls */}
+        <div className="flex justify-between items-center mb-8">
+          <DateRangeSelector 
+            startDate={startDate}
+            endDate={endDate}
+            onDateRangeChange={handleDateRangeChange}
           />
-          <DashboardCard
-            title="Total Revenue"
-            value={`$${stats.totalRevenue.toLocaleString()}`}
-            icon={<TrendingUp size={20} />}
-            trend={{ value: 18.3, isPositive: true }}
-            chartComponent={<CampaignTrendChart data={revenueTrendData} color="#38A169" />}
-          />
-          <DashboardCard
-            title="Average ROAS"
-            value={`${stats.averageRoas.toFixed(2)}x`}
-            icon={<BarChart4 size={20} />}
-            trend={{ value: 5.2, isPositive: true }}
-            chartComponent={
-              <MetricPieChart 
-                value={Math.round(stats.averageRoas * 100) / 100} 
-                maxValue={10}
-                title="ROAS"
-                color="#38A169"
-              />
-            }
-          />
-          <DashboardCard
-            title="Average CTR"
-            value={`${stats.averageCtr.toFixed(2)}%`}
-            icon={<MousePointerClick size={20} />}
-            trend={{ value: 0.8, isPositive: true }}
-            chartComponent={
-              <MetricPieChart 
-                value={Math.round(stats.averageCtr * 10) / 10}
-                maxValue={10}
-                title="CTR"
-                color="#3182CE"
-                isPercentage
-              />
-            }
-          />
-        </section>
-
-        {/* Charts Section */}
-        <section className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          <div className="lg:col-span-2">
-            <PerformanceChart data={campaigns} isLoading={isLoading} />
+          
+          <div className="flex items-center space-x-4">
+            {syncStatus && (
+              <span className="text-sm text-gray-300">
+                Last sync: {new Date(syncStatus.last_sync_at).toLocaleString()}
+              </span>
+            )}
+            
+            <Button
+              onClick={handleRefreshData}
+              className="flex items-center space-x-2 bg-zue-blue hover:bg-blue-700"
+            >
+              <RefreshCcw size={16} />
+              <span>Sync Data</span>
+            </Button>
           </div>
-          <div>
-            <CampaignPieChart 
-              data={campaigns} 
-              isLoading={isLoading} 
-              metric="spend" 
-              title="Ad Spend Distribution"
-            />
-          </div>
-        </section>
+        </div>
 
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <CampaignPieChart 
-            data={campaigns} 
-            isLoading={isLoading} 
-            metric="revenue" 
-            title="Revenue Distribution"
-          />
-          <CampaignPieChart 
-            data={campaigns} 
-            isLoading={isLoading} 
-            metric="conversions" 
-            title="Conversions Distribution"
-          />
-        </section>
+        {accounts.length === 0 ? (
+          <FacebookAccountSetup onSuccess={() => {
+            toast.success("Account connected! Syncing data...");
+            triggerSync();
+          }} />
+        ) : (
+          <>
+            {/* Key Metrics Section */}
+            <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              <DashboardCard
+                title="Total Ad Spend"
+                value={`$${stats.totalSpend.toLocaleString()}`}
+                icon={<DollarSign size={20} />}
+                trend={{ value: 12.5, isPositive: true }}
+                chartComponent={<CampaignTrendChart data={spendTrendData} color="#3182CE" />}
+              />
+              <DashboardCard
+                title="Total Revenue"
+                value={`$${stats.totalRevenue.toLocaleString()}`}
+                icon={<TrendingUp size={20} />}
+                trend={{ value: 18.3, isPositive: true }}
+                chartComponent={<CampaignTrendChart data={revenueTrendData} color="#38A169" />}
+              />
+              <DashboardCard
+                title="Average ROAS"
+                value={`${stats.averageRoas.toFixed(2)}x`}
+                icon={<BarChart4 size={20} />}
+                trend={{ value: 5.2, isPositive: true }}
+                chartComponent={
+                  <MetricPieChart 
+                    value={Math.round(stats.averageRoas * 100) / 100} 
+                    maxValue={10}
+                    title="ROAS"
+                    color="#38A169"
+                  />
+                }
+              />
+              <DashboardCard
+                title="Average CTR"
+                value={`${stats.averageCtr.toFixed(2)}%`}
+                icon={<MousePointerClick size={20} />}
+                trend={{ value: 0.8, isPositive: true }}
+                chartComponent={
+                  <MetricPieChart 
+                    value={Math.round(stats.averageCtr * 10) / 10}
+                    maxValue={10}
+                    title="CTR"
+                    color="#3182CE"
+                    isPercentage
+                  />
+                }
+              />
+            </section>
 
-        {/* Campaign Table Section */}
-        <section className="bg-zue-dark-light rounded-lg p-6 border border-gray-800 shadow-md">
-          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-            <BarChart size={20} className="text-zue-blue" />
-            Facebook Ad Campaigns
-          </h2>
-          <CampaignTable campaigns={campaigns} isLoading={isLoading} />
-        </section>
+            {/* Charts Section */}
+            <section className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+              <div className="lg:col-span-2">
+                <PerformanceChart data={metrics} isLoading={isLoading} />
+              </div>
+              <div>
+                <CampaignPieChart 
+                  data={metrics} 
+                  isLoading={isLoading} 
+                  metric="spend" 
+                  title="Ad Spend Distribution"
+                />
+              </div>
+            </section>
+
+            <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+              <CampaignPieChart 
+                data={metrics} 
+                isLoading={isLoading} 
+                metric="revenue" 
+                title="Revenue Distribution"
+              />
+              <CampaignPieChart 
+                data={metrics} 
+                isLoading={isLoading} 
+                metric="conversions" 
+                title="Conversions Distribution"
+              />
+            </section>
+
+            {/* Campaign Table Section */}
+            <section className="bg-zue-dark-light rounded-lg p-6 border border-gray-800 shadow-md">
+              <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                <BarChart4 size={20} className="text-zue-blue" />
+                Facebook Ad Campaigns
+              </h2>
+              <CampaignTable campaigns={metrics} isLoading={isLoading} />
+            </section>
+          </>
+        )}
       </main>
     </div>
   );
