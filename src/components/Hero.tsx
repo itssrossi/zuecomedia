@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 const Hero = () => {
@@ -32,12 +33,23 @@ const Hero = () => {
           </div>
         </div>
         
-        <div className="mt-20 grid grid-cols-2 md:grid-cols-6 gap-4 md:gap-8">
-          {['Brand', 'Design', 'Strategy', 'Technology', 'Campaigns', 'Analytics'].map((item, index) => <div key={index} style={{
-          animationDelay: `${index * 0.1}s`
-        }} className="flex items-center justify-center p-4 bg-zue-dark-light/50 backdrop-blur-sm rounded-lg border border-white/10 animate-fade-in mx-[10px]">
-              <span className="text-white font-medium">{item}</span>
-            </div>)}
+        <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+          {[
+            'Results-driven strategies tailored to your goals',
+            'Creative solutions that make your brand stand out',
+            'Data-backed decisions for maximum ROI',
+            'Dedicated team of industry experts'
+          ].map((item, index) => (
+            <div 
+              key={index} 
+              style={{ animationDelay: `${index * 0.1}s` }} 
+              className="flex items-center justify-center p-4 bg-zue-dark-light/50 backdrop-blur-sm rounded-lg border border-white/10 animate-fade-in mx-[10px]"
+            >
+              <span className="text-white font-medium drop-shadow-md light:text-zue-dark light:font-semibold light:drop-shadow-lg">
+                {item}
+              </span>
+            </div>
+          ))}
         </div>
       </div>
     </section>;
