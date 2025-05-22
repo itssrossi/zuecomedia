@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
@@ -11,7 +10,7 @@ import OnboardingActions from "@/components/onboarding/OnboardingActions";
 import { ChecklistItemType } from "@/components/onboarding/ChecklistItem";
 
 const Onboarding = () => {
-  const { user, checkOnboardingStatus } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [checklistItems, setChecklistItems] = useState<ChecklistItemType[]>([
     {
@@ -141,11 +140,6 @@ const Onboarding = () => {
           });
           
         if (error) throw error;
-        
-        // Update the onboarding status in Auth context
-        if (allCompleted) {
-          await checkOnboardingStatus(user.id);
-        }
       } catch (error) {
         console.error('Error saving onboarding progress:', error);
       }
@@ -169,15 +163,9 @@ const Onboarding = () => {
             
           if (error) throw error;
           
-          // Update status in context and ensure it's fully processed
-          await checkOnboardingStatus(user.id);
-          
-          // Add a small delay to ensure the state is updated before navigation
-          setTimeout(() => {
-            // Redirect directly to dashboard when all tasks are completed
-            navigate("/dashboard");
-            toast.success("Onboarding completed! Welcome to your dashboard.");
-          }, 300); // Increased timeout to ensure state updates properly
+          // Simply navigate to dashboard when completed
+          navigate("/dashboard");
+          toast.success("Onboarding completed! Welcome to your dashboard.");
         } catch (error) {
           console.error('Error completing onboarding:', error);
           toast.error("There was an error completing onboarding. Please try again.");
@@ -208,7 +196,7 @@ const Onboarding = () => {
         <OnboardingActions 
           progress={progress} 
           onComplete={handleComplete} 
-          onBack={() => window.history.back()} 
+          onBack={() => navigate("/dashboard")} // Change to go directly to dashboard
         />
       </div>
     </div>

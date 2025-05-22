@@ -12,6 +12,7 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, fullName: string) => Promise<void>;
   signOut: () => Promise<void>;
+  checkOnboardingStatus?: (userId: string) => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -21,6 +22,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
+
+  // Simplified version - no longer checking onboarding status
+  const checkOnboardingStatus = async (userId: string): Promise<boolean> => {
+    // Simply return true to indicate onboarding is "completed" for all users
+    // This effectively bypasses onboarding checks while allowing the function to still exist
+    return true;
+  };
 
   useEffect(() => {
     // Set up auth state listener
@@ -50,7 +58,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       toast.success("Signed in successfully");
       
-      // Always go to dashboard after login
+      // Always go to dashboard after login - simplified approach
       navigate("/dashboard", { replace: true });
     } catch (error: any) {
       toast.error(error.message || "Failed to sign in");
@@ -135,7 +143,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       isLoading, 
       signIn, 
       signUp, 
-      signOut
+      signOut,
+      checkOnboardingStatus
     }}>
       {children}
     </AuthContext.Provider>
