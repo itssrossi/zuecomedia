@@ -3,10 +3,12 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const DashboardHeader = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
   const goToOnboarding = () => {
     navigate('/onboarding');
@@ -25,16 +27,16 @@ const DashboardHeader = () => {
             Zue<span className="text-zue-blue">Co</span> Analytics Dashboard
           </h1>
         </div>
-        <div className="flex items-center gap-4">
+        <div className={`flex ${isMobile ? 'flex-col space-y-2' : 'items-center gap-4'}`}>
           <Button
             variant="outline"
             className="border-zue-blue text-white hover:bg-zue-blue/20 flex items-center gap-2"
             onClick={goToOnboarding}
           >
             <CheckCircle size={16} />
-            Onboarding Checklist
+            {isMobile ? '' : 'Onboarding Checklist'}
           </Button>
-          {user && (
+          {user && !isMobile && (
             <span className="text-sm text-gray-300">
               {user.email}
             </span>

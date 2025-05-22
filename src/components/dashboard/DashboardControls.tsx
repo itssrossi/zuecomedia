@@ -2,6 +2,7 @@
 import { RefreshCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import DateRangeSelector from "@/components/dashboard/DateRangeSelector";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface DashboardControlsProps {
   startDate: Date | undefined;
@@ -18,15 +19,17 @@ const DashboardControls = ({
   onRefreshData,
   syncStatus
 }: DashboardControlsProps) => {
+  const isMobile = useIsMobile();
+  
   return (
-    <div className="flex justify-between items-center mb-8">
+    <div className={`${isMobile ? 'flex-col space-y-4' : 'flex justify-between items-center'} mb-8`}>
       <DateRangeSelector 
         startDate={startDate}
         endDate={endDate}
         onDateRangeChange={onDateRangeChange}
       />
       
-      <div className="flex items-center space-x-4">
+      <div className={`flex items-center ${isMobile ? 'justify-between w-full' : 'space-x-4'}`}>
         {syncStatus && (
           <span className="text-sm text-gray-300">
             Last sync: {new Date(syncStatus.last_sync_at).toLocaleString()}
