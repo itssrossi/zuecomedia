@@ -1,0 +1,84 @@
+
+import { 
+  BarChart4, 
+  DollarSign, 
+  TrendingUp, 
+  MousePointerClick
+} from "lucide-react";
+import DashboardCard from "@/components/dashboard/DashboardCard";
+import CampaignTrendChart from "@/components/dashboard/CampaignTrendChart";
+import MetricPieChart from "@/components/dashboard/MetricPieChart";
+
+interface DashboardMetricsProps {
+  stats: {
+    totalSpend: number;
+    totalRevenue: number;
+    totalImpressions: number;
+    totalClicks: number;
+    averageCtr: number;
+    averageRoas: number;
+    averageCpc: number;
+  };
+  spendTrendData: { name: string; value: number }[];
+  revenueTrendData: { name: string; value: number }[];
+  roasTrendData: { name: string; value: number }[];
+  ctrTrendData: { name: string; value: number }[];
+}
+
+const DashboardMetrics = ({ 
+  stats, 
+  spendTrendData, 
+  revenueTrendData, 
+  roasTrendData, 
+  ctrTrendData 
+}: DashboardMetricsProps) => {
+  return (
+    <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <DashboardCard
+        title="Total Ad Spend"
+        value={`$${stats.totalSpend.toLocaleString()}`}
+        icon={<DollarSign size={20} />}
+        trend={{ value: 12.5, isPositive: true }}
+        chartComponent={<CampaignTrendChart data={spendTrendData} color="#3182CE" />}
+      />
+      <DashboardCard
+        title="Total Revenue"
+        value={`$${stats.totalRevenue.toLocaleString()}`}
+        icon={<TrendingUp size={20} />}
+        trend={{ value: 18.3, isPositive: true }}
+        chartComponent={<CampaignTrendChart data={revenueTrendData} color="#38A169" />}
+      />
+      <DashboardCard
+        title="Average ROAS"
+        value={`${stats.averageRoas.toFixed(2)}x`}
+        icon={<BarChart4 size={20} />}
+        trend={{ value: 5.2, isPositive: true }}
+        chartComponent={
+          <MetricPieChart 
+            value={Math.round(stats.averageRoas * 100) / 100} 
+            maxValue={10}
+            title="ROAS"
+            color="#38A169"
+          />
+        }
+      />
+      <DashboardCard
+        title="Average CTR"
+        value={`${stats.averageCtr.toFixed(2)}%`}
+        icon={<MousePointerClick size={20} />}
+        trend={{ value: 0.8, isPositive: true }}
+        chartComponent={
+          <MetricPieChart 
+            value={Math.round(stats.averageCtr * 10) / 10}
+            maxValue={10}
+            title="CTR"
+            color="#3182CE"
+            isPercentage
+          />
+        }
+      />
+    </section>
+  );
+};
+
+export default DashboardMetrics;
