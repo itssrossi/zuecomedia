@@ -171,14 +171,14 @@ const Onboarding = () => {
           
           // Update status in context
           await checkOnboardingStatus(user.id);
+          
+          // Redirect directly to dashboard when all tasks are completed
+          navigate("/dashboard");
+          toast.success("Onboarding completed! Welcome to your dashboard.");
         } catch (error) {
           console.error('Error completing onboarding:', error);
         }
       }
-      
-      // Redirect to Facebook account setup page when all tasks are completed
-      navigate("/dashboard/facebook-setup");
-      toast.success("Onboarding completed! Let's connect your Facebook Ad Account.");
     } else {
       // Show warning that not all tasks are completed
       toast.warning("Please complete all onboarding tasks before proceeding.");

@@ -22,7 +22,7 @@ const OnboardingActions = ({ progress, onComplete, onBack }: OnboardingActionsPr
         className="bg-zue-blue hover:bg-zue-blue-dark text-white"
         onClick={onComplete}
       >
-        {progress === 100 ? "Complete Onboarding" : "Continue to Dashboard"}
+        {progress === 100 ? "Complete & Go to Dashboard" : "Continue"}
       </Button>
     </div>
   );
