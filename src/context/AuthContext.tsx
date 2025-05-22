@@ -30,7 +30,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { data, error } = await supabase
         .from('user_onboarding')
         .select('completed')
-        .eq('user_id', userId);
+        .eq('user_id', userId)
+        .single();
         
       if (error) {
         console.error("Error checking onboarding status:", error);
@@ -38,7 +39,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       
       // Check if any data was returned and if completion status is true
-      const completed = data && data.length > 0 ? data[0].completed || false : false;
+      const completed = data && data.completed || false;
       setIsOnboardingCompleted(completed);
       return completed;
     } catch (error) {

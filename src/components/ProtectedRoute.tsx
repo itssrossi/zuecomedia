@@ -41,7 +41,7 @@ const ProtectedRoute = ({ children, requireOnboarding = true }: ProtectedRoutePr
   // Redirect logic based on onboarding completion
   if (location.pathname === "/dashboard" || location.pathname.startsWith("/dashboard/")) {
     // If trying to access dashboard but onboarding not completed
-    if (!isOnboardingCompleted) {
+    if (!isOnboardingCompleted && requireOnboarding) {
       return <Navigate to="/onboarding" replace />;
     }
   } else if (location.pathname === "/onboarding") {

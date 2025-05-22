@@ -169,14 +169,18 @@ const Onboarding = () => {
             
           if (error) throw error;
           
-          // Update status in context
+          // Update status in context and ensure it's fully processed
           await checkOnboardingStatus(user.id);
           
-          // Redirect directly to dashboard when all tasks are completed
-          navigate("/dashboard");
-          toast.success("Onboarding completed! Welcome to your dashboard.");
+          // Add a small delay to ensure the state is updated before navigation
+          setTimeout(() => {
+            // Redirect directly to dashboard when all tasks are completed
+            navigate("/dashboard");
+            toast.success("Onboarding completed! Welcome to your dashboard.");
+          }, 100);
         } catch (error) {
           console.error('Error completing onboarding:', error);
+          toast.error("There was an error completing onboarding. Please try again.");
         }
       }
     } else {
