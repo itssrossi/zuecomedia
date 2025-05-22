@@ -12,8 +12,6 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, fullName: string) => Promise<void>;
   signOut: () => Promise<void>;
-  isOnboardingCompleted: boolean;
-  checkOnboardingStatus: (userId: string) => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -22,63 +20,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isOnboardingCompleted, setIsOnboardingCompleted] = useState(false);
   const navigate = useNavigate();
-
-  const checkOnboardingStatus = async (userId: string): Promise<boolean> => {
-    try {
-      const { data, error } = await supabase
-        .from('user_onboarding')
-        .select('completed')
-        .eq('user_id', userId)
-        .single();
-        
-      if (error && error.code !== 'PGRST116') { // PGRST116 is "no rows returned" error
-        console.error("Error checking onboarding status:", error);
-        return false;
-      }
-      
-      // Check if data was returned and completion status
-      const completed = data?.completed || false;
-      setIsOnboardingCompleted(completed);
-      return completed;
-    } catch (error) {
-      console.error("Error in checkOnboardingStatus:", error);
-      return false;
-    }
-  };
 
   useEffect(() => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, currentSession) => {
+      (event, currentSession) => {
         setSession(currentSession);
         setUser(currentSession?.user ?? null);
-        
-        // Check onboarding status whenever auth state changes
-        if (currentSession?.user) {
-          // Use setTimeout to prevent potential deadlocks with Supabase client
-          setTimeout(async () => {
-            await checkOnboardingStatus(currentSession.user.id);
-          }, 0);
-        } else {
-          setIsOnboardingCompleted(false);
-        }
-        
         setIsLoading(false);
       }
     );
 
     // Check for existing session
-    supabase.auth.getSession().then(async ({ data: { session: currentSession } }) => {
+    supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
       setSession(currentSession);
       setUser(currentSession?.user ?? null);
-      
-      // Check onboarding status for existing session
-      if (currentSession?.user) {
-        await checkOnboardingStatus(currentSession.user.id);
-      }
-      
       setIsLoading(false);
     });
 
@@ -91,20 +48,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { error, data } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
 
-      // Check if this user has completed onboarding
-      if (data.user) {
-        const completed = await checkOnboardingStatus(data.user.id);
-        
-        toast.success("Signed in successfully");
-        
-        // If onboarding is not completed, redirect to onboarding
-        if (!completed) {
-          navigate("/onboarding");
-        } else {
-          // Otherwise go to dashboard
-          navigate("/dashboard");
-        }
-      }
+      toast.success("Signed in successfully");
+      
+      // Always go to dashboard after login
+      navigate("/dashboard", { replace: true });
     } catch (error: any) {
       toast.error(error.message || "Failed to sign in");
     } finally {
@@ -142,7 +89,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           console.error("Error creating profile:", profileError);
         }
         
-        // Create entry in user_onboarding table
+        // For new users, create an onboarding entry but don't enforce completion
         try {
           const { error: onboardingError } = await supabase
             .from('user_onboarding')
@@ -157,10 +104,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           console.error("Error creating onboarding record:", onboardingError);
         }
         
-        setIsOnboardingCompleted(false);
         toast.success("Signed up successfully");
-        // Always redirect to onboarding page for new users
-        navigate("/onboarding");
+        
+        // New users are directed to onboarding but can skip to dashboard if needed
+        navigate("/onboarding", { replace: true });
       } else {
         toast.success("Signed up successfully. Please check your email for verification.");
       }
@@ -174,7 +121,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signOut = async () => {
     try {
       await supabase.auth.signOut();
-      setIsOnboardingCompleted(false);
       toast.success("Signed out successfully");
       navigate("/login");
     } catch (error: any) {
@@ -189,9 +135,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       isLoading, 
       signIn, 
       signUp, 
-      signOut, 
-      isOnboardingCompleted,
-      checkOnboardingStatus
+      signOut
     }}>
       {children}
     </AuthContext.Provider>
