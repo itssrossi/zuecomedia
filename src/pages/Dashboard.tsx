@@ -30,6 +30,7 @@ const Dashboard = () => {
   const [startDate, setStartDate] = useState<Date | undefined>(subDays(new Date(), 30));
   const [endDate, setEndDate] = useState<Date | undefined>(new Date());
   const [selectedCampaigns, setSelectedCampaigns] = useState<string[]>([]);
+  const [accountConnected, setAccountConnected] = useState(false);
 
   // Format dates for API calls
   const formattedStartDate = startDate ? format(startDate, 'yyyy-MM-dd') : undefined;
@@ -46,6 +47,17 @@ const Dashboard = () => {
     triggerSync
   } = useFacebookData(formattedStartDate, formattedEndDate, selectedCampaigns);
 
+  // Effect to auto-refresh when an account is connected
+  useEffect(() => {
+    if (accountConnected) {
+      // Reset the flag
+      setAccountConnected(false);
+      
+      // Trigger a sync to fetch data
+      triggerSync();
+    }
+  }, [accountConnected, triggerSync]);
+
   const handleDateRangeChange = (start: Date | undefined, end: Date | undefined) => {
     setStartDate(start);
     setEndDate(end);
@@ -57,6 +69,13 @@ const Dashboard = () => {
 
   const goToOnboarding = () => {
     navigate('/onboarding');
+  };
+
+  const handleAccountConnected = () => {
+    // Set the flag to trigger the useEffect
+    setAccountConnected(true);
+    
+    toast.success("Account connected! Syncing data...");
   };
 
   // Sample trend data (in a production app, this would come from the actual metrics)
@@ -172,10 +191,7 @@ const Dashboard = () => {
         </div>
 
         {accounts.length === 0 ? (
-          <FacebookAccountSetup onSuccess={() => {
-            toast.success("Account connected! Syncing data...");
-            triggerSync();
-          }} />
+          <FacebookAccountSetup onSuccess={handleAccountConnected} />
         ) : (
           <>
             {/* Key Metrics Section */}

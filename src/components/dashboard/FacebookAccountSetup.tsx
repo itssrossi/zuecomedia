@@ -22,10 +22,11 @@ const FacebookAccountSetup = ({ onSuccess }: FacebookAccountSetupProps) => {
 
     try {
       await saveAdAccount(accountId, accountName, accessToken);
-      toast.success("Facebook Ad account successfully connected");
       setAccountId("");
       setAccountName("");
       setAccessToken("");
+      
+      // Call the onSuccess callback to trigger refresh
       onSuccess();
     } catch (error: any) {
       toast.error(`Failed to connect account: ${error.message}`);
