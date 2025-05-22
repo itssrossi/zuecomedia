@@ -1,29 +1,19 @@
 
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
-import { CheckCircle2, Circle, ExternalLink } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/sonner";
 import { Json } from "@/integrations/supabase/types";
-
-interface ChecklistItem {
-  id: number;
-  title: string;
-  description: string;
-  link?: string;
-  linkText?: string;
-  completed: boolean;
-}
+import OnboardingHeader from "@/components/onboarding/OnboardingHeader";
+import ChecklistContainer from "@/components/onboarding/ChecklistContainer";
+import OnboardingActions from "@/components/onboarding/OnboardingActions";
+import { ChecklistItemType } from "@/components/onboarding/ChecklistItem";
 
 const Onboarding = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [checklistItems, setChecklistItems] = useState<ChecklistItem[]>([
+  const [checklistItems, setChecklistItems] = useState<ChecklistItemType[]>([
     {
       id: 1,
       title: "Join WhatsApp Group",
@@ -112,7 +102,7 @@ const Onboarding = () => {
         
         if (data && data.onboarding_data) {
           // Type assertion to handle Json type
-          const savedData = data.onboarding_data as unknown as ChecklistItem[];
+          const savedData = data.onboarding_data as unknown as ChecklistItemType[];
           
           if (Array.isArray(savedData)) {
             setChecklistItems(prevItems => {
@@ -175,83 +165,21 @@ const Onboarding = () => {
   return (
     <div className="min-h-screen bg-zue-dark text-white p-4 md:p-8">
       <div className="max-w-4xl mx-auto">
-        <header className="mb-8 text-center">
-          <Link to="/" className="flex justify-center items-center mb-6">
-            <img
-              src="/lovable-uploads/d341fa26-afd0-418c-9c97-902fff2b93e2.png"
-              alt="Zue Co Media Logo"
-              className="h-12 mr-2"
-            />
-            <span className="font-bold text-2xl">
-              Zue<span className="text-zue-blue">Co</span> Media
-            </span>
-          </Link>
-          <h1 className="text-3xl font-bold mb-2">Welcome to Zue Co Media!</h1>
-          <p className="text-lg text-gray-300 mb-4">
-            Complete these steps to set up your account and get started with our services.
-          </p>
-          <div className="bg-zue-dark-light rounded-full h-4 w-full mb-2 overflow-hidden">
-            <div 
-              className="bg-zue-blue h-full rounded-full transition-all duration-500"
-              style={{ width: `${progress}%` }}
-            ></div>
-          </div>
-          <p className="text-sm text-gray-300">{completedCount} of {checklistItems.length} tasks completed ({progress}%)</p>
-        </header>
+        <OnboardingHeader 
+          completedCount={completedCount} 
+          totalCount={checklistItems.length} 
+        />
 
-        <div className="space-y-4">
-          {checklistItems.map((item) => (
-            <Card key={item.id} className="bg-zue-dark-light border-gray-800">
-              <CardHeader className="pb-2">
-                <CardTitle className="flex items-center gap-3">
-                  <Checkbox 
-                    id={`task-${item.id}`}
-                    checked={item.completed}
-                    onCheckedChange={() => toggleItem(item.id)}
-                    className="h-5 w-5"
-                  />
-                  <label 
-                    htmlFor={`task-${item.id}`}
-                    className={`text-xl cursor-pointer ${item.completed ? 'line-through text-gray-400' : ''}`}
-                  >
-                    {item.title}
-                  </label>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-300 mb-3">{item.description}</p>
-                {item.link && (
-                  <a 
-                    href={item.link} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-zue-blue hover:text-zue-blue-light"
-                  >
-                    <ExternalLink size={16} />
-                    {item.linkText || "Open Link"}
-                  </a>
-                )}
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        <ChecklistContainer 
+          items={checklistItems} 
+          onToggleItem={toggleItem} 
+        />
 
-        <div className="mt-8 flex justify-between">
-          <Button 
-            variant="outline" 
-            onClick={() => window.history.back()}
-          >
-            Back
-          </Button>
-          
-          <Button 
-            variant="default"
-            className="bg-zue-blue hover:bg-zue-blue-dark text-white"
-            onClick={handleComplete}
-          >
-            {progress === 100 ? "Complete Onboarding" : "Continue to Dashboard"}
-          </Button>
-        </div>
+        <OnboardingActions 
+          progress={progress} 
+          onComplete={handleComplete} 
+          onBack={() => window.history.back()} 
+        />
       </div>
     </div>
   );
