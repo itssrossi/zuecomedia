@@ -22,6 +22,38 @@ export interface DashboardStats {
   averageCpc: number;
 }
 
+// Define AdMetric type to match what the components expect
+export interface AdMetric {
+  id: string;
+  campaign: string; // This is what the component is expecting
+  impressions: number;
+  clicks: number;
+  spend: number;
+  conversions: number;
+  revenue: number;
+  ctr: number;
+  cpc: number;
+  roas: number;
+  date: string;
+}
+
+// Helper function to convert FbAdMetric to AdMetric
+const convertToAdMetric = (metrics: FbAdMetric[]): AdMetric[] => {
+  return metrics.map(metric => ({
+    id: metric.id,
+    campaign: metric.campaign_name || '', // Use campaign_name or empty string
+    impressions: metric.impressions,
+    clicks: metric.clicks,
+    spend: metric.spend,
+    conversions: metric.conversions,
+    revenue: metric.revenue,
+    ctr: metric.ctr,
+    cpc: metric.cpc,
+    roas: metric.roas,
+    date: metric.date
+  }));
+};
+
 export const useFacebookData = (startDate?: string, endDate?: string, campaignIds?: string[]) => {
   const { user } = useAuth();
   const [stats, setStats] = useState<DashboardStats>({
@@ -108,10 +140,14 @@ export const useFacebookData = (startDate?: string, endDate?: string, campaignId
     }
   };
 
+  // Convert FbAdMetric to AdMetric for components that expect AdMetric
+  const adMetrics: AdMetric[] = metricsQuery.data ? convertToAdMetric(metricsQuery.data) : [];
+
   return {
     accounts: accountsQuery.data || [],
     campaigns: campaignsQuery.data || [],
-    metrics: metricsQuery.data || [],
+    metrics: adMetrics, // Return the converted metrics
+    rawMetrics: metricsQuery.data || [], // Also provide raw metrics if needed
     syncStatus: syncStatusQuery.data,
     stats,
     isLoading: accountsQuery.isLoading || campaignsQuery.isLoading || metricsQuery.isLoading,

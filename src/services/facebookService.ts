@@ -30,6 +30,7 @@ export interface FbAdMetric {
   cpc: number;
   roas: number;
   campaign_name?: string; // For joined queries
+  campaign?: string; // Add this property to match AdMetric type
 }
 
 export interface SyncStatus {
@@ -95,7 +96,8 @@ export const fetchUserAdMetrics = async (
   
   return data?.map(item => ({
     ...item,
-    campaign_name: item.fb_campaigns.campaign_name
+    campaign_name: item.fb_campaigns.campaign_name,
+    campaign: item.fb_campaigns.campaign_name // Add this to match AdMetric type
   })) || [];
 };
 
@@ -118,10 +120,18 @@ export const saveAdAccount = async (
   accountName: string,
   accessToken: string
 ): Promise<void> => {
+  // Get current user ID from auth
+  const { data: { user } } = await supabase.auth.getUser();
+  
+  if (!user) {
+    throw new Error("User must be logged in to save ad account");
+  }
+  
   const { error } = await supabase.from('fb_ad_accounts').insert({
     account_id: accountId,
     account_name: accountName,
-    access_token: accessToken
+    access_token: accessToken,
+    user_id: user.id // Add the user_id from the authenticated user
   });
   
   if (error) {
