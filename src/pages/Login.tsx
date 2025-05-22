@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/AuthContext";
 import { Link } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useTheme } from "@/context/ThemeContext";
 
 const Login = () => {
   // Login state
@@ -19,6 +20,7 @@ const Login = () => {
   const [signupLoading, setSignupLoading] = useState(false);
 
   const { signIn, signUp, isLoading } = useAuth();
+  const { theme } = useTheme();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,11 +43,19 @@ const Login = () => {
       <div className="w-full max-w-md">
         <div className="flex justify-center mb-6">
           <a href="/" className="flex items-center">
-            <img
-              src="/lovable-uploads/d341fa26-afd0-418c-9c97-902fff2b93e2.png"
-              alt="Zue Co Media Logo"
-              className="h-12 mr-2"
-            />
+            {theme === 'light' ? (
+              <img
+                src="/lovable-uploads/c5a928fa-35df-4bf0-b39d-7b83e2cbc714.png"
+                alt="Zue Co Media Light Logo"
+                className="h-12 mr-2"
+              />
+            ) : (
+              <img
+                src="/lovable-uploads/7ae353e4-9833-4708-a345-e1195eaace46.png"
+                alt="Zue Co Media Dark Logo"
+                className="h-12 mr-2"
+              />
+            )}
             <span className="font-bold text-2xl text-white">
               Zue<span className="text-zue-blue">Co</span> Media
             </span>
