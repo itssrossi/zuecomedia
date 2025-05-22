@@ -55,15 +55,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signUp = async (email: string, password: string, fullName: string) => {
     try {
-      const { error } = await supabase.auth.signUp({
+      const { error, data } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: { full_name: fullName },
         },
       });
+      
       if (error) throw error;
-      toast.success("Signed up successfully. Please check your email for verification.");
+      
+      // Check if a new user was created
+      if (data.user && data.session) {
+        // User is automatically signed in after signing up
+        setUser(data.user);
+        setSession(data.session);
+        
+        // Create entry in user_onboarding table
+        await supabase.from('user_onboarding').insert({
+          user_id: data.user.id,
+          onboarding_data: [],
+          completed: false
+        });
+        
+        toast.success("Signed up successfully");
+        // Redirect to onboarding page instead of dashboard for new users
+        navigate("/onboarding");
+      } else {
+        toast.success("Signed up successfully. Please check your email for verification.");
+      }
     } catch (error: any) {
       toast.error(error.message || "Failed to sign up");
     }
