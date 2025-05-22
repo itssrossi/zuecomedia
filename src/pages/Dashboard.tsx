@@ -6,6 +6,7 @@ import { format } from "date-fns";
 import { toast } from "@/components/ui/sonner";
 import { useFacebookData } from "@/hooks/useFacebookData";
 import { useAuth } from "@/context/AuthContext";
+import { ThemeProvider } from "@/context/ThemeContext";
 
 // Component imports
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
@@ -75,40 +76,42 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-zue-dark text-white">
-      {/* Dashboard Header */}
-      <DashboardHeader />
+    <ThemeProvider>
+      <div className="min-h-screen bg-zue-dark text-white theme-transition">
+        {/* Dashboard Header */}
+        <DashboardHeader />
 
-      {/* Dashboard Content */}
-      <main className="container mx-auto px-4 py-8">
-        {/* Date Range and Sync Controls */}
-        <DashboardControls
-          startDate={startDate}
-          endDate={endDate}
-          onDateRangeChange={handleDateRangeChange}
-          onRefreshData={handleRefreshData}
-          syncStatus={syncStatus}
-        />
+        {/* Dashboard Content */}
+        <main className="container mx-auto px-4 py-8">
+          {/* Date Range and Sync Controls */}
+          <DashboardControls
+            startDate={startDate}
+            endDate={endDate}
+            onDateRangeChange={handleDateRangeChange}
+            onRefreshData={handleRefreshData}
+            syncStatus={syncStatus}
+          />
 
-        {accounts.length === 0 ? (
-          <FacebookAccountSetup onSuccess={handleAccountConnected} />
-        ) : (
-          <>
-            {/* Key Metrics Section */}
-            <DashboardMetrics
-              stats={stats}
-              spendTrendData={spendTrendData}
-              revenueTrendData={revenueTrendData}
-              roasTrendData={roasTrendData}
-              ctrTrendData={ctrTrendData}
-            />
+          {accounts.length === 0 ? (
+            <FacebookAccountSetup onSuccess={handleAccountConnected} />
+          ) : (
+            <>
+              {/* Key Metrics Section */}
+              <DashboardMetrics
+                stats={stats}
+                spendTrendData={spendTrendData}
+                revenueTrendData={revenueTrendData}
+                roasTrendData={roasTrendData}
+                ctrTrendData={ctrTrendData}
+              />
 
-            {/* Charts and Table Section */}
-            <DashboardCharts metrics={metrics} isLoading={isLoading} />
-          </>
-        )}
-      </main>
-    </div>
+              {/* Charts and Table Section */}
+              <DashboardCharts metrics={metrics} isLoading={isLoading} />
+            </>
+          )}
+        </main>
+      </div>
+    </ThemeProvider>
   );
 };
 

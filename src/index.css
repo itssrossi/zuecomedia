@@ -36,12 +36,50 @@
     --radius: 0.5rem;
   }
 
+  :root.light-mode {
+    --background: 0 0% 100%;
+    --foreground: 222 47% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    --primary: 199 89% 48%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 20% 98%;
+    --secondary-foreground: 222 47% 11%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215 16% 47%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222 47% 11%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 199 89% 48%;
+  }
+
+  :root.dark-mode {
+    /* Keep existing dark theme variables */
+  }
+
   * {
     @apply border-border;
   }
 
   body {
     @apply bg-zue-dark text-foreground;
+  }
+
+  body.light-mode {
+    @apply bg-white text-gray-900;
   }
 }
 
@@ -68,5 +106,48 @@
 
   .container-custom {
     @apply max-w-7xl mx-auto;
+  }
+
+  /* Light mode specific classes */
+  .light-mode .service-card {
+    @apply bg-white border-gray-200 shadow-sm;
+  }
+
+  .light-mode .heading-highlight {
+    @apply text-zue-blue font-bold;
+  }
+
+  /* Theme transition for smooth switching */
+  .theme-transition {
+    @apply transition-colors duration-300;
+  }
+  
+  /* Light mode dashboard styles */
+  .light-mode .bg-zue-dark {
+    @apply bg-white;
+  }
+  
+  .light-mode .bg-zue-dark-light {
+    @apply bg-gray-50;
+  }
+  
+  .light-mode .text-white {
+    @apply text-gray-900;
+  }
+  
+  .light-mode .text-gray-300 {
+    @apply text-gray-600;
+  }
+  
+  .light-mode .text-gray-400 {
+    @apply text-gray-500;
+  }
+  
+  .light-mode .border-gray-800 {
+    @apply border-gray-200;
+  }
+  
+  .light-mode .bg-zue-card-dark {
+    @apply bg-white border-gray-200;
   }
 }
