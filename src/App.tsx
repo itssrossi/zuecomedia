@@ -12,6 +12,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Onboarding from "./pages/Onboarding";
 import FacebookAccountSetup from "./pages/FacebookAccountSetup";
+import CalendarBooking from "./pages/CalendarBooking";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
           <AuthProvider>
             <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/book-meeting" element={<CalendarBooking />} />
               <Route path="/login" element={<Login />} />
               <Route path="/onboarding" element={
                 <ProtectedRoute>
