@@ -139,7 +139,7 @@ const CalendarBooking = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-white">
                   <Clock size={20} />
-                  Available Times (EST/EDT)
+                  Available Times (UTC -4)
                 </CardTitle>
               </CardHeader>
               <CardContent>
