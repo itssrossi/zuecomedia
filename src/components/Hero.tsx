@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, LogIn } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const Hero = () => {
@@ -7,6 +7,10 @@ const Hero = () => {
 
   const handleGetStarted = () => {
     navigate('/book-meeting');
+  };
+
+  const handleLogin = () => {
+    navigate('/login');
   };
 
   return (
@@ -38,8 +42,13 @@ const Hero = () => {
               Get Started
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
-            <Button variant="outline" className="border-white/20 hover:bg-white/10 text-white px-6 py-6 text-lg rounded-lg">
-              Learn More
+            <Button 
+              variant="outline" 
+              className="border-white/20 hover:bg-white/10 text-white px-6 py-6 text-lg rounded-lg"
+              onClick={handleLogin}
+            >
+              Login
+              <LogIn className="ml-2 h-5 w-5" />
             </Button>
           </div>
         </div>
