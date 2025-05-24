@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { ArrowRight, LogIn } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -36,7 +37,7 @@ const Hero = () => {
           
           <div className="flex flex-col sm:flex-row gap-4">
             <Button 
-              className="bg-zue-blue hover:bg-zue-blue-dark text-white px-6 py-6 text-lg rounded-lg"
+              className="bg-zue-blue hover:bg-zue-blue-dark text-white px-6 py-6 text-lg rounded-lg light-mode:shadow-lg"
               onClick={handleGetStarted}
             >
               Get Started
@@ -44,7 +45,7 @@ const Hero = () => {
             </Button>
             <Button 
               variant="outline" 
-              className="border-white/20 hover:bg-white/10 text-white px-6 py-6 text-lg rounded-lg"
+              className="border-white/20 hover:bg-white/10 text-white px-6 py-6 text-lg rounded-lg light-mode:shadow-lg"
               onClick={handleLogin}
             >
               Login
