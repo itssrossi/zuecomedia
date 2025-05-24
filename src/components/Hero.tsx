@@ -1,24 +1,18 @@
-
 import { Button } from "@/components/ui/button";
 import { ArrowRight, LogIn } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-
 const Hero = () => {
   const navigate = useNavigate();
-
   const handleGetStarted = () => {
     navigate('/book-meeting');
   };
-
   const handleLogin = () => {
     navigate('/login');
   };
-
-  return (
-    <section id="home" className="min-h-screen bg-zue-dark flex items-center relative overflow-hidden">
+  return <section id="home" className="min-h-screen bg-zue-dark flex items-center relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-zue-blue/10 to-transparent z-0" style={{
-        backgroundImage: "radial-gradient(circle at 25% 10%, rgba(14, 165, 233, 0.15) 0%, transparent 50%)"
-      }} />
+      backgroundImage: "radial-gradient(circle at 25% 10%, rgba(14, 165, 233, 0.15) 0%, transparent 50%)"
+    }} />
       
       <div className="container-custom relative z-10 pt-28">
         <div className="flex flex-col items-center text-center md:text-left md:items-start">
@@ -36,18 +30,11 @@ const Hero = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4">
-            <Button 
-              className="bg-zue-blue hover:bg-zue-blue-dark text-white px-6 py-6 text-lg rounded-lg light-mode:shadow-lg"
-              onClick={handleGetStarted}
-            >
+            <Button className="bg-zue-blue hover:bg-zue-blue-dark text-white px-6 py-6 text-lg rounded-lg light-mode:shadow-lg" onClick={handleGetStarted}>
               Get Started
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
-            <Button 
-              variant="outline" 
-              className="border-white/20 hover:bg-white/10 text-white px-6 py-6 text-lg rounded-lg light-mode:shadow-lg"
-              onClick={handleLogin}
-            >
+            <Button variant="outline" onClick={handleLogin} className="border-white/20 px-6 py-6 text-lg rounded-lg light-mode:shadow-lg text-slate-950 bg-slate-50">
               Login
               <LogIn className="ml-2 h-5 w-5" />
             </Button>
@@ -55,21 +42,13 @@ const Hero = () => {
         </div>
         
         <div className="mt-20 grid grid-cols-2 md:grid-cols-6 gap-4 md:gap-8">
-          {['Brand', 'Design', 'Strategy', 'Technology', 'Campaigns', 'Analytics'].map((item, index) => (
-            <div 
-              key={index} 
-              style={{
-                animationDelay: `${index * 0.1}s`
-              }} 
-              className="flex items-center justify-center p-4 bg-zue-dark-light/50 backdrop-blur-sm rounded-lg border border-white/10 animate-fade-in mx-[10px]"
-            >
+          {['Brand', 'Design', 'Strategy', 'Technology', 'Campaigns', 'Analytics'].map((item, index) => <div key={index} style={{
+          animationDelay: `${index * 0.1}s`
+        }} className="flex items-center justify-center p-4 bg-zue-dark-light/50 backdrop-blur-sm rounded-lg border border-white/10 animate-fade-in mx-[10px]">
               <span className="text-white font-medium">{item}</span>
-            </div>
-          ))}
+            </div>)}
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default Hero;
