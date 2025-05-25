@@ -138,8 +138,8 @@ async function processAdAccount(supabase, userId, account, accessToken) {
     
     console.log(`Using formatted account ID: ${formattedAccountId}`);
     
-    // Fetch campaigns from Facebook API
-    const campaignsUrl = `${FB_API_BASE_URL}/${formattedAccountId}/campaigns?fields=id,name,status&access_token=${accessToken}`;
+    // Fetch campaigns from Facebook API with additional fields including status and dates
+    const campaignsUrl = `${FB_API_BASE_URL}/${formattedAccountId}/campaigns?fields=id,name,status,start_time,stop_time,created_time,updated_time&access_token=${accessToken}`;
     
     console.log('Making Facebook API request:', campaignsUrl);
     const campaignsResponse = await fetch(campaignsUrl);
@@ -154,19 +154,22 @@ async function processAdAccount(supabase, userId, account, accessToken) {
     console.log(`Found ${campaignsData.data?.length || 0} campaigns`);
 
     if (!campaignsData.data || campaignsData.data.length === 0) {
-      console.log(`No active campaigns found for account ${account.account_id}`);
-      return { message: `No active campaigns found for account ${account.account_id}` };
+      console.log(`No campaigns found for account ${account.account_id}`);
+      return { message: `No campaigns found for account ${account.account_id}` };
     }
 
     // Process each campaign
     for (const campaign of campaignsData.data) {
-      console.log(`Processing campaign: ${campaign.name} (${campaign.id})`);
+      console.log(`Processing campaign: ${campaign.name} (${campaign.id}) - Status: ${campaign.status}`);
       
-      // Insert/update campaign in our database
+      // Insert/update campaign in our database with status information
       const { data: campaignRecord, error: campaignError } = await supabase.from('fb_campaigns').upsert({
         user_id: userId,
         fb_campaign_id: campaign.id,
         campaign_name: campaign.name,
+        campaign_status: campaign.status,
+        start_time: campaign.start_time || null,
+        stop_time: campaign.stop_time || null,
         updated_at: new Date().toISOString()
       }, {
         onConflict: 'user_id, fb_campaign_id'
@@ -179,8 +182,12 @@ async function processAdAccount(supabase, userId, account, accessToken) {
       
       const campaignId = campaignRecord[0].id;
       
-      // Fetch insights (metrics) for this campaign
-      await fetchCampaignInsights(supabase, userId, campaignId, campaign.id, accessToken);
+      // Only fetch insights for active campaigns to avoid wasting API calls
+      if (campaign.status === 'ACTIVE') {
+        await fetchCampaignInsights(supabase, userId, campaignId, campaign.id, accessToken);
+      } else {
+        console.log(`Skipping insights for ${campaign.status} campaign: ${campaign.name}`);
+      }
     }
 
     return { message: `Processed account ${account.account_id} successfully` };
