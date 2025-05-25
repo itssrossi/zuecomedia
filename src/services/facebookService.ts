@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 
 export interface FbAdAccount {
@@ -82,29 +81,40 @@ export const fetchUserAdMetrics = async (
       fb_campaigns!inner(campaign_name, campaign_status, start_time, stop_time)
     `);
   
-  // Build the date filter condition
+  // If date range is specified, filter to show:
+  // 1. Metrics within the date range
+  // 2. OR campaigns that overlap with the date range (regardless of metrics)
   if (startDate || endDate) {
-    // Create a condition that includes:
-    // 1. Metrics within the date range
-    // 2. OR campaigns that are scheduled within the date range (even without metrics)
-    let dateConditions = [];
+    let conditions = [];
     
+    // Condition 1: Metrics within date range
     if (startDate && endDate) {
-      // Include metrics in date range OR campaigns scheduled in date range
-      dateConditions.push(`(date.gte.${startDate},date.lte.${endDate})`);
-      dateConditions.push(`(fb_campaigns.start_time.gte.${startDate},fb_campaigns.start_time.lte.${endDate})`);
-      dateConditions.push(`(fb_campaigns.stop_time.gte.${startDate},fb_campaigns.stop_time.lte.${endDate})`);
+      conditions.push(`and(date.gte.${startDate},date.lte.${endDate})`);
     } else if (startDate) {
-      dateConditions.push(`(date.gte.${startDate})`);
-      dateConditions.push(`(fb_campaigns.start_time.gte.${startDate})`);
+      conditions.push(`date.gte.${startDate}`);
     } else if (endDate) {
-      dateConditions.push(`(date.lte.${endDate})`);
-      dateConditions.push(`(fb_campaigns.stop_time.lte.${endDate})`);
+      conditions.push(`date.lte.${endDate}`);
     }
     
-    // Use 'or' to combine conditions - metrics in range OR campaign scheduled in range
-    if (dateConditions.length > 0) {
-      query = query.or(dateConditions.join(','));
+    // Condition 2: Campaign scheduled to overlap with date range
+    let campaignConditions = [];
+    
+    if (startDate && endDate) {
+      // Campaign overlaps if:
+      // - starts before end date AND (has no stop time OR stops after start date)
+      campaignConditions.push(`and(fb_campaigns.start_time.lte.${endDate},or(fb_campaigns.stop_time.is.null,fb_campaigns.stop_time.gte.${startDate}))`);
+    } else if (startDate) {
+      // Campaign active after start date
+      campaignConditions.push(`or(fb_campaigns.stop_time.is.null,fb_campaigns.stop_time.gte.${startDate})`);
+    } else if (endDate) {
+      // Campaign started before end date
+      campaignConditions.push(`fb_campaigns.start_time.lte.${endDate}`);
+    }
+    
+    // Combine all conditions with OR
+    let allConditions = [...conditions, ...campaignConditions];
+    if (allConditions.length > 0) {
+      query = query.or(allConditions.join(','));
     }
   }
   
