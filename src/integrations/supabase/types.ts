@@ -101,25 +101,34 @@ export type Database = {
       fb_campaigns: {
         Row: {
           campaign_name: string
+          campaign_status: string | null
           created_at: string
           fb_campaign_id: string
           id: string
+          start_time: string | null
+          stop_time: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
           campaign_name: string
+          campaign_status?: string | null
           created_at?: string
           fb_campaign_id: string
           id?: string
+          start_time?: string | null
+          stop_time?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
           campaign_name?: string
+          campaign_status?: string | null
           created_at?: string
           fb_campaign_id?: string
           id?: string
+          start_time?: string | null
+          stop_time?: string | null
           updated_at?: string
           user_id?: string
         }

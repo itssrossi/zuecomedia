@@ -35,6 +35,9 @@ export interface AdMetric {
   cpc: number;
   roas: number;
   date: string;
+  status?: string; // Add campaign status
+  start_time?: string | null; // Add start time
+  stop_time?: string | null; // Add stop time
 }
 
 // Helper function to convert FbAdMetric to AdMetric
@@ -50,7 +53,10 @@ const convertToAdMetric = (metrics: FbAdMetric[]): AdMetric[] => {
     ctr: metric.ctr,
     cpc: metric.cpc,
     roas: metric.roas,
-    date: metric.date
+    date: metric.date,
+    status: metric.campaign_status || undefined,
+    start_time: metric.start_time,
+    stop_time: metric.stop_time
   }));
 };
 

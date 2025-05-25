@@ -13,6 +13,9 @@ export interface FbCampaign {
   id: string;
   fb_campaign_id: string;
   campaign_name: string;
+  campaign_status: string | null;
+  start_time: string | null;
+  stop_time: string | null;
   user_id: string;
 }
 
@@ -31,6 +34,9 @@ export interface FbAdMetric {
   roas: number;
   campaign_name?: string; // For joined queries
   campaign?: string; // Add this property to match AdMetric type
+  campaign_status?: string; // Add campaign status
+  start_time?: string | null; // Add start time
+  stop_time?: string | null; // Add stop time
 }
 
 export interface SyncStatus {
@@ -73,7 +79,7 @@ export const fetchUserAdMetrics = async (
     .from('fb_ad_metrics')
     .select(`
       *,
-      fb_campaigns!inner(campaign_name)
+      fb_campaigns!inner(campaign_name, campaign_status, start_time, stop_time)
     `);
   
   if (startDate) {
@@ -97,7 +103,10 @@ export const fetchUserAdMetrics = async (
   return data?.map(item => ({
     ...item,
     campaign_name: item.fb_campaigns.campaign_name,
-    campaign: item.fb_campaigns.campaign_name // Add this to match AdMetric type
+    campaign: item.fb_campaigns.campaign_name, // Add this to match AdMetric type
+    campaign_status: item.fb_campaigns.campaign_status,
+    start_time: item.fb_campaigns.start_time,
+    stop_time: item.fb_campaigns.stop_time
   })) || [];
 };
 
