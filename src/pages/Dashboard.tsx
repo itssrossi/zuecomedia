@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { subDays } from "date-fns";
+import { subDays, addDays } from "date-fns";
 import { format } from "date-fns";
 import { toast } from "@/components/ui/sonner";
 import { useFacebookData } from "@/hooks/useFacebookData";
@@ -19,7 +19,7 @@ const Dashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [startDate, setStartDate] = useState<Date | undefined>(subDays(new Date(), 30));
-  const [endDate, setEndDate] = useState<Date | undefined>(new Date());
+  const [endDate, setEndDate] = useState<Date | undefined>(addDays(new Date(), 7)); // Include future dates
   const [selectedCampaigns, setSelectedCampaigns] = useState<string[]>([]);
   const [accountConnected, setAccountConnected] = useState(false);
 
@@ -94,6 +94,20 @@ const Dashboard = () => {
           <FacebookAccountSetup onSuccess={handleAccountConnected} />
         ) : (
           <>
+            {/* Debug information */}
+            {metrics.length === 0 && (
+              <div className="bg-yellow-900/20 border border-yellow-500/50 rounded-lg p-4 mb-6">
+                <h3 className="text-yellow-400 font-medium mb-2">No Data Found</h3>
+                <p className="text-yellow-200 text-sm">
+                  No metrics data found for the selected date range. 
+                  Try expanding your date range or check if your campaigns have any activity.
+                </p>
+                <p className="text-yellow-200 text-sm mt-2">
+                  Current range: {startDate ? format(startDate, 'yyyy-MM-dd') : 'Not set'} to {endDate ? format(endDate, 'yyyy-MM-dd') : 'Not set'}
+                </p>
+              </div>
+            )}
+
             {/* Key Metrics Section */}
             <DashboardMetrics
               stats={stats}

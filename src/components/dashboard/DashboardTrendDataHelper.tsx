@@ -12,7 +12,12 @@ interface UseTrendDataResult {
 export const useTrendData = (metrics: AdMetric[]): UseTrendDataResult => {
   const trendData = useMemo(() => {
     const getTrendData = (metric: 'spend' | 'revenue' | 'ctr' | 'roas') => {
-      if (!metrics || metrics.length === 0) return [];
+      if (!metrics || metrics.length === 0) {
+        // Return some default data points to prevent empty charts
+        return [
+          { name: "No Data", value: 0 }
+        ];
+      }
       
       // Group metrics by date
       const groupedByDate: Record<string, any> = {};
@@ -34,6 +39,10 @@ export const useTrendData = (metrics: AdMetric[]): UseTrendDataResult => {
       
       // Convert to array and sort by date
       const sortedDates = Object.keys(groupedByDate).sort();
+      
+      if (sortedDates.length === 0) {
+        return [{ name: "No Data", value: 0 }];
+      }
       
       return sortedDates.map(date => {
         const data = groupedByDate[date];

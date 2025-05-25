@@ -20,7 +20,10 @@ const CampaignTable = ({ campaigns, isLoading }: CampaignTableProps) => {
   if (campaigns.length === 0) {
     return (
       <div className="w-full h-40 flex items-center justify-center">
-        <p className="text-gray-400">No campaign data available</p>
+        <div className="text-center">
+          <p className="text-gray-400 mb-2">No campaign data available</p>
+          <p className="text-gray-500 text-sm">Try expanding your date range or sync your data</p>
+        </div>
       </div>
     );
   }
@@ -45,6 +48,35 @@ const CampaignTable = ({ campaigns, isLoading }: CampaignTableProps) => {
     return new Date(dateString).toLocaleDateString();
   };
 
+  // Group campaigns by name to avoid duplicates and sum up metrics
+  const groupedCampaigns = campaigns.reduce((acc, campaign) => {
+    const key = campaign.campaign;
+    if (!acc[key]) {
+      acc[key] = {
+        ...campaign,
+        impressions: 0,
+        clicks: 0,
+        spend: 0,
+        conversions: 0,
+        revenue: 0
+      };
+    }
+    
+    acc[key].impressions += campaign.impressions;
+    acc[key].clicks += campaign.clicks;
+    acc[key].spend += campaign.spend;
+    acc[key].conversions += campaign.conversions;
+    acc[key].revenue += campaign.revenue;
+    
+    // Recalculate derived metrics
+    acc[key].ctr = acc[key].impressions > 0 ? (acc[key].clicks / acc[key].impressions) * 100 : 0;
+    acc[key].roas = acc[key].spend > 0 ? acc[key].revenue / acc[key].spend : 0;
+    
+    return acc;
+  }, {} as Record<string, AdMetric>);
+
+  const uniqueCampaigns = Object.values(groupedCampaigns);
+
   return (
     <div className="overflow-auto">
       <Table>
@@ -64,7 +96,7 @@ const CampaignTable = ({ campaigns, isLoading }: CampaignTableProps) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {campaigns.map((campaign) => (
+          {uniqueCampaigns.map((campaign) => (
             <TableRow key={campaign.id} className="border-b border-gray-800 hover:bg-zue-dark-light/50">
               <TableCell className="font-medium">{campaign.campaign}</TableCell>
               <TableCell>
