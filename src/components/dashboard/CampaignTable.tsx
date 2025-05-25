@@ -1,7 +1,7 @@
 
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import type { AdMetric } from "@/services/airtableService";
+import type { AdMetric } from "@/hooks/useFacebookData";
 
 interface CampaignTableProps {
   campaigns: AdMetric[];
