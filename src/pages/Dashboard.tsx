@@ -61,8 +61,9 @@ const Dashboard = () => {
     setEndDate(end);
   };
 
-  const handleRefreshData = () => {
-    triggerSync();
+  const handleRefreshData = async () => {
+    await triggerSync();
+    // The sync status will automatically update through the query refetch
   };
 
   const handleAccountConnected = () => {
@@ -74,6 +75,17 @@ const Dashboard = () => {
     toast.success("Account connected! Syncing data...");
   };
 
+  // Get user's display name
+  const getUserDisplayName = () => {
+    if (user?.user_metadata?.full_name) {
+      return user.user_metadata.full_name;
+    }
+    if (user?.email) {
+      return user.email.split('@')[0]; // Use part before @ as fallback
+    }
+    return 'User';
+  };
+
   return (
     <div className="min-h-screen bg-zue-dark text-white theme-transition">
       {/* Dashboard Header */}
@@ -81,6 +93,14 @@ const Dashboard = () => {
 
       {/* Dashboard Content */}
       <main className="container mx-auto px-4 py-8">
+        {/* Welcome Message */}
+        <div className="mb-6">
+          <h2 className="text-2xl font-semibold text-white">
+            Welcome, {getUserDisplayName()}!
+          </h2>
+          <p className="text-gray-400 mt-1">Here's your Facebook advertising performance overview</p>
+        </div>
+
         {/* Date Range and Sync Controls */}
         <DashboardControls
           startDate={startDate}

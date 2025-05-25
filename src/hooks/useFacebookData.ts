@@ -98,7 +98,7 @@ export const useFacebookData = (startDate?: string, endDate?: string, campaignId
     queryKey: ['syncStatus', user?.id],
     queryFn: fetchLastSyncStatus,
     enabled: !!user,
-    refetchInterval: 60000 // Refetch every minute
+    refetchInterval: 5000 // Refetch every 5 seconds to show updates faster
   });
 
   // Calculate stats from metrics
@@ -141,6 +141,18 @@ export const useFacebookData = (startDate?: string, endDate?: string, campaignId
     try {
       await triggerFacebookDataSync();
       toast.success("Facebook data sync initiated");
+      
+      // Refetch sync status immediately after triggering sync
+      setTimeout(() => {
+        syncStatusQuery.refetch();
+      }, 1000);
+      
+      // Also refetch metrics after a short delay to get updated data
+      setTimeout(() => {
+        metricsQuery.refetch();
+        accountsQuery.refetch();
+        campaignsQuery.refetch();
+      }, 3000);
     } catch (error: any) {
       toast.error(`Failed to sync: ${error.message || "Unknown error"}`);
     }

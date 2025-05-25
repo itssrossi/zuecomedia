@@ -25,9 +25,10 @@ const DateRangeSelector = ({
   const [isOpen, setIsOpen] = useState(false);
 
   const handleQuickSelect = (days: number) => {
-    const end = new Date();
     const start = new Date();
     start.setDate(start.getDate() - days);
+    const end = new Date();
+    end.setDate(end.getDate() + 7); // Include future dates
     
     onDateRangeChange(start, end);
     setIsOpen(false);
@@ -60,7 +61,7 @@ const DateRangeSelector = ({
                   mode="single"
                   selected={startDate}
                   onSelect={(date) => onDateRangeChange(date, endDate)}
-                  disabled={(date) => date > new Date() || (endDate ? date > endDate : false)}
+                  disabled={(date) => endDate ? date > endDate : false}
                   className="bg-zue-dark-light rounded-md"
                 />
               </div>
@@ -70,7 +71,7 @@ const DateRangeSelector = ({
                   mode="single"
                   selected={endDate}
                   onSelect={(date) => onDateRangeChange(startDate, date)}
-                  disabled={(date) => date > new Date() || (startDate ? date < startDate : false)}
+                  disabled={(date) => startDate ? date < startDate : false}
                   className="bg-zue-dark-light rounded-md"
                 />
               </div>
