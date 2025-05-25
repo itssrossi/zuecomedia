@@ -62,6 +62,7 @@ const convertToAdMetric = (metrics: FbAdMetric[]): AdMetric[] => {
 
 export const useFacebookData = (startDate?: string, endDate?: string, campaignIds?: string[]) => {
   const { user } = useAuth();
+  const [isSyncing, setIsSyncing] = useState(false);
   const [stats, setStats] = useState<DashboardStats>({
     totalSpend: 0,
     totalRevenue: 0,
@@ -93,12 +94,12 @@ export const useFacebookData = (startDate?: string, endDate?: string, campaignId
     enabled: !!user
   });
 
-  // Query for sync status
+  // Query for sync status - more frequent polling when syncing
   const syncStatusQuery = useQuery({
     queryKey: ['syncStatus', user?.id],
     queryFn: fetchLastSyncStatus,
     enabled: !!user,
-    refetchInterval: 3000 // Refetch every 3 seconds
+    refetchInterval: isSyncing ? 1000 : 5000 // Poll every 1 second during sync, 5 seconds otherwise
   });
 
   // Calculate stats from metrics
@@ -140,30 +141,33 @@ export const useFacebookData = (startDate?: string, endDate?: string, campaignId
   const triggerSync = async () => {
     try {
       console.log("Starting sync...");
+      setIsSyncing(true);
+      
       await triggerFacebookDataSync();
       toast.success("Facebook data sync initiated");
       
-      // Immediately refetch sync status to get updated timestamp
+      // Start aggressive polling for sync status updates
       await syncStatusQuery.refetch();
       
-      // After a brief delay, refetch all data
+      // Wait a bit for the sync to complete, then refetch all data
       setTimeout(async () => {
         console.log("Refetching data after sync...");
         await Promise.all([
           metricsQuery.refetch(),
           accountsQuery.refetch(),
           campaignsQuery.refetch(),
-          syncStatusQuery.refetch() // Refetch sync status again
+          syncStatusQuery.refetch()
         ]);
+        
+        // Stop aggressive polling after data is refreshed
+        setTimeout(() => {
+          setIsSyncing(false);
+        }, 3000);
       }, 2000);
-      
-      // Continue refetching sync status for a few more seconds to catch any updates
-      setTimeout(async () => {
-        await syncStatusQuery.refetch();
-      }, 5000);
       
     } catch (error: any) {
       console.error("Sync error:", error);
+      setIsSyncing(false);
       toast.error(`Failed to sync: ${error.message || "Unknown error"}`);
     }
   };
@@ -181,6 +185,7 @@ export const useFacebookData = (startDate?: string, endDate?: string, campaignId
     isLoading: accountsQuery.isLoading || campaignsQuery.isLoading || metricsQuery.isLoading,
     isError: accountsQuery.isError || campaignsQuery.isError || metricsQuery.isError,
     error: accountsQuery.error || campaignsQuery.error || metricsQuery.error,
-    triggerSync
+    triggerSync,
+    isSyncing
   };
 };
