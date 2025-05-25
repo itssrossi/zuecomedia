@@ -1,0 +1,27 @@
+
+{
+  "name": "Zue Co Media",
+  "short_name": "ZueCo",
+  "description": "Digital Marketing & Brand Solutions",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0A0A0A",
+  "theme_color": "#0A0A0A",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/lovable-uploads/a79bad13-be65-407a-8c30-ff4c211bf5e1.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/lovable-uploads/a79bad13-be65-407a-8c30-ff4c211bf5e1.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "productivity"],
+  "lang": "en"
+}
