@@ -11,7 +11,6 @@ interface DashboardCardProps {
   };
   className?: string;
   chartComponent?: ReactNode;
-  iconBgColor?: string;
 }
 
 const DashboardCard = ({
@@ -20,38 +19,27 @@ const DashboardCard = ({
   icon,
   trend,
   className = "",
-  chartComponent,
-  iconBgColor = "bg-blue-100"
+  chartComponent
 }: DashboardCardProps) => {
   return (
-    <div className={`bg-white p-6 rounded-lg shadow-sm border border-gray-200 ${className}`}>
-      <div className="flex justify-between items-start mb-4">
-        <div>
-          <h3 className="text-gray-600 text-sm font-medium mb-1">{title}</h3>
-          <div className="flex items-end gap-2">
-            <span className="text-2xl font-bold text-gray-900">{value}</span>
-            {trend && (
-              <span className={`text-sm font-medium flex items-center gap-1 ${
-                trend.isPositive ? 'text-green-600' : 'text-red-600'
-              }`}>
-                {trend.isPositive ? '↗' : '↘'} {trend.isPositive ? '+' : ''}{trend.value}%
-                <span className="text-gray-500 font-normal">Since last week</span>
-              </span>
-            )}
-          </div>
-        </div>
+    <div className={`bg-zue-dark-light p-6 rounded-lg shadow-md border border-gray-800 hover:border-zue-blue/50 transition-all duration-300 ${className}`}>
+      <div className="flex justify-between items-start mb-3">
+        <h3 className="text-gray-400 font-medium text-sm">{title}</h3>
+        {icon && <div className="text-gray-500">{icon}</div>}
+      </div>
+      
+      <div className="flex items-end space-x-2 mb-3">
+        <span className="text-2xl font-bold text-white">{value}</span>
         
-        {icon && (
-          <div className={`w-12 h-12 ${iconBgColor} rounded-lg flex items-center justify-center`}>
-            <div className="text-blue-600">
-              {icon}
-            </div>
-          </div>
+        {trend && (
+          <span className={`text-sm font-medium flex items-center ${trend.isPositive ? 'text-green-500' : 'text-red-500'}`}>
+            {trend.isPositive ? '↑' : '↓'} {Math.abs(trend.value)}%
+          </span>
         )}
       </div>
 
       {chartComponent && (
-        <div className="mt-4">
+        <div className="mt-2">
           {chartComponent}
         </div>
       )}
