@@ -130,8 +130,16 @@ async function processAdAccount(supabase, userId, account, accessToken) {
   console.log(`Fetching campaigns for account: ${account.account_id}`);
   
   try {
+    // Format the account ID properly for Facebook API - add "act_" prefix if not present
+    let formattedAccountId = account.account_id;
+    if (!formattedAccountId.startsWith('act_')) {
+      formattedAccountId = `act_${formattedAccountId}`;
+    }
+    
+    console.log(`Using formatted account ID: ${formattedAccountId}`);
+    
     // Fetch campaigns from Facebook API
-    const campaignsUrl = `${FB_API_BASE_URL}/${account.account_id}/campaigns?fields=id,name,status&access_token=${accessToken}`;
+    const campaignsUrl = `${FB_API_BASE_URL}/${formattedAccountId}/campaigns?fields=id,name,status&access_token=${accessToken}`;
     
     console.log('Making Facebook API request:', campaignsUrl);
     const campaignsResponse = await fetch(campaignsUrl);
