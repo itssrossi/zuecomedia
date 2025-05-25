@@ -1,36 +1,153 @@
 
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --background: 222 47% 11%;
+    --foreground: 0 0% 100%;
+
+    --card: 222 47% 11%;
+    --card-foreground: 0 0% 100%;
+
+    --popover: 222 47% 11%;
+    --popover-foreground: 0 0% 100%;
+
+    --primary: 199 89% 48%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217 33% 17%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --ring: 224 76% 48%;
+
+    --radius: 0.5rem;
+  }
+
+  :root.light-mode {
+    --background: 0 0% 100%;
+    --foreground: 222 47% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    --primary: 199 89% 48%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 20% 98%;
+    --secondary-foreground: 222 47% 11%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215 16% 47%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222 47% 11%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 199 89% 48%;
+  }
+
+  :root.dark-mode {
+    /* Keep existing dark theme variables */
+  }
+
   * {
     @apply border-border;
   }
+
   body {
-    @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    @apply bg-zue-dark text-foreground;
+  }
+
+  body.light-mode {
+    @apply bg-white text-gray-900;
   }
 }
 
-/* PWA Mobile App-like behavior - hidden URL bar and full viewport usage */
-@media (max-width: 768px) {
-  html, body {
-    height: 100vh;
-    height: -webkit-fill-available;
-    overflow-x: hidden;
+@layer components {
+  .card-hover {
+    @apply transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-zue-blue/20;
   }
 
-  #root {
-    min-height: 100vh;
-    min-height: -webkit-fill-available;
+  .service-card {
+    @apply bg-zue-card-dark rounded-lg p-6 shadow-md flex flex-col h-full border border-zue-dark-light card-hover;
   }
 
-  /* Ensure full viewport usage on mobile Safari */
-  @supports (-webkit-touch-callout: none) {
-    html, body {
-      height: -webkit-fill-available;
-    }
+  .button-highlight {
+    @apply bg-zue-blue hover:bg-zue-blue-dark text-white font-medium rounded-lg px-5 py-2.5 transition-all;
+  }
+
+  .heading-highlight {
+    @apply text-zue-blue font-bold;
+  }
+
+  .section {
+    @apply py-16 md:py-24 px-4 sm:px-6 lg:px-8;
+  }
+
+  .container-custom {
+    @apply max-w-7xl mx-auto;
+  }
+
+  /* Light mode specific classes */
+  .light-mode .service-card {
+    @apply bg-white border-gray-200 shadow-sm;
+  }
+
+  .light-mode .heading-highlight {
+    @apply text-zue-blue font-bold;
+  }
+
+  /* Theme transition for smooth switching */
+  .theme-transition {
+    @apply transition-colors duration-300;
+  }
+  
+  /* Light mode dashboard styles */
+  .light-mode .bg-zue-dark {
+    @apply bg-white;
+  }
+  
+  .light-mode .bg-zue-dark-light {
+    @apply bg-gray-50;
+  }
+  
+  .light-mode .text-white {
+    @apply text-gray-900;
+  }
+  
+  .light-mode .text-gray-300 {
+    @apply text-gray-600;
+  }
+  
+  .light-mode .text-gray-400 {
+    @apply text-gray-500;
+  }
+  
+  .light-mode .border-gray-800 {
+    @apply border-gray-200;
+  }
+  
+  .light-mode .bg-zue-card-dark {
+    @apply bg-white border-gray-200;
   }
 }
