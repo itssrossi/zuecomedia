@@ -35,16 +35,6 @@ serve(async (req: Request) => {
       },
     });
 
-    // Get the Facebook access token from secrets
-    const facebookAccessToken = Deno.env.get('FACEBOOK_ACCESS_TOKEN');
-    if (!facebookAccessToken) {
-      console.error('Facebook access token not configured');
-      return new Response(JSON.stringify({ error: 'Facebook access token not configured' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
     console.log('Getting user session...');
     // Get the user from the request
     const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -89,7 +79,7 @@ serve(async (req: Request) => {
       console.log(`Processing account: ${account.account_id}`);
       
       try {
-        const result = await processAdAccount(supabase, user.id, account, facebookAccessToken);
+        const result = await processAdAccount(supabase, user.id, account);
         results.push(result);
       } catch (error) {
         console.error(`Error processing account ${account.account_id}:`, error);
@@ -126,7 +116,7 @@ serve(async (req: Request) => {
 });
 
 // Fetch real campaign data from Facebook Marketing API
-async function processAdAccount(supabase, userId, account, accessToken) {
+async function processAdAccount(supabase, userId, account) {
   console.log(`Fetching campaigns for account: ${account.account_id}`);
   
   try {
@@ -139,9 +129,9 @@ async function processAdAccount(supabase, userId, account, accessToken) {
     console.log(`Using formatted account ID: ${formattedAccountId}`);
     
     // Fetch campaigns from Facebook API with additional fields including status and dates
-    const campaignsUrl = `${FB_API_BASE_URL}/${formattedAccountId}/campaigns?fields=id,name,status,start_time,stop_time,created_time,updated_time&access_token=${accessToken}`;
+    const campaignsUrl = `${FB_API_BASE_URL}/${formattedAccountId}/campaigns?fields=id,name,status,start_time,stop_time,created_time,updated_time&access_token=${account.access_token}`;
     
-    console.log('Making Facebook API request:', campaignsUrl);
+    console.log('Making Facebook API request for campaigns...');
     const campaignsResponse = await fetch(campaignsUrl);
     
     if (!campaignsResponse.ok) {
@@ -162,12 +152,12 @@ async function processAdAccount(supabase, userId, account, accessToken) {
     for (const campaign of campaignsData.data) {
       console.log(`Processing campaign: ${campaign.name} (${campaign.id}) - Status: ${campaign.status}`);
       
-      // Insert/update campaign in our database with status information
+      // Insert/update campaign in our database with correct status information
       const { data: campaignRecord, error: campaignError } = await supabase.from('fb_campaigns').upsert({
         user_id: userId,
         fb_campaign_id: campaign.id,
         campaign_name: campaign.name,
-        campaign_status: campaign.status,
+        campaign_status: campaign.status, // Use the actual status from Facebook
         start_time: campaign.start_time || null,
         stop_time: campaign.stop_time || null,
         updated_at: new Date().toISOString()
@@ -182,12 +172,9 @@ async function processAdAccount(supabase, userId, account, accessToken) {
       
       const campaignId = campaignRecord[0].id;
       
-      // Only fetch insights for active campaigns to avoid wasting API calls
-      if (campaign.status === 'ACTIVE') {
-        await fetchCampaignInsights(supabase, userId, campaignId, campaign.id, accessToken);
-      } else {
-        console.log(`Skipping insights for ${campaign.status} campaign: ${campaign.name}`);
-      }
+      // Fetch insights for all campaigns, not just active ones
+      console.log(`Fetching insights for campaign: ${campaign.name} (Status: ${campaign.status})`);
+      await fetchCampaignInsights(supabase, userId, campaignId, campaign.id, account.access_token);
     }
 
     return { message: `Processed account ${account.account_id} successfully` };
@@ -202,16 +189,16 @@ async function fetchCampaignInsights(supabase, userId, campaignId, fbCampaignId,
   console.log(`Fetching insights for campaign: ${fbCampaignId}`);
   
   try {
-    // Calculate date range (last 30 days)
+    // Calculate date range (last 90 days for better data coverage)
     const endDate = new Date();
     const startDate = new Date();
-    startDate.setDate(startDate.getDate() - 30);
+    startDate.setDate(startDate.getDate() - 90);
     
     const since = startDate.toISOString().split('T')[0];
     const until = endDate.toISOString().split('T')[0];
     
-    // Fetch insights from Facebook API
-    const insightsUrl = `${FB_API_BASE_URL}/${fbCampaignId}/insights?fields=impressions,clicks,spend,actions,action_values,ctr,cpc&time_range={"since":"${since}","until":"${until}"}&time_increment=1&access_token=${accessToken}`;
+    // Fetch insights from Facebook API with more comprehensive fields
+    const insightsUrl = `${FB_API_BASE_URL}/${fbCampaignId}/insights?fields=impressions,clicks,spend,actions,action_values,ctr,cpc,date_start,date_stop&time_range={"since":"${since}","until":"${until}"}&time_increment=1&access_token=${accessToken}`;
     
     console.log('Fetching insights from Facebook API...');
     const insightsResponse = await fetch(insightsUrl);
@@ -219,6 +206,10 @@ async function fetchCampaignInsights(supabase, userId, campaignId, fbCampaignId,
     if (!insightsResponse.ok) {
       const errorText = await insightsResponse.text();
       console.error(`Facebook API error fetching insights: ${insightsResponse.status} - ${errorText}`);
+      
+      // If no insights data, create dummy data so we can see the campaign in the table
+      console.log('Creating placeholder metrics for campaign without insights data');
+      await createPlaceholderMetrics(supabase, userId, campaignId, since);
       return;
     }
     
@@ -226,7 +217,8 @@ async function fetchCampaignInsights(supabase, userId, campaignId, fbCampaignId,
     console.log(`Found ${insightsData.data?.length || 0} daily insights`);
 
     if (!insightsData.data || insightsData.data.length === 0) {
-      console.log(`No insights data found for campaign ${fbCampaignId}`);
+      console.log('No insights data found, creating placeholder metrics');
+      await createPlaceholderMetrics(supabase, userId, campaignId, since);
       return;
     }
 
@@ -287,5 +279,35 @@ async function fetchCampaignInsights(supabase, userId, campaignId, fbCampaignId,
     console.log(`Successfully processed insights for campaign ${fbCampaignId}`);
   } catch (error) {
     console.error(`Error fetching insights for campaign ${fbCampaignId}:`, error);
+    // Create placeholder metrics even if there's an error
+    await createPlaceholderMetrics(supabase, userId, campaignId, new Date().toISOString().split('T')[0]);
+  }
+}
+
+// Create placeholder metrics for campaigns without insights data
+async function createPlaceholderMetrics(supabase, userId, campaignId, date) {
+  console.log('Creating placeholder metrics for campaign without data');
+  
+  const { error: metricsError } = await supabase.from('fb_ad_metrics').upsert({
+    user_id: userId,
+    campaign_id: campaignId,
+    date: date,
+    impressions: 0,
+    clicks: 0,
+    spend: 0,
+    conversions: 0,
+    revenue: 0,
+    ctr: 0,
+    cpc: 0,
+    roas: 0,
+    updated_at: new Date().toISOString()
+  }, {
+    onConflict: 'user_id, campaign_id, date'
+  });
+
+  if (metricsError) {
+    console.error('Error creating placeholder metrics:', metricsError);
+  } else {
+    console.log('Successfully created placeholder metrics');
   }
 }

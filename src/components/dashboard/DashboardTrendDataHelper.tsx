@@ -1,6 +1,6 @@
 
 import { useMemo } from "react";
-import type { AdMetric } from "@/services/airtableService";
+import type { AdMetric } from "@/hooks/useFacebookData";
 
 interface UseTrendDataResult {
   spendTrendData: { name: string; value: number }[];

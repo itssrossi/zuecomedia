@@ -1,7 +1,7 @@
 
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { AdMetric } from "@/services/airtableService";
+import type { AdMetric } from "@/hooks/useFacebookData";
 
 interface CampaignPieChartProps {
   data: AdMetric[];
