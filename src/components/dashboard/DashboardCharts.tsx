@@ -1,9 +1,8 @@
-
 import { BarChart4 } from "lucide-react";
 import PerformanceChart from "@/components/dashboard/PerformanceChart";
 import CampaignPieChart from "@/components/dashboard/CampaignPieChart";
 import CampaignTable from "@/components/dashboard/CampaignTable";
-import type { AdMetric } from "@/services/airtableService";
+import type { AdMetric } from "@/hooks/useFacebookData";
 
 interface DashboardChartsProps {
   metrics: AdMetric[];
