@@ -82,12 +82,30 @@ export const fetchUserAdMetrics = async (
       fb_campaigns!inner(campaign_name, campaign_status, start_time, stop_time)
     `);
   
-  if (startDate) {
-    query = query.gte('date', startDate);
-  }
-  
-  if (endDate) {
-    query = query.lte('date', endDate);
+  // Build the date filter condition
+  if (startDate || endDate) {
+    // Create a condition that includes:
+    // 1. Metrics within the date range
+    // 2. OR campaigns that are scheduled within the date range (even without metrics)
+    let dateConditions = [];
+    
+    if (startDate && endDate) {
+      // Include metrics in date range OR campaigns scheduled in date range
+      dateConditions.push(`(date.gte.${startDate},date.lte.${endDate})`);
+      dateConditions.push(`(fb_campaigns.start_time.gte.${startDate},fb_campaigns.start_time.lte.${endDate})`);
+      dateConditions.push(`(fb_campaigns.stop_time.gte.${startDate},fb_campaigns.stop_time.lte.${endDate})`);
+    } else if (startDate) {
+      dateConditions.push(`(date.gte.${startDate})`);
+      dateConditions.push(`(fb_campaigns.start_time.gte.${startDate})`);
+    } else if (endDate) {
+      dateConditions.push(`(date.lte.${endDate})`);
+      dateConditions.push(`(fb_campaigns.stop_time.lte.${endDate})`);
+    }
+    
+    // Use 'or' to combine conditions - metrics in range OR campaign scheduled in range
+    if (dateConditions.length > 0) {
+      query = query.or(dateConditions.join(','));
+    }
   }
   
   if (campaignIds && campaignIds.length > 0) {
