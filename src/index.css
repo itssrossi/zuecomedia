@@ -14,33 +14,23 @@
   }
 }
 
-/* PWA and Mobile App-like styles */
-html, body {
-  height: 100vh;
-  height: -webkit-fill-available;
-  overflow-x: hidden;
-}
-
-#root {
-  min-height: 100vh;
-  min-height: -webkit-fill-available;
-}
-
-/* Hide scrollbars on mobile for cleaner app-like experience */
+/* PWA Mobile App-like behavior - hidden URL bar and full viewport usage */
 @media (max-width: 768px) {
-  ::-webkit-scrollbar {
-    display: none;
-  }
-  
-  html {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-}
-
-/* Ensure full viewport usage on mobile */
-@supports (-webkit-touch-callout: none) {
   html, body {
+    height: 100vh;
     height: -webkit-fill-available;
+    overflow-x: hidden;
+  }
+
+  #root {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+  }
+
+  /* Ensure full viewport usage on mobile Safari */
+  @supports (-webkit-touch-callout: none) {
+    html, body {
+      height: -webkit-fill-available;
+    }
   }
 }
