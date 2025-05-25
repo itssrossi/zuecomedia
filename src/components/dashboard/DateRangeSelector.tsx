@@ -40,7 +40,7 @@ const DateRangeSelector = ({
         <PopoverTrigger asChild>
           <Button
             variant="outline"
-            className="border-gray-600 bg-zue-dark-light text-white hover:bg-gray-700"
+            className="border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
             {startDate && endDate ? (
@@ -52,27 +52,27 @@ const DateRangeSelector = ({
             )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0 bg-zue-dark-light border-gray-700" align="start">
+        <PopoverContent className="w-auto p-0 bg-white border-gray-300" align="start">
           <div className="grid gap-4 p-4">
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <div className="text-sm text-gray-300 mb-1">Start Date</div>
+                <div className="text-sm text-gray-600 mb-1">Start Date</div>
                 <Calendar
                   mode="single"
                   selected={startDate}
                   onSelect={(date) => onDateRangeChange(date, endDate)}
                   disabled={(date) => endDate ? date > endDate : false}
-                  className="bg-zue-dark-light rounded-md"
+                  className="bg-white rounded-md"
                 />
               </div>
               <div>
-                <div className="text-sm text-gray-300 mb-1">End Date</div>
+                <div className="text-sm text-gray-600 mb-1">End Date</div>
                 <Calendar
                   mode="single"
                   selected={endDate}
                   onSelect={(date) => onDateRangeChange(startDate, date)}
                   disabled={(date) => startDate ? date < startDate : false}
-                  className="bg-zue-dark-light rounded-md"
+                  className="bg-white rounded-md"
                 />
               </div>
             </div>
@@ -81,7 +81,7 @@ const DateRangeSelector = ({
               <Button
                 variant="outline"
                 size="sm"
-                className="border-gray-600 text-white"
+                className="border-gray-300 text-gray-700"
                 onClick={() => handleQuickSelect(7)}
               >
                 Last 7 days
@@ -89,7 +89,7 @@ const DateRangeSelector = ({
               <Button
                 variant="outline"
                 size="sm"
-                className="border-gray-600 text-white"
+                className="border-gray-300 text-gray-700"
                 onClick={() => handleQuickSelect(30)}
               >
                 Last 30 days
@@ -97,7 +97,7 @@ const DateRangeSelector = ({
               <Button
                 variant="outline"
                 size="sm"
-                className="border-gray-600 text-white"
+                className="border-gray-300 text-gray-700"
                 onClick={() => handleQuickSelect(90)}
               >
                 Last 90 days
@@ -105,7 +105,7 @@ const DateRangeSelector = ({
               <Button
                 variant="outline"
                 size="sm"
-                className="border-gray-600 text-white"
+                className="border-gray-300 text-gray-700"
                 onClick={() => {
                   onDateRangeChange(undefined, undefined);
                   setIsOpen(false);

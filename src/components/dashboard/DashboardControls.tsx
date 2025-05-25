@@ -21,7 +21,7 @@ const DashboardControls = ({
   syncStatus
 }: DashboardControlsProps) => {
   return (
-    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
         <DateRangeSelector
           startDate={startDate}
@@ -33,7 +33,7 @@ const DashboardControls = ({
       
       <div className="flex items-center gap-4">
         {syncStatus && (
-          <div className="text-sm text-gray-400">
+          <div className="text-sm text-gray-500">
             Last sync: {new Date(syncStatus.last_sync_at).toLocaleString()}
           </div>
         )}
@@ -42,7 +42,7 @@ const DashboardControls = ({
           onClick={onRefreshData} 
           variant="outline" 
           size="sm"
-          className="bg-zue-dark-light border-gray-700 text-white hover:bg-zue-dark hover:text-white"
+          className="bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
         >
           <RefreshCw className="w-4 h-4 mr-2" />
           Sync Data

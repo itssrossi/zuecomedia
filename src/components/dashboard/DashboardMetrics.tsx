@@ -1,9 +1,9 @@
 
 import { 
-  BarChart4, 
+  Users, 
   DollarSign, 
   TrendingUp, 
-  MousePointerClick
+  FileText
 } from "lucide-react";
 import DashboardCard from "@/components/dashboard/DashboardCard";
 import CampaignTrendChart from "@/components/dashboard/CampaignTrendChart";
@@ -39,7 +39,6 @@ const DashboardMetrics = ({
   // Convert currency amounts (assuming data comes in USD)
   const convertedSpend = convertCurrency(stats.totalSpend, 'USD', selectedCurrency.code);
   const convertedRevenue = convertCurrency(stats.totalRevenue, 'USD', selectedCurrency.code);
-  const convertedCpc = convertCurrency(stats.averageCpc, 'USD', selectedCurrency.code);
 
   // Convert trend data
   const convertedSpendTrend = spendTrendData.map(item => ({
@@ -52,50 +51,38 @@ const DashboardMetrics = ({
     value: convertCurrency(item.value, 'USD', selectedCurrency.code)
   }));
 
+  // Calculate fake customer count based on clicks (for display purposes)
+  const customerCount = Math.floor(stats.totalClicks / 10) || 1456;
+
   return (
     <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       <DashboardCard
-        title="Total Ad Spend"
-        value={formatCurrency(convertedSpend, selectedCurrency.code)}
-        icon={<DollarSign size={20} />}
-        trend={{ value: 12.5, isPositive: true }}
-        chartComponent={<CampaignTrendChart data={convertedSpendTrend} color="#3182CE" />}
+        title="Customers"
+        value={customerCount.toLocaleString()}
+        icon={<Users size={24} />}
+        trend={{ value: 6.5, isPositive: true }}
+        iconBgColor="bg-blue-100"
       />
       <DashboardCard
-        title="Total Revenue"
+        title="Revenue"
         value={formatCurrency(convertedRevenue, selectedCurrency.code)}
-        icon={<TrendingUp size={20} />}
-        trend={{ value: 18.3, isPositive: true }}
-        chartComponent={<CampaignTrendChart data={convertedRevenueTrend} color="#38A169" />}
+        icon={<DollarSign size={24} />}
+        trend={{ value: 0.10, isPositive: false }}
+        iconBgColor="bg-teal-100"
       />
       <DashboardCard
-        title="Average ROAS"
-        value={`${stats.averageRoas.toFixed(2)}x`}
-        icon={<BarChart4 size={20} />}
-        trend={{ value: 5.2, isPositive: true }}
-        chartComponent={
-          <MetricPieChart 
-            value={Math.round(stats.averageRoas * 100) / 100} 
-            maxValue={10}
-            title="ROAS"
-            color="#38A169"
-          />
-        }
+        title="Profit"
+        value={`${((stats.averageRoas - 1) * 100).toFixed(0)}%`}
+        icon={<TrendingUp size={24} />}
+        trend={{ value: 0.2, isPositive: false }}
+        iconBgColor="bg-purple-100"
       />
       <DashboardCard
-        title="Average CTR"
-        value={`${stats.averageCtr.toFixed(2)}%`}
-        icon={<MousePointerClick size={20} />}
-        trend={{ value: 0.8, isPositive: true }}
-        chartComponent={
-          <MetricPieChart 
-            value={Math.round(stats.averageCtr * 10) / 10}
-            maxValue={10}
-            title="CTR"
-            color="#3182CE"
-            isPercentage
-          />
-        }
+        title="Invoices"
+        value="1.135"
+        icon={<FileText size={24} />}
+        trend={{ value: 11.5, isPositive: true }}
+        iconBgColor="bg-blue-100"
       />
     </section>
   );
