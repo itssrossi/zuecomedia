@@ -74,6 +74,8 @@ export const fetchUserAdMetrics = async (
   endDate?: string,
   campaignIds?: string[]
 ): Promise<FbAdMetric[]> => {
+  console.log('fetchUserAdMetrics called with:', { startDate, endDate, campaignIds });
+  
   let query = supabase
     .from('fb_ad_metrics')
     .select(`
@@ -81,61 +83,71 @@ export const fetchUserAdMetrics = async (
       fb_campaigns!inner(campaign_name, campaign_status, start_time, stop_time)
     `);
   
-  // If date range is specified, filter to show:
-  // 1. Metrics within the date range
-  // 2. OR campaigns that overlap with the date range (regardless of metrics)
-  if (startDate || endDate) {
-    let conditions = [];
-    
-    // Condition 1: Metrics within date range
-    if (startDate && endDate) {
-      conditions.push(`and(date.gte.${startDate},date.lte.${endDate})`);
-    } else if (startDate) {
-      conditions.push(`date.gte.${startDate}`);
-    } else if (endDate) {
-      conditions.push(`date.lte.${endDate}`);
-    }
-    
-    // Condition 2: Campaign scheduled to overlap with date range
-    let campaignConditions = [];
-    
-    if (startDate && endDate) {
-      // Campaign overlaps if:
-      // - starts before end date AND (has no stop time OR stops after start date)
-      campaignConditions.push(`and(fb_campaigns.start_time.lte.${endDate},or(fb_campaigns.stop_time.is.null,fb_campaigns.stop_time.gte.${startDate}))`);
-    } else if (startDate) {
-      // Campaign active after start date
-      campaignConditions.push(`or(fb_campaigns.stop_time.is.null,fb_campaigns.stop_time.gte.${startDate})`);
-    } else if (endDate) {
-      // Campaign started before end date
-      campaignConditions.push(`fb_campaigns.start_time.lte.${endDate}`);
-    }
-    
-    // Combine all conditions with OR
-    let allConditions = [...conditions, ...campaignConditions];
-    if (allConditions.length > 0) {
-      query = query.or(allConditions.join(','));
-    }
-  }
-  
+  // Apply campaign filter first if specified
   if (campaignIds && campaignIds.length > 0) {
     query = query.in('campaign_id', campaignIds);
   }
   
-  const { data, error } = await query;
+  const { data: allData, error } = await query;
   
   if (error) {
     throw new Error(`Error fetching ad metrics: ${error.message}`);
   }
   
-  return data?.map(item => ({
+  console.log('Raw data from database:', allData?.length || 0, 'records');
+  
+  if (!allData) return [];
+  
+  // Transform the data first
+  const transformedData = allData.map(item => ({
     ...item,
     campaign_name: item.fb_campaigns.campaign_name,
-    campaign: item.fb_campaigns.campaign_name, // Add this to match AdMetric type
+    campaign: item.fb_campaigns.campaign_name,
     campaign_status: item.fb_campaigns.campaign_status,
     start_time: item.fb_campaigns.start_time,
     stop_time: item.fb_campaigns.stop_time
-  })) || [];
+  }));
+  
+  // If no date range specified, return all data
+  if (!startDate && !endDate) {
+    console.log('No date filter, returning all data');
+    return transformedData;
+  }
+  
+  // Apply date filtering in JavaScript for more control
+  const filteredData = transformedData.filter(item => {
+    const metricDate = new Date(item.date);
+    const campaignStart = item.start_time ? new Date(item.start_time) : null;
+    const campaignStop = item.stop_time ? new Date(item.stop_time) : null;
+    const filterStart = startDate ? new Date(startDate) : null;
+    const filterEnd = endDate ? new Date(endDate) : null;
+    
+    // Check if metric date is within the filter range
+    let metricInRange = true;
+    if (filterStart && metricDate < filterStart) metricInRange = false;
+    if (filterEnd && metricDate > filterEnd) metricInRange = false;
+    
+    // Check if campaign is scheduled to be active during the filter range
+    let campaignActiveInRange = false;
+    if (campaignStart) {
+      // Campaign has started
+      const campaignStartsBeforeFilterEnd = !filterEnd || campaignStart <= filterEnd;
+      const campaignEndsAfterFilterStart = !campaignStop || !filterStart || campaignStop >= filterStart;
+      campaignActiveInRange = campaignStartsBeforeFilterEnd && campaignEndsAfterFilterStart;
+    }
+    
+    // Include the record if either:
+    // 1. The metric date is in range, OR
+    // 2. The campaign is scheduled to be active in the range
+    const shouldInclude = metricInRange || campaignActiveInRange;
+    
+    console.log(`Campaign: ${item.campaign_name}, Metric Date: ${item.date}, Start: ${item.start_time}, Stop: ${item.stop_time}, Include: ${shouldInclude}`);
+    
+    return shouldInclude;
+  });
+  
+  console.log('Filtered data:', filteredData.length, 'records');
+  return filteredData;
 };
 
 export const fetchLastSyncStatus = async (): Promise<SyncStatus | null> => {
