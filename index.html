@@ -8,11 +8,19 @@
     <meta name="description" content="Elevate your brand with creative marketing excellence at Zue Co Media. Strategic marketing solutions, branding, and digital experiences." />
     <meta name="author" content="Zue Co Media" />
     
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    
     <!-- Favicon settings with multiple sizes for better browser compatibility -->
     <link rel="icon" href="/lovable-uploads/a79bad13-be65-407a-8c30-ff4c211bf5e1.png" type="image/png" />
     <link rel="icon" sizes="16x16" href="/lovable-uploads/a79bad13-be65-407a-8c30-ff4c211bf5e1.png" type="image/png" />
     <link rel="icon" sizes="32x32" href="/lovable-uploads/a79bad13-be65-407a-8c30-ff4c211bf5e1.png" type="image/png" />
     <link rel="apple-touch-icon" href="/lovable-uploads/a79bad13-be65-407a-8c30-ff4c211bf5e1.png" />
+
+    <!-- PWA iOS specific -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Zue Co Media" />
 
     <meta property="og:title" content="Zue Co Media - Digital Marketing & Brand Solutions" />
     <meta property="og:description" content="Elevate your brand with creative marketing excellence at Zue Co Media. Strategic marketing solutions, branding, and digital experiences." />
@@ -29,5 +37,20 @@
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- PWA Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+              console.log('SW registered: ', registration);
+            })
+            .catch((registrationError) => {
+              console.log('SW registration failed: ', registrationError);
+            });
+        });
+      }
+    </script>
   </body>
 </html>
