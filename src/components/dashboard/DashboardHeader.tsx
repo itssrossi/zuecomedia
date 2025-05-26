@@ -4,6 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useTheme } from "@/context/ThemeContext";
+import ThemeToggle from "./ThemeToggle";
 
 const DashboardHeader = () => {
   const { user, signOut } = useAuth();
@@ -33,6 +34,7 @@ const DashboardHeader = () => {
           </h1>
         </div>
         <div className={`flex items-center ${isMobile ? 'gap-2' : 'gap-4'}`}>
+          <ThemeToggle />
           {user && !isMobile && (
             <span className={`text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-300'}`}>
               {user.email}
