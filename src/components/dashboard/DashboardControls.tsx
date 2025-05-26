@@ -1,16 +1,18 @@
 
-import { RefreshCw } from "lucide-react";
+import { RefreshCcw, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import DateRangeSelector from "./DateRangeSelector";
-import CurrencySelector from "./CurrencySelector";
-import type { SyncStatus } from "@/services/facebookService";
+import DateRangeSelector from "@/components/dashboard/DateRangeSelector";
+import { useIsMobile } from "@/hooks/use-mobile";
+import ThemeToggle from "@/components/dashboard/ThemeToggle";
+import { useNavigate } from "react-router-dom";
+import { useTheme } from "@/context/ThemeContext";
 
 interface DashboardControlsProps {
   startDate: Date | undefined;
   endDate: Date | undefined;
   onDateRangeChange: (start: Date | undefined, end: Date | undefined) => void;
   onRefreshData: () => void;
-  syncStatus: SyncStatus | null;
+  syncStatus?: { last_sync_at: string } | null;
 }
 
 const DashboardControls = ({
@@ -20,33 +22,52 @@ const DashboardControls = ({
   onRefreshData,
   syncStatus
 }: DashboardControlsProps) => {
+  const isMobile = useIsMobile();
+  const navigate = useNavigate();
+  const { theme } = useTheme();
+  
+  const goToOnboarding = () => {
+    navigate('/onboarding');
+  };
+  
   return (
-    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-        <DateRangeSelector
-          startDate={startDate}
-          endDate={endDate}
-          onDateRangeChange={onDateRangeChange}
-        />
-        <CurrencySelector />
-      </div>
+    <div className={`${isMobile ? 'flex-col space-y-4' : 'flex justify-between items-center'} mb-8`}>
+      <DateRangeSelector 
+        startDate={startDate}
+        endDate={endDate}
+        onDateRangeChange={onDateRangeChange}
+      />
       
-      <div className="flex items-center gap-4">
+      <div className={`flex items-center ${isMobile ? 'justify-between w-full' : 'space-x-4'}`}>
         {syncStatus && (
-          <div className="text-sm text-gray-400">
+          <span className="text-sm text-gray-300">
             Last sync: {new Date(syncStatus.last_sync_at).toLocaleString()}
-          </div>
+          </span>
         )}
         
-        <Button 
-          onClick={onRefreshData} 
-          variant="outline" 
-          size="sm"
-          className="bg-zue-dark-light border-gray-700 text-white hover:bg-zue-dark hover:text-white"
-        >
-          <RefreshCw className="w-4 h-4 mr-2" />
-          Sync Data
-        </Button>
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="outline"
+            className={`
+              ${theme === 'light' 
+                ? 'border-zue-blue text-gray-800 hover:bg-zue-blue/10' 
+                : 'border-zue-blue text-white hover:bg-zue-blue/20'}
+              flex items-center gap-2
+            `}
+            onClick={goToOnboarding}
+          >
+            <CheckCircle size={16} />
+            {isMobile ? '' : 'Onboarding Checklist'}
+          </Button>
+          <ThemeToggle />
+          <Button
+            onClick={onRefreshData}
+            className="flex items-center space-x-2 bg-zue-blue hover:bg-blue-700"
+          >
+            <RefreshCcw size={16} />
+            <span>Sync Data</span>
+          </Button>
+        </div>
       </div>
     </div>
   );

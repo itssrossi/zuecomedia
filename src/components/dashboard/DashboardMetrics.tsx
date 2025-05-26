@@ -8,8 +8,6 @@ import {
 import DashboardCard from "@/components/dashboard/DashboardCard";
 import CampaignTrendChart from "@/components/dashboard/CampaignTrendChart";
 import MetricPieChart from "@/components/dashboard/MetricPieChart";
-import { useCurrency } from "@/context/CurrencyContext";
-import { convertCurrency, formatCurrency } from "@/utils/currencyUtils";
 
 interface DashboardMetricsProps {
   stats: {
@@ -34,39 +32,21 @@ const DashboardMetrics = ({
   roasTrendData, 
   ctrTrendData 
 }: DashboardMetricsProps) => {
-  const { selectedCurrency } = useCurrency();
-
-  // Convert currency amounts (data comes in ZAR, our base currency)
-  const convertedSpend = convertCurrency(stats.totalSpend, 'ZAR', selectedCurrency.code);
-  const convertedRevenue = convertCurrency(stats.totalRevenue, 'ZAR', selectedCurrency.code);
-  const convertedCpc = convertCurrency(stats.averageCpc, 'ZAR', selectedCurrency.code);
-
-  // Convert trend data (from ZAR to selected currency)
-  const convertedSpendTrend = spendTrendData.map(item => ({
-    ...item,
-    value: convertCurrency(item.value, 'ZAR', selectedCurrency.code)
-  }));
-
-  const convertedRevenueTrend = revenueTrendData.map(item => ({
-    ...item,
-    value: convertCurrency(item.value, 'ZAR', selectedCurrency.code)
-  }));
-
   return (
     <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       <DashboardCard
         title="Total Ad Spend"
-        value={formatCurrency(convertedSpend, selectedCurrency.code)}
+        value={`$${stats.totalSpend.toLocaleString()}`}
         icon={<DollarSign size={20} />}
         trend={{ value: 12.5, isPositive: true }}
-        chartComponent={<CampaignTrendChart data={convertedSpendTrend} color="#3182CE" />}
+        chartComponent={<CampaignTrendChart data={spendTrendData} color="#3182CE" />}
       />
       <DashboardCard
         title="Total Revenue"
-        value={formatCurrency(convertedRevenue, selectedCurrency.code)}
+        value={`$${stats.totalRevenue.toLocaleString()}`}
         icon={<TrendingUp size={20} />}
         trend={{ value: 18.3, isPositive: true }}
-        chartComponent={<CampaignTrendChart data={convertedRevenueTrend} color="#38A169" />}
+        chartComponent={<CampaignTrendChart data={revenueTrendData} color="#38A169" />}
       />
       <DashboardCard
         title="Average ROAS"

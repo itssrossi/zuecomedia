@@ -1,8 +1,6 @@
 
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { useCurrency } from "@/context/CurrencyContext";
-import { convertCurrency, formatCurrency } from "@/utils/currencyUtils";
 import type { AdMetric } from "@/hooks/useFacebookData";
 
 interface CampaignTableProps {
@@ -11,8 +9,6 @@ interface CampaignTableProps {
 }
 
 const CampaignTable = ({ campaigns, isLoading }: CampaignTableProps) => {
-  const { selectedCurrency } = useCurrency();
-
   if (isLoading) {
     return (
       <div className="w-full h-40 flex items-center justify-center">
@@ -100,31 +96,25 @@ const CampaignTable = ({ campaigns, isLoading }: CampaignTableProps) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {uniqueCampaigns.map((campaign) => {
-            // Convert from ZAR (base currency) to selected currency
-            const convertedSpend = convertCurrency(campaign.spend, 'ZAR', selectedCurrency.code);
-            const convertedRevenue = convertCurrency(campaign.revenue, 'ZAR', selectedCurrency.code);
-            
-            return (
-              <TableRow key={campaign.id} className="border-b border-gray-800 hover:bg-zue-dark-light/50">
-                <TableCell className="font-medium">{campaign.campaign}</TableCell>
-                <TableCell>
-                  <Badge className={`text-white ${getStatusBadgeColor(campaign.status || 'UNKNOWN')}`}>
-                    {campaign.status || 'UNKNOWN'}
-                  </Badge>
-                </TableCell>
-                <TableCell>{formatDate(campaign.start_time)}</TableCell>
-                <TableCell>{formatDate(campaign.stop_time)}</TableCell>
-                <TableCell className="text-right">{campaign.impressions.toLocaleString()}</TableCell>
-                <TableCell className="text-right">{campaign.clicks.toLocaleString()}</TableCell>
-                <TableCell className="text-right">{campaign.ctr.toFixed(2)}%</TableCell>
-                <TableCell className="text-right">{formatCurrency(convertedSpend, selectedCurrency.code)}</TableCell>
-                <TableCell className="text-right">{campaign.conversions.toLocaleString()}</TableCell>
-                <TableCell className="text-right">{formatCurrency(convertedRevenue, selectedCurrency.code)}</TableCell>
-                <TableCell className="text-right">{campaign.roas.toFixed(2)}x</TableCell>
-              </TableRow>
-            );
-          })}
+          {uniqueCampaigns.map((campaign) => (
+            <TableRow key={campaign.id} className="border-b border-gray-800 hover:bg-zue-dark-light/50">
+              <TableCell className="font-medium">{campaign.campaign}</TableCell>
+              <TableCell>
+                <Badge className={`text-white ${getStatusBadgeColor(campaign.status || 'UNKNOWN')}`}>
+                  {campaign.status || 'UNKNOWN'}
+                </Badge>
+              </TableCell>
+              <TableCell>{formatDate(campaign.start_time)}</TableCell>
+              <TableCell>{formatDate(campaign.stop_time)}</TableCell>
+              <TableCell className="text-right">{campaign.impressions.toLocaleString()}</TableCell>
+              <TableCell className="text-right">{campaign.clicks.toLocaleString()}</TableCell>
+              <TableCell className="text-right">{campaign.ctr.toFixed(2)}%</TableCell>
+              <TableCell className="text-right">${campaign.spend.toLocaleString()}</TableCell>
+              <TableCell className="text-right">{campaign.conversions.toLocaleString()}</TableCell>
+              <TableCell className="text-right">${campaign.revenue.toLocaleString()}</TableCell>
+              <TableCell className="text-right">{campaign.roas.toFixed(2)}x</TableCell>
+            </TableRow>
+          ))}
         </TableBody>
       </Table>
     </div>
