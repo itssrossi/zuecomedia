@@ -26,6 +26,8 @@ export interface DashboardStats {
 export interface AdMetric {
   id: string;
   campaign: string; // This is what the component is expecting
+  adset_id: string; // Add adset specific fields
+  adset_name: string;
   impressions: number;
   clicks: number;
   spend: number;
@@ -45,6 +47,8 @@ const convertToAdMetric = (metrics: FbAdMetric[]): AdMetric[] => {
   return metrics.map(metric => ({
     id: metric.id,
     campaign: metric.campaign_name || '', // Use campaign_name or empty string
+    adset_id: metric.adset_id || metric.campaign_id, // Use adset_id or fall back to campaign_id
+    adset_name: metric.adset_name || metric.campaign_name || '', // Use adset_name or fall back
     impressions: metric.impressions,
     clicks: metric.clicks,
     spend: metric.spend,

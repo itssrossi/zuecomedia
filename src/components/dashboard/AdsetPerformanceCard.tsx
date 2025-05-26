@@ -13,12 +13,14 @@ interface AdsetPerformanceCardProps {
 const AdsetPerformanceCard = ({ metrics }: AdsetPerformanceCardProps) => {
   const { selectedCurrency } = useCurrency();
 
-  // Group metrics by adset (using campaign as proxy for adset for now)
+  // Group metrics by actual adset (using adset_id and adset_name)
   const adsetData = metrics.reduce((acc, metric) => {
-    const key = metric.campaign;
+    const key = metric.adset_id; // Use adset_id as the key
     if (!acc[key]) {
       acc[key] = {
-        name: key,
+        id: metric.adset_id,
+        name: metric.adset_name,
+        campaign: metric.campaign,
         spend: 0,
         revenue: 0,
         conversions: 0,
@@ -117,6 +119,7 @@ const AdsetPerformanceCard = ({ metrics }: AdsetPerformanceCardProps) => {
               <tr className="border-b border-gray-700">
                 <th className="text-left py-2 text-gray-400">Rank</th>
                 <th className="text-left py-2 text-gray-400">Ad Set</th>
+                <th className="text-left py-2 text-gray-400">Campaign</th>
                 <th className="text-right py-2 text-gray-400">ROAS</th>
                 <th className="text-right py-2 text-gray-400">Spend</th>
                 <th className="text-right py-2 text-gray-400">Revenue</th>
@@ -124,12 +127,12 @@ const AdsetPerformanceCard = ({ metrics }: AdsetPerformanceCardProps) => {
               </tr>
             </thead>
             <tbody>
-              {adsets.slice(0, 5).map((adset, index) => {
+              {adsets.slice(0, 10).map((adset, index) => {
                 const convertedAdsetSpend = convertCurrency(adset.spend, 'USD', selectedCurrency.code);
                 const convertedAdsetRevenue = convertCurrency(adset.revenue, 'USD', selectedCurrency.code);
                 
                 return (
-                  <tr key={adset.name} className="border-b border-gray-800 hover:bg-zue-dark-light/50">
+                  <tr key={adset.id} className="border-b border-gray-800 hover:bg-zue-dark-light/50">
                     <td className="py-2">
                       <span className={`inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-medium ${
                         index === 0 ? 'bg-yellow-500 text-black' :
@@ -142,6 +145,9 @@ const AdsetPerformanceCard = ({ metrics }: AdsetPerformanceCardProps) => {
                     </td>
                     <td className="py-2 text-white max-w-xs truncate" title={adset.name}>
                       {adset.name}
+                    </td>
+                    <td className="py-2 text-gray-300 max-w-xs truncate" title={adset.campaign}>
+                      {adset.campaign}
                     </td>
                     <td className="py-2 text-right">
                       <span className={`font-medium ${adset.roas > 1 ? 'text-green-400' : 'text-red-400'}`}>

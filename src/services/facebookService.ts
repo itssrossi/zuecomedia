@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 
 export interface FbAdAccount {
@@ -22,6 +23,8 @@ export interface FbAdMetric {
   id: string;
   user_id: string;
   campaign_id: string;
+  adset_id?: string;
+  adset_name?: string;
   date: string;
   impressions: number;
   clicks: number;
@@ -105,7 +108,10 @@ export const fetchUserAdMetrics = async (
     campaign: item.fb_campaigns.campaign_name,
     campaign_status: item.fb_campaigns.campaign_status,
     start_time: item.fb_campaigns.start_time,
-    stop_time: item.fb_campaigns.stop_time
+    stop_time: item.fb_campaigns.stop_time,
+    // Use adset_id and adset_name if available, otherwise fall back to campaign data
+    adset_id: item.adset_id || item.campaign_id,
+    adset_name: item.adset_name || item.fb_campaigns.campaign_name
   }));
   
   // If no date range specified, return all data
