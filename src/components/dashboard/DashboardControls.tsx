@@ -2,6 +2,7 @@
 import { RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import DateRangeSelector from "./DateRangeSelector";
+import CurrencySelector from "./CurrencySelector";
 import type { SyncStatus } from "@/services/facebookService";
 
 interface DashboardControlsProps {
@@ -27,6 +28,7 @@ const DashboardControls = ({
           endDate={endDate}
           onDateRangeChange={onDateRangeChange}
         />
+        <CurrencySelector />
       </div>
       
       <div className="flex items-center gap-4">

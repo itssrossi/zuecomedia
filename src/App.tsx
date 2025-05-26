@@ -1,6 +1,7 @@
 
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/context/AuthContext";
@@ -19,40 +20,42 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <ThemeProvider>
-      <CurrencyProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <AuthProvider>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/book-meeting" element={<CalendarBooking />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/onboarding" element={
-                <ProtectedRoute>
-                  <Onboarding />
-                </ProtectedRoute>
-              } />
-              <Route path="/dashboard/facebook-setup" element={
-                <ProtectedRoute>
-                  <FacebookAccountSetup />
-                </ProtectedRoute>
-              } />
-              <Route 
-                path="/dashboard" 
-                element={
+    <TooltipProvider>
+      <ThemeProvider>
+        <CurrencyProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <AuthProvider>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/book-meeting" element={<CalendarBooking />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/onboarding" element={
                   <ProtectedRoute>
-                    <Dashboard />
+                    <Onboarding />
                   </ProtectedRoute>
-                } 
-              />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </AuthProvider>
-        </BrowserRouter>
-      </CurrencyProvider>
-    </ThemeProvider>
+                } />
+                <Route path="/dashboard/facebook-setup" element={
+                  <ProtectedRoute>
+                    <FacebookAccountSetup />
+                  </ProtectedRoute>
+                } />
+                <Route 
+                  path="/dashboard" 
+                  element={
+                    <ProtectedRoute>
+                      <Dashboard />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </AuthProvider>
+          </BrowserRouter>
+        </CurrencyProvider>
+      </ThemeProvider>
+    </TooltipProvider>
   </QueryClientProvider>
 );
 

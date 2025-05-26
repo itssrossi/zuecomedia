@@ -1,3 +1,4 @@
+
 export interface Currency {
   code: string;
   symbol: string;
@@ -13,8 +14,7 @@ export const SUPPORTED_CURRENCIES: Currency[] = [
   { code: 'JPY', symbol: '¥', name: 'Japanese Yen' },
   { code: 'CHF', symbol: 'Fr', name: 'Swiss Franc' },
   { code: 'CNY', symbol: '¥', name: 'Chinese Yuan' },
-  { code: 'INR', symbol: '₹', name: 'Indian Rupee' },
-  { code: 'ZAR', symbol: 'R', name: 'South African Rand' }
+  { code: 'INR', symbol: '₹', name: 'Indian Rupee' }
 ];
 
 // Simple exchange rates (in a real app, these would come from an API)
@@ -27,8 +27,7 @@ const EXCHANGE_RATES: Record<string, number> = {
   JPY: 110,
   CHF: 0.92,
   CNY: 6.45,
-  INR: 74.5,
-  ZAR: 18.5
+  INR: 74.5
 };
 
 export const convertCurrency = (amount: number, fromCurrency: string, toCurrency: string): number => {

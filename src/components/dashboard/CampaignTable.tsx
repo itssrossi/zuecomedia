@@ -101,9 +101,8 @@ const CampaignTable = ({ campaigns, isLoading }: CampaignTableProps) => {
         </TableHeader>
         <TableBody>
           {uniqueCampaigns.map((campaign) => {
-            // Convert from ZAR (source currency) to selected currency
-            const convertedSpend = convertCurrency(campaign.spend, 'ZAR', selectedCurrency.code);
-            const convertedRevenue = convertCurrency(campaign.revenue, 'ZAR', selectedCurrency.code);
+            const convertedSpend = convertCurrency(campaign.spend, 'USD', selectedCurrency.code);
+            const convertedRevenue = convertCurrency(campaign.revenue, 'USD', selectedCurrency.code);
             
             return (
               <TableRow key={campaign.id} className="border-b border-gray-800 hover:bg-zue-dark-light/50">

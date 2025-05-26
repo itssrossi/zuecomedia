@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 
 export interface FbAdAccount {
@@ -23,8 +22,6 @@ export interface FbAdMetric {
   id: string;
   user_id: string;
   campaign_id: string;
-  adset_id?: string | null;
-  adset_name?: string | null;
   date: string;
   impressions: number;
   clicks: number;
@@ -101,18 +98,14 @@ export const fetchUserAdMetrics = async (
   
   if (!allData) return [];
   
-  // Transform the data - only include actual adset data, no campaign fallbacks
+  // Transform the data first
   const transformedData = allData.map(item => ({
     ...item,
     campaign_name: item.fb_campaigns.campaign_name,
     campaign: item.fb_campaigns.campaign_name,
     campaign_status: item.fb_campaigns.campaign_status,
     start_time: item.fb_campaigns.start_time,
-    stop_time: item.fb_campaigns.stop_time,
-    // Keep adset_id and adset_name as they are from the database
-    // Do NOT use campaign data as fallback
-    adset_id: item.adset_id || null,
-    adset_name: item.adset_name || null
+    stop_time: item.fb_campaigns.stop_time
   }));
   
   // If no date range specified, return all data
@@ -197,20 +190,9 @@ export const saveAdAccount = async (
 
 export const triggerFacebookDataSync = async (): Promise<void> => {
   try {
-    // Get the current session to ensure we have a valid auth token
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-    
-    if (sessionError || !session) {
-      throw new Error("User must be logged in to sync data");
-    }
-
-    console.log("Invoking sync function with auth token...");
-    
     const { data, error } = await supabase.functions.invoke('sync-facebook-data', {
-      headers: {
-        Authorization: `Bearer ${session.access_token}`,
-      },
-      body: {}
+      method: 'POST',
+      body: {} // Add an empty body to avoid potential issues
     });
     
     if (error) {

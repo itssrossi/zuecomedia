@@ -4,7 +4,6 @@ import { useAuth } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useTheme } from "@/context/ThemeContext";
-import MobileMenu from "./MobileMenu";
 
 const DashboardHeader = () => {
   const { user, signOut } = useAuth();
@@ -33,31 +32,24 @@ const DashboardHeader = () => {
             Zue<span className="text-zue-blue">Co</span> Analytics Dashboard
           </h1>
         </div>
-        
         <div className={`flex items-center ${isMobile ? 'gap-2' : 'gap-4'}`}>
-          {isMobile ? (
-            <MobileMenu />
-          ) : (
-            <>
-              {user && (
-                <span className={`text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-300'}`}>
-                  {user.email}
-                </span>
-              )}
-              <Button
-                variant="outline"
-                className={`
-                  ${theme === 'light' 
-                    ? 'border-gray-300 text-gray-700 hover:bg-gray-100' 
-                    : 'border-gray-600 text-white hover:bg-zue-dark'}
-                  hover:text-white
-                `}
-                onClick={signOut}
-              >
-                Logout
-              </Button>
-            </>
+          {user && !isMobile && (
+            <span className={`text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-300'}`}>
+              {user.email}
+            </span>
           )}
+          <Button
+            variant="outline"
+            className={`
+              ${theme === 'light' 
+                ? 'border-gray-300 text-gray-700 hover:bg-gray-100' 
+                : 'border-gray-600 text-white hover:bg-zue-dark'}
+              hover:text-white
+            `}
+            onClick={signOut}
+          >
+            Logout
+          </Button>
         </div>
       </div>
     </header>

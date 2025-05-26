@@ -36,23 +36,20 @@ const DashboardMetrics = ({
 }: DashboardMetricsProps) => {
   const { selectedCurrency } = useCurrency();
 
-  // Convert currency amounts - assuming data comes in ZAR (South African Rand)
-  // since that's what the user's Facebook account is providing
-  const sourceCurrency = 'ZAR'; // The currency from Facebook ads data
-  
-  const convertedSpend = convertCurrency(stats.totalSpend, sourceCurrency, selectedCurrency.code);
-  const convertedRevenue = convertCurrency(stats.totalRevenue, sourceCurrency, selectedCurrency.code);
-  const convertedCpc = convertCurrency(stats.averageCpc, sourceCurrency, selectedCurrency.code);
+  // Convert currency amounts (assuming data comes in USD)
+  const convertedSpend = convertCurrency(stats.totalSpend, 'USD', selectedCurrency.code);
+  const convertedRevenue = convertCurrency(stats.totalRevenue, 'USD', selectedCurrency.code);
+  const convertedCpc = convertCurrency(stats.averageCpc, 'USD', selectedCurrency.code);
 
-  // Convert trend data from ZAR to selected currency
+  // Convert trend data
   const convertedSpendTrend = spendTrendData.map(item => ({
     ...item,
-    value: convertCurrency(item.value, sourceCurrency, selectedCurrency.code)
+    value: convertCurrency(item.value, 'USD', selectedCurrency.code)
   }));
 
   const convertedRevenueTrend = revenueTrendData.map(item => ({
     ...item,
-    value: convertCurrency(item.value, sourceCurrency, selectedCurrency.code)
+    value: convertCurrency(item.value, 'USD', selectedCurrency.code)
   }));
 
   return (

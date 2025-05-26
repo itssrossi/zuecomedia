@@ -1,5 +1,5 @@
 
-import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { cn } from "@/lib/utils";
 
 interface MetricPieChartProps {
@@ -67,6 +67,14 @@ const MetricPieChart = ({
             ))}
           </Pie>
           {renderCustomLabel()}
+          <Tooltip 
+            formatter={(value: number) => [`${value}`, data[0].name]}
+            contentStyle={{ 
+              backgroundColor: "#1F2937", 
+              borderColor: "#4B5563", 
+              color: "#F9FAFB" 
+            }} 
+          />
         </PieChart>
       </ResponsiveContainer>
     </div>
