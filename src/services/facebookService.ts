@@ -196,27 +196,11 @@ export const saveAdAccount = async (
 
 export const triggerFacebookDataSync = async (): Promise<void> => {
   try {
-    // Get the current session to ensure we have a valid auth token
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-    
-    if (sessionError) {
-      console.error("Session error:", sessionError);
-      throw new Error(`Session error: ${sessionError.message}`);
-    }
-    
-    if (!session) {
-      console.error("No active session found");
-      throw new Error("Please log in to sync data");
-    }
-    
-    console.log("Session found, calling sync function...");
+    console.log("Starting sync...");
     
     const { data, error } = await supabase.functions.invoke('sync-facebook-data', {
       method: 'POST',
-      body: {},
-      headers: {
-        Authorization: `Bearer ${session.access_token}`
-      }
+      body: {}
     });
     
     if (error) {

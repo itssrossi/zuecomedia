@@ -1,4 +1,3 @@
-
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { serve } from 'https://deno.land/std@0.177.0/http/server.ts';
 
@@ -31,17 +30,10 @@ serve(async (req: Request) => {
     console.log('Creating Supabase client...');
     console.log('Auth header present:', !!authHeader);
     
-    if (!authHeader) {
-      console.error('No authorization header found');
-      return new Response(JSON.stringify({ error: 'No authorization header' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-    
+    // Create supabase client with auth context from the request
     const supabase = createClient(supabaseUrl, supabaseKey, {
       global: {
-        headers: { Authorization: authHeader },
+        headers: authHeader ? { Authorization: authHeader } : {},
       },
     });
 
