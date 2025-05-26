@@ -1,3 +1,4 @@
+
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { serve } from 'https://deno.land/std@0.177.0/http/server.ts';
 
@@ -286,7 +287,7 @@ async function fetchAdsetInsights(supabase, userId, campaignId, adsetId, adsetNa
       // Calculate ROAS
       const roas = spend > 0 ? revenue / spend : 0;
       
-      // Insert/update metrics in our database with adset information
+      // Insert/update metrics in our database with adset information using the correct conflict resolution
       const { error: metricsError } = await supabase.from('fb_ad_metrics').upsert({
         user_id: userId,
         campaign_id: campaignId,
@@ -303,11 +304,13 @@ async function fetchAdsetInsights(supabase, userId, campaignId, adsetId, adsetNa
         roas,
         updated_at: new Date().toISOString()
       }, {
-        onConflict: 'user_id, campaign_id, date, adset_id'
+        onConflict: 'user_id, campaign_id, date, adset_id' // Use the new unique constraint
       });
 
       if (metricsError) {
         console.error(`Error upserting adset metrics for ${insight.date_start}:`, metricsError);
+      } else {
+        console.log(`Successfully upserted adset metrics for ${adsetName} on ${insight.date_start}`);
       }
     }
     
