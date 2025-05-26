@@ -1,3 +1,4 @@
+
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { serve } from 'https://deno.land/std@0.177.0/http/server.ts';
 
@@ -24,22 +25,27 @@ serve(async (req: Request) => {
   try {
     // Create a Supabase client with the Auth context of the logged in user
     const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
-    const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY') ?? '';
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
     const authHeader = req.headers.get('Authorization') ?? '';
     
     console.log('Creating Supabase client...');
-    const supabase = createClient(supabaseUrl, supabaseKey, {
+    
+    // Create client with service role key for admin access
+    const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+    
+    // Create client with user auth for getting user
+    const supabaseUser = createClient(supabaseUrl, Deno.env.get('SUPABASE_ANON_KEY') ?? '', {
       global: {
         headers: { Authorization: authHeader },
       },
     });
 
     console.log('Getting user session...');
-    // Get the user from the request
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    // Get the user from the request using the user client
+    const { data: { user }, error: userError } = await supabaseUser.auth.getUser();
     if (userError || !user) {
       console.error('User error:', userError);
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+      return new Response(JSON.stringify({ error: 'Unauthorized: ' + (userError?.message || 'No user found') }), {
         status: 401,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -47,9 +53,9 @@ serve(async (req: Request) => {
 
     console.log('User authenticated:', user.id);
 
-    // Fetch the user's Facebook Ad accounts
+    // Fetch the user's Facebook Ad accounts using admin client
     console.log('Fetching ad accounts for user:', user.id);
-    const { data: adAccounts, error: accountsError } = await supabase
+    const { data: adAccounts, error: accountsError } = await supabaseAdmin
       .from('fb_ad_accounts')
       .select('*')
       .eq('user_id', user.id);
@@ -78,7 +84,7 @@ serve(async (req: Request) => {
       console.log(`Processing account: ${account.account_id}`);
       
       try {
-        const result = await processAdAccount(supabase, user.id, account);
+        const result = await processAdAccount(supabaseAdmin, user.id, account);
         results.push(result);
       } catch (error) {
         console.error(`Error processing account ${account.account_id}:`, error);
@@ -91,7 +97,7 @@ serve(async (req: Request) => {
 
     // Update the sync status
     console.log('Updating sync status...');
-    await supabase.from('fb_sync_status').upsert({
+    await supabaseAdmin.from('fb_sync_status').upsert({
       user_id: user.id,
       last_sync_at: new Date().toISOString(),
       sync_status: 'success',
