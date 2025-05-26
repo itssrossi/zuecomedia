@@ -30,49 +30,71 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
+    let mounted = true;
+
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, currentSession) => {
-        setSession(currentSession);
-        setUser(currentSession?.user ?? null);
+      async (event, currentSession) => {
+        if (!mounted) return;
+
+        console.log('Auth event:', event, 'Session:', currentSession);
+        
+        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+          setSession(currentSession);
+          setUser(currentSession?.user ?? null);
+        } else if (event === 'SIGNED_OUT') {
+          setSession(null);
+          setUser(null);
+        }
+        
         setIsLoading(false);
       }
     );
 
-    // Check for existing session
-    supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
-      setSession(currentSession);
-      setUser(currentSession?.user ?? null);
-      setIsLoading(false);
-    });
+    // Check for existing session on mount
+    const getInitialSession = async () => {
+      try {
+        const { data: { session: currentSession }, error } = await supabase.auth.getSession();
+        
+        if (!mounted) return;
+        
+        if (error) {
+          console.error('Error getting session:', error);
+        }
+        
+        setSession(currentSession);
+        setUser(currentSession?.user ?? null);
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Error in getInitialSession:', error);
+        if (mounted) {
+          setIsLoading(false);
+        }
+      }
+    };
 
-    return () => subscription.unsubscribe();
+    getInitialSession();
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signIn = async (email: string, password: string, keepLoggedIn: boolean = false) => {
     try {
       setIsLoading(true);
       
-      // Configure session persistence based on keepLoggedIn option
-      const authOptions = keepLoggedIn 
-        ? { 
-            options: { 
-              refreshToken: true,
-              persistSession: true,
-              // Set a longer session duration (30 days)
-              sessionRefreshMargin: 30 * 24 * 60 * 60 // 30 days in seconds
-            } 
-          }
-        : { options: { persistSession: true } };
-      
       const { error, data } = await supabase.auth.signInWithPassword({ 
         email, 
-        password,
-        ...authOptions.options 
+        password 
       });
       
       if (error) throw error;
 
+      // If keepLoggedIn is true, we'll rely on the persistent session configuration
+      // The session will automatically be stored in localStorage with the custom storageKey
+      
       toast.success("Signed in successfully");
       
       // Always go to dashboard after login - simplified approach
