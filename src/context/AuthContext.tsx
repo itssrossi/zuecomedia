@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Session, User } from "@supabase/supabase-js";
@@ -9,7 +8,7 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   isLoading: boolean;
-  signIn: (email: string, password: string) => Promise<void>;
+  signIn: (email: string, password: string, keepLoggedIn?: boolean) => Promise<void>;
   signUp: (email: string, password: string, fullName: string) => Promise<void>;
   signOut: () => Promise<void>;
   checkOnboardingStatus?: (userId: string) => Promise<boolean>;
@@ -50,10 +49,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (email: string, password: string, keepLoggedIn: boolean = false) => {
     try {
       setIsLoading(true);
-      const { error, data } = await supabase.auth.signInWithPassword({ email, password });
+      
+      // Configure session persistence based on keepLoggedIn option
+      const authOptions = keepLoggedIn 
+        ? { 
+            options: { 
+              refreshToken: true,
+              persistSession: true,
+              // Set a longer session duration (30 days)
+              sessionRefreshMargin: 30 * 24 * 60 * 60 // 30 days in seconds
+            } 
+          }
+        : { options: { persistSession: true } };
+      
+      const { error, data } = await supabase.auth.signInWithPassword({ 
+        email, 
+        password,
+        ...authOptions.options 
+      });
+      
       if (error) throw error;
 
       toast.success("Signed in successfully");

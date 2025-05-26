@@ -6,11 +6,14 @@ import { useAuth } from "@/context/AuthContext";
 import { Link } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTheme } from "@/context/ThemeContext";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
 const Login = () => {
   // Login state
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [keepLoggedIn, setKeepLoggedIn] = useState(false);
   
   // Signup state
   const [signupEmail, setSignupEmail] = useState("");
@@ -24,7 +27,7 @@ const Login = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    await signIn(email, password);
+    await signIn(email, password, keepLoggedIn);
   };
 
   const handleSignup = async (e: React.FormEvent) => {
@@ -103,6 +106,21 @@ const Login = () => {
                     className="bg-zue-dark border-gray-700 text-white"
                     required
                   />
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="keep-logged-in"
+                    checked={keepLoggedIn}
+                    onCheckedChange={(checked) => setKeepLoggedIn(checked as boolean)}
+                    className="border-gray-600 data-[state=checked]:bg-zue-blue data-[state=checked]:border-zue-blue"
+                  />
+                  <Label 
+                    htmlFor="keep-logged-in" 
+                    className="text-white text-sm cursor-pointer"
+                  >
+                    Keep me logged in for 30 days
+                  </Label>
                 </div>
 
                 <Button
