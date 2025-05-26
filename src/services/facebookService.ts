@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 
 export interface FbAdAccount {
@@ -196,9 +197,20 @@ export const saveAdAccount = async (
 
 export const triggerFacebookDataSync = async (): Promise<void> => {
   try {
+    // Get the current session to ensure we have a valid auth token
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    
+    if (sessionError || !session) {
+      throw new Error("User must be logged in to sync data");
+    }
+
+    console.log("Invoking sync function with auth token...");
+    
     const { data, error } = await supabase.functions.invoke('sync-facebook-data', {
-      method: 'POST',
-      body: {} // Add an empty body to avoid potential issues
+      headers: {
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      body: {}
     });
     
     if (error) {
