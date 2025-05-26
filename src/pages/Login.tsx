@@ -1,13 +1,12 @@
 
-import { useState } from "react";
+import { useState, useCallback, memo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/AuthContext";
-import { Link } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTheme } from "@/context/ThemeContext";
 
-const Login = () => {
+const Login = memo(() => {
   // Login state
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,12 +21,12 @@ const Login = () => {
   const { signIn, signUp, isLoading } = useAuth();
   const { theme } = useTheme();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     await signIn(email, password);
-  };
+  }, [email, password, signIn]);
 
-  const handleSignup = async (e: React.FormEvent) => {
+  const handleSignup = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     if (signupPassword !== confirmPassword) {
       alert("Passwords don't match");
@@ -36,7 +35,31 @@ const Login = () => {
     setSignupLoading(true);
     await signUp(signupEmail, signupPassword, fullName);
     setSignupLoading(false);
-  };
+  }, [signupEmail, signupPassword, confirmPassword, fullName, signUp]);
+
+  const handleEmailChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+  }, []);
+
+  const handlePasswordChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+  }, []);
+
+  const handleSignupEmailChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSignupEmail(e.target.value);
+  }, []);
+
+  const handleSignupPasswordChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSignupPassword(e.target.value);
+  }, []);
+
+  const handleConfirmPasswordChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setConfirmPassword(e.target.value);
+  }, []);
+
+  const handleFullNameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setFullName(e.target.value);
+  }, []);
 
   return (
     <div className="min-h-screen bg-zue-dark flex flex-col justify-center items-center p-4">
@@ -48,12 +71,14 @@ const Login = () => {
                 src="/lovable-uploads/c5a928fa-35df-4bf0-b39d-7b83e2cbc714.png"
                 alt="Zue Co Media Light Logo"
                 className="h-12 mr-2"
+                loading="eager"
               />
             ) : (
               <img
                 src="/lovable-uploads/7ae353e4-9833-4708-a345-e1195eaace46.png"
                 alt="Zue Co Media Dark Logo"
                 className="h-12 mr-2"
+                loading="eager"
               />
             )}
             <span className="font-bold text-2xl text-white">
@@ -83,10 +108,11 @@ const Login = () => {
                     id="email"
                     type="email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={handleEmailChange}
                     placeholder="your@email.com"
                     className="bg-zue-dark border-gray-700 text-white"
                     required
+                    autoComplete="email"
                   />
                 </div>
 
@@ -98,10 +124,11 @@ const Login = () => {
                     id="password"
                     type="password"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={handlePasswordChange}
                     placeholder="••••••••"
                     className="bg-zue-dark border-gray-700 text-white"
                     required
+                    autoComplete="current-password"
                   />
                 </div>
 
@@ -129,10 +156,11 @@ const Login = () => {
                     id="full-name"
                     type="text"
                     value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
+                    onChange={handleFullNameChange}
                     placeholder="John Doe"
                     className="bg-zue-dark border-gray-700 text-white"
                     required
+                    autoComplete="name"
                   />
                 </div>
                 
@@ -144,10 +172,11 @@ const Login = () => {
                     id="signup-email"
                     type="email"
                     value={signupEmail}
-                    onChange={(e) => setSignupEmail(e.target.value)}
+                    onChange={handleSignupEmailChange}
                     placeholder="your@email.com"
                     className="bg-zue-dark border-gray-700 text-white"
                     required
+                    autoComplete="email"
                   />
                 </div>
 
@@ -159,11 +188,12 @@ const Login = () => {
                     id="signup-password"
                     type="password"
                     value={signupPassword}
-                    onChange={(e) => setSignupPassword(e.target.value)}
+                    onChange={handleSignupPasswordChange}
                     placeholder="••••••••"
                     className="bg-zue-dark border-gray-700 text-white"
                     required
                     minLength={6}
+                    autoComplete="new-password"
                   />
                 </div>
                 
@@ -175,11 +205,12 @@ const Login = () => {
                     id="confirm-password"
                     type="password"
                     value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    onChange={handleConfirmPasswordChange}
                     placeholder="••••••••"
                     className="bg-zue-dark border-gray-700 text-white"
                     required
                     minLength={6}
+                    autoComplete="new-password"
                   />
                 </div>
 
@@ -197,6 +228,8 @@ const Login = () => {
       </div>
     </div>
   );
-};
+});
+
+Login.displayName = 'Login';
 
 export default Login;

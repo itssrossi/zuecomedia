@@ -1,5 +1,5 @@
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
@@ -23,17 +23,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Simplified version - no longer checking onboarding status
-  const checkOnboardingStatus = async (userId: string): Promise<boolean> => {
-    // Simply return true to indicate onboarding is "completed" for all users
-    // This effectively bypasses onboarding checks while allowing the function to still exist
+  // Memoized function to avoid recreating on every render
+  const checkOnboardingStatus = useCallback(async (userId: string): Promise<boolean> => {
     return true;
-  };
+  }, []);
 
   useEffect(() => {
+    let mounted = true;
+
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, currentSession) => {
+        if (!mounted) return;
+        
         setSession(currentSession);
         setUser(currentSession?.user ?? null);
         setIsLoading(false);
@@ -42,32 +44,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Check for existing session
     supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
+      if (!mounted) return;
+      
       setSession(currentSession);
       setUser(currentSession?.user ?? null);
       setIsLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = useCallback(async (email: string, password: string) => {
     try {
       setIsLoading(true);
-      const { error, data } = await supabase.auth.signInWithPassword({ email, password });
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
 
       toast.success("Signed in successfully");
-      
-      // Always go to dashboard after login - simplified approach
       navigate("/dashboard", { replace: true });
     } catch (error: any) {
       toast.error(error.message || "Failed to sign in");
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [navigate]);
 
-  const signUp = async (email: string, password: string, fullName: string) => {
+  const signUp = useCallback(async (email: string, password: string, fullName: string) => {
     try {
       setIsLoading(true);
       const { error, data } = await supabase.auth.signUp({
@@ -80,13 +85,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       if (error) throw error;
       
-      // Check if a new user was created
       if (data.user && data.session) {
-        // User is automatically signed in after signing up
         setUser(data.user);
         setSession(data.session);
         
-        // Create entry in profiles table
         try {
           await supabase.from('profiles').insert({
             id: data.user.id,
@@ -97,7 +99,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           console.error("Error creating profile:", profileError);
         }
         
-        // For new users, create an onboarding entry but don't enforce completion
         try {
           const { error: onboardingError } = await supabase
             .from('user_onboarding')
@@ -113,8 +114,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
         
         toast.success("Signed up successfully");
-        
-        // New users are directed to onboarding but can skip to dashboard if needed
         navigate("/onboarding", { replace: true });
       } else {
         toast.success("Signed up successfully. Please check your email for verification.");
@@ -124,9 +123,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [navigate]);
 
-  const signOut = async () => {
+  const signOut = useCallback(async () => {
     try {
       await supabase.auth.signOut();
       toast.success("Signed out successfully");
@@ -134,18 +133,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (error: any) {
       toast.error(error.message || "Failed to sign out");
     }
-  };
+  }, [navigate]);
+
+  // Memoize the context value to prevent unnecessary re-renders
+  const contextValue = useMemo(() => ({
+    user,
+    session,
+    isLoading,
+    signIn,
+    signUp,
+    signOut,
+    checkOnboardingStatus
+  }), [user, session, isLoading, signIn, signUp, signOut, checkOnboardingStatus]);
 
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      session, 
-      isLoading, 
-      signIn, 
-      signUp, 
-      signOut,
-      checkOnboardingStatus
-    }}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );
