@@ -23,17 +23,17 @@ interface CurrencyProviderProps {
 
 export const CurrencyProvider = ({ children }: CurrencyProviderProps) => {
   const [selectedCurrency, setSelectedCurrency] = useState<Currency>(() => {
-    // Load from localStorage or default to USD
+    // Load from localStorage or default to ZAR (base currency)
     const saved = localStorage.getItem('selectedCurrency');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
         return SUPPORTED_CURRENCIES.find(c => c.code === parsed.code) || SUPPORTED_CURRENCIES[0];
       } catch {
-        return SUPPORTED_CURRENCIES[0];
+        return SUPPORTED_CURRENCIES[0]; // ZAR
       }
     }
-    return SUPPORTED_CURRENCIES[0];
+    return SUPPORTED_CURRENCIES[0]; // ZAR
   });
 
   useEffect(() => {

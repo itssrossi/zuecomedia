@@ -36,20 +36,20 @@ const DashboardMetrics = ({
 }: DashboardMetricsProps) => {
   const { selectedCurrency } = useCurrency();
 
-  // Convert currency amounts (assuming data comes in USD)
-  const convertedSpend = convertCurrency(stats.totalSpend, 'USD', selectedCurrency.code);
-  const convertedRevenue = convertCurrency(stats.totalRevenue, 'USD', selectedCurrency.code);
-  const convertedCpc = convertCurrency(stats.averageCpc, 'USD', selectedCurrency.code);
+  // Convert currency amounts (data comes in ZAR, our base currency)
+  const convertedSpend = convertCurrency(stats.totalSpend, 'ZAR', selectedCurrency.code);
+  const convertedRevenue = convertCurrency(stats.totalRevenue, 'ZAR', selectedCurrency.code);
+  const convertedCpc = convertCurrency(stats.averageCpc, 'ZAR', selectedCurrency.code);
 
-  // Convert trend data
+  // Convert trend data (from ZAR to selected currency)
   const convertedSpendTrend = spendTrendData.map(item => ({
     ...item,
-    value: convertCurrency(item.value, 'USD', selectedCurrency.code)
+    value: convertCurrency(item.value, 'ZAR', selectedCurrency.code)
   }));
 
   const convertedRevenueTrend = revenueTrendData.map(item => ({
     ...item,
-    value: convertCurrency(item.value, 'USD', selectedCurrency.code)
+    value: convertCurrency(item.value, 'ZAR', selectedCurrency.code)
   }));
 
   return (

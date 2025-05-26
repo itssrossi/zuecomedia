@@ -6,6 +6,7 @@ export interface Currency {
 }
 
 export const SUPPORTED_CURRENCIES: Currency[] = [
+  { code: 'ZAR', symbol: 'R', name: 'South African Rand' },
   { code: 'USD', symbol: '$', name: 'US Dollar' },
   { code: 'EUR', symbol: '€', name: 'Euro' },
   { code: 'GBP', symbol: '£', name: 'British Pound' },
@@ -17,30 +18,41 @@ export const SUPPORTED_CURRENCIES: Currency[] = [
   { code: 'INR', symbol: '₹', name: 'Indian Rupee' }
 ];
 
-// Simple exchange rates (in a real app, these would come from an API)
+// Exchange rates relative to ZAR (South African Rand is the base currency)
 const EXCHANGE_RATES: Record<string, number> = {
-  USD: 1,
-  EUR: 0.85,
-  GBP: 0.73,
-  CAD: 1.25,
-  AUD: 1.35,
-  JPY: 110,
-  CHF: 0.92,
-  CNY: 6.45,
-  INR: 74.5
+  ZAR: 1,        // Base currency
+  USD: 0.055,    // 1 ZAR = 0.055 USD
+  EUR: 0.051,    // 1 ZAR = 0.051 EUR
+  GBP: 0.044,    // 1 ZAR = 0.044 GBP
+  CAD: 0.075,    // 1 ZAR = 0.075 CAD
+  AUD: 0.083,    // 1 ZAR = 0.083 AUD
+  JPY: 8.2,      // 1 ZAR = 8.2 JPY
+  CHF: 0.049,    // 1 ZAR = 0.049 CHF
+  CNY: 0.40,     // 1 ZAR = 0.40 CNY
+  INR: 4.6       // 1 ZAR = 4.6 INR
 };
 
 export const convertCurrency = (amount: number, fromCurrency: string, toCurrency: string): number => {
   if (fromCurrency === toCurrency) return amount;
   
-  // Convert to USD first, then to target currency
-  const usdAmount = amount / EXCHANGE_RATES[fromCurrency];
-  return usdAmount * EXCHANGE_RATES[toCurrency];
+  // Since ZAR is our base currency, convert from ZAR to target currency
+  if (fromCurrency === 'ZAR') {
+    return amount * EXCHANGE_RATES[toCurrency];
+  }
+  
+  // If converting from another currency to ZAR
+  if (toCurrency === 'ZAR') {
+    return amount / EXCHANGE_RATES[fromCurrency];
+  }
+  
+  // Convert from one non-ZAR currency to another via ZAR
+  const zarAmount = amount / EXCHANGE_RATES[fromCurrency];
+  return zarAmount * EXCHANGE_RATES[toCurrency];
 };
 
 export const formatCurrency = (amount: number, currencyCode: string): string => {
   const currency = SUPPORTED_CURRENCIES.find(c => c.code === currencyCode);
-  if (!currency) return `$${amount.toLocaleString()}`;
+  if (!currency) return `R${amount.toLocaleString()}`;
   
   // For JPY, don't show decimal places
   const decimals = currencyCode === 'JPY' ? 0 : 2;
