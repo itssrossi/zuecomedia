@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Session, User } from "@supabase/supabase-js";
@@ -8,7 +9,7 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   isLoading: boolean;
-  signIn: (email: string, password: string, keepLoggedIn?: boolean) => Promise<void>;
+  signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, fullName: string) => Promise<void>;
   signOut: () => Promise<void>;
   checkOnboardingStatus?: (userId: string) => Promise<boolean>;
@@ -30,71 +31,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
-    let mounted = true;
-
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, currentSession) => {
-        if (!mounted) return;
-
-        console.log('Auth event:', event, 'Session:', currentSession);
-        
-        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-          setSession(currentSession);
-          setUser(currentSession?.user ?? null);
-        } else if (event === 'SIGNED_OUT') {
-          setSession(null);
-          setUser(null);
-        }
-        
+      (event, currentSession) => {
+        setSession(currentSession);
+        setUser(currentSession?.user ?? null);
         setIsLoading(false);
       }
     );
 
-    // Check for existing session on mount
-    const getInitialSession = async () => {
-      try {
-        const { data: { session: currentSession }, error } = await supabase.auth.getSession();
-        
-        if (!mounted) return;
-        
-        if (error) {
-          console.error('Error getting session:', error);
-        }
-        
-        setSession(currentSession);
-        setUser(currentSession?.user ?? null);
-        setIsLoading(false);
-      } catch (error) {
-        console.error('Error in getInitialSession:', error);
-        if (mounted) {
-          setIsLoading(false);
-        }
-      }
-    };
+    // Check for existing session
+    supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
+      setSession(currentSession);
+      setUser(currentSession?.user ?? null);
+      setIsLoading(false);
+    });
 
-    getInitialSession();
-
-    return () => {
-      mounted = false;
-      subscription.unsubscribe();
-    };
+    return () => subscription.unsubscribe();
   }, []);
 
-  const signIn = async (email: string, password: string, keepLoggedIn: boolean = false) => {
+  const signIn = async (email: string, password: string) => {
     try {
       setIsLoading(true);
-      
-      const { error, data } = await supabase.auth.signInWithPassword({ 
-        email, 
-        password 
-      });
-      
+      const { error, data } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
 
-      // If keepLoggedIn is true, we'll rely on the persistent session configuration
-      // The session will automatically be stored in localStorage with the custom storageKey
-      
       toast.success("Signed in successfully");
       
       // Always go to dashboard after login - simplified approach

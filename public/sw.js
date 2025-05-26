@@ -1,5 +1,5 @@
 
-const CACHE_NAME = 'zue-co-media-v2';
+const CACHE_NAME = 'zue-co-media-v1';
 const urlsToCache = [
   '/',
   '/static/js/bundle.js',
@@ -15,18 +15,9 @@ self.addEventListener('install', (event) => {
         return cache.addAll(urlsToCache);
       })
   );
-  // Force the waiting service worker to become the active service worker
-  self.skipWaiting();
 });
 
 self.addEventListener('fetch', (event) => {
-  // Don't cache auth-related requests to ensure fresh session data
-  if (event.request.url.includes('supabase.co/auth') || 
-      event.request.url.includes('/token') ||
-      event.request.url.includes('/refresh')) {
-    return;
-  }
-
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
@@ -48,20 +39,4 @@ self.addEventListener('activate', (event) => {
       );
     })
   );
-  // Ensure the new service worker takes control immediately
-  self.clients.claim();
-});
-
-// Handle background sync for authentication
-self.addEventListener('sync', (event) => {
-  if (event.tag === 'auth-sync') {
-    event.waitUntil(
-      // This ensures auth state is properly synced when coming back online
-      self.clients.matchAll().then((clients) => {
-        clients.forEach((client) => {
-          client.postMessage({ type: 'AUTH_SYNC' });
-        });
-      })
-    );
-  }
 });
