@@ -1,7 +1,9 @@
+
 import { BarChart4 } from "lucide-react";
 import PerformanceChart from "@/components/dashboard/PerformanceChart";
 import CampaignPieChart from "@/components/dashboard/CampaignPieChart";
 import CampaignTable from "@/components/dashboard/CampaignTable";
+import AdsetPerformanceCard from "@/components/dashboard/AdsetPerformanceCard";
 import type { AdMetric } from "@/hooks/useFacebookData";
 
 interface DashboardChartsProps {
@@ -12,6 +14,15 @@ interface DashboardChartsProps {
 const DashboardCharts = ({ metrics, isLoading }: DashboardChartsProps) => {
   return (
     <>
+      {/* Adset Performance Section */}
+      <section className="mb-8">
+        <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+          <BarChart4 size={20} className="text-zue-blue" />
+          Ad Set Performance
+        </h2>
+        <AdsetPerformanceCard metrics={metrics} />
+      </section>
+
       {/* Charts Section */}
       <section className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         <div className="lg:col-span-2">
