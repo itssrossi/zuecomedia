@@ -26,9 +26,19 @@ serve(async (req: Request) => {
     // Create a Supabase client with the Auth context of the logged in user
     const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
     const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY') ?? '';
-    const authHeader = req.headers.get('Authorization') ?? '';
+    const authHeader = req.headers.get('Authorization');
     
     console.log('Creating Supabase client...');
+    console.log('Auth header present:', !!authHeader);
+    
+    if (!authHeader) {
+      console.error('No authorization header found');
+      return new Response(JSON.stringify({ error: 'No authorization header' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    
     const supabase = createClient(supabaseUrl, supabaseKey, {
       global: {
         headers: { Authorization: authHeader },
@@ -38,9 +48,18 @@ serve(async (req: Request) => {
     console.log('Getting user session...');
     // Get the user from the request
     const { data: { user }, error: userError } = await supabase.auth.getUser();
-    if (userError || !user) {
-      console.error('User error:', userError);
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+    
+    if (userError) {
+      console.error('User authentication error:', userError);
+      return new Response(JSON.stringify({ error: `Authentication failed: ${userError.message}` }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    
+    if (!user) {
+      console.error('No user found in session');
+      return new Response(JSON.stringify({ error: 'User not authenticated' }), {
         status: 401,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
