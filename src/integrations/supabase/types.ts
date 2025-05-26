@@ -41,6 +41,8 @@ export type Database = {
       }
       fb_ad_metrics: {
         Row: {
+          adset_id: string | null
+          adset_name: string | null
           campaign_id: string
           clicks: number
           conversions: number
@@ -57,6 +59,8 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          adset_id?: string | null
+          adset_name?: string | null
           campaign_id: string
           clicks?: number
           conversions?: number
@@ -73,6 +77,8 @@ export type Database = {
           user_id: string
         }
         Update: {
+          adset_id?: string | null
+          adset_name?: string | null
           campaign_id?: string
           clicks?: number
           conversions?: number

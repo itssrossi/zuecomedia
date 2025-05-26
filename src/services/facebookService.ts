@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 
 export interface FbAdAccount {
@@ -23,8 +22,8 @@ export interface FbAdMetric {
   id: string;
   user_id: string;
   campaign_id: string;
-  adset_id?: string;
-  adset_name?: string;
+  adset_id?: string | null;
+  adset_name?: string | null;
   date: string;
   impressions: number;
   clicks: number;

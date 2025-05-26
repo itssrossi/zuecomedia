@@ -1,4 +1,3 @@
-
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { serve } from 'https://deno.land/std@0.177.0/http/server.ts';
 
@@ -175,12 +174,146 @@ async function processAdAccount(supabase, userId, account) {
       // Fetch insights for all campaigns, not just active ones
       console.log(`Fetching insights for campaign: ${campaign.name} (Status: ${campaign.status})`);
       await fetchCampaignInsights(supabase, userId, campaignId, campaign.id, account.access_token);
+      
+      // Also fetch adsets for this campaign
+      console.log(`Fetching adsets for campaign: ${campaign.name}`);
+      await fetchCampaignAdsets(supabase, userId, campaignId, campaign.id, account.access_token);
     }
 
     return { message: `Processed account ${account.account_id} successfully` };
   } catch (error) {
     console.error(`Error in processAdAccount for ${account.account_id}:`, error);
     throw error;
+  }
+}
+
+// Fetch campaign adsets from Facebook API
+async function fetchCampaignAdsets(supabase, userId, campaignId, fbCampaignId, accessToken) {
+  console.log(`Fetching adsets for campaign: ${fbCampaignId}`);
+  
+  try {
+    const adsetsUrl = `${FB_API_BASE_URL}/${fbCampaignId}/adsets?fields=id,name,status,start_time,end_time&access_token=${accessToken}`;
+    
+    const adsetsResponse = await fetch(adsetsUrl);
+    
+    if (!adsetsResponse.ok) {
+      const errorText = await adsetsResponse.text();
+      console.error(`Facebook API error fetching adsets: ${adsetsResponse.status} - ${errorText}`);
+      return; // Don't throw, just skip adsets if there's an error
+    }
+    
+    const adsetsData = await adsetsResponse.json();
+    console.log(`Found ${adsetsData.data?.length || 0} adsets for campaign ${fbCampaignId}`);
+
+    if (!adsetsData.data || adsetsData.data.length === 0) {
+      console.log('No adsets found for campaign, using campaign as adset');
+      return;
+    }
+
+    // Fetch insights for each adset
+    for (const adset of adsetsData.data) {
+      console.log(`Fetching insights for adset: ${adset.name} (${adset.id})`);
+      await fetchAdsetInsights(supabase, userId, campaignId, adset.id, adset.name, accessToken);
+    }
+    
+  } catch (error) {
+    console.error(`Error fetching adsets for campaign ${fbCampaignId}:`, error);
+    // Don't throw, just continue with campaign-level data
+  }
+}
+
+// Fetch adset insights from Facebook API
+async function fetchAdsetInsights(supabase, userId, campaignId, adsetId, adsetName, accessToken) {
+  console.log(`Fetching insights for adset: ${adsetId}`);
+  
+  try {
+    // Calculate date range (last 90 days for better data coverage)
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - 90);
+    
+    const since = startDate.toISOString().split('T')[0];
+    const until = endDate.toISOString().split('T')[0];
+    
+    // Fetch insights from Facebook API
+    const insightsUrl = `${FB_API_BASE_URL}/${adsetId}/insights?fields=impressions,clicks,spend,actions,action_values,ctr,cpc,date_start,date_stop&time_range={"since":"${since}","until":"${until}"}&time_increment=1&access_token=${accessToken}`;
+    
+    console.log('Fetching adset insights from Facebook API...');
+    const insightsResponse = await fetch(insightsUrl);
+    
+    if (!insightsResponse.ok) {
+      const errorText = await insightsResponse.text();
+      console.error(`Facebook API error fetching adset insights: ${insightsResponse.status} - ${errorText}`);
+      return;
+    }
+    
+    const insightsData = await insightsResponse.json();
+    console.log(`Found ${insightsData.data?.length || 0} daily insights for adset`);
+
+    if (!insightsData.data || insightsData.data.length === 0) {
+      console.log('No adset insights data found');
+      return;
+    }
+
+    // Process each day's insights for the adset
+    for (const insight of insightsData.data) {
+      const impressions = parseInt(insight.impressions || '0');
+      const clicks = parseInt(insight.clicks || '0');
+      const spend = parseFloat(insight.spend || '0');
+      const ctr = parseFloat(insight.ctr || '0');
+      const cpc = parseFloat(insight.cpc || '0');
+      
+      // Extract conversions and revenue from actions
+      let conversions = 0;
+      let revenue = 0;
+      
+      if (insight.actions) {
+        for (const action of insight.actions) {
+          if (action.action_type === 'purchase' || action.action_type === 'offsite_conversion.fb_pixel_purchase') {
+            conversions += parseInt(action.value || '0');
+          }
+        }
+      }
+      
+      if (insight.action_values) {
+        for (const actionValue of insight.action_values) {
+          if (actionValue.action_type === 'purchase' || actionValue.action_type === 'offsite_conversion.fb_pixel_purchase') {
+            revenue += parseFloat(actionValue.value || '0');
+          }
+        }
+      }
+      
+      // Calculate ROAS
+      const roas = spend > 0 ? revenue / spend : 0;
+      
+      // Insert/update metrics in our database with adset information
+      const { error: metricsError } = await supabase.from('fb_ad_metrics').upsert({
+        user_id: userId,
+        campaign_id: campaignId,
+        adset_id: adsetId,
+        adset_name: adsetName,
+        date: insight.date_start,
+        impressions,
+        clicks,
+        spend,
+        conversions,
+        revenue,
+        ctr,
+        cpc,
+        roas,
+        updated_at: new Date().toISOString()
+      }, {
+        onConflict: 'user_id, campaign_id, date, adset_id'
+      });
+
+      if (metricsError) {
+        console.error(`Error upserting adset metrics for ${insight.date_start}:`, metricsError);
+      }
+    }
+    
+    console.log(`Successfully processed adset insights for ${adsetId}`);
+  } catch (error) {
+    console.error(`Error fetching adset insights for ${adsetId}:`, error);
   }
 }
 
