@@ -43,6 +43,17 @@ const MetricPieChart = ({
     );
   };
 
+  const CustomTooltip = ({ active, payload }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-gray-800 border border-gray-600 p-2 rounded shadow-lg">
+          <p className="text-white">{`${payload[0].name}: ${payload[0].value}`}</p>
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
     <div className={cn("h-24", className)}>
       <ResponsiveContainer width="100%" height="100%">
@@ -67,14 +78,7 @@ const MetricPieChart = ({
             ))}
           </Pie>
           {renderCustomLabel()}
-          <Tooltip 
-            formatter={(value: number) => [`${value}`, data[0].name]}
-            contentStyle={{ 
-              backgroundColor: "#1F2937", 
-              borderColor: "#4B5563", 
-              color: "#F9FAFB" 
-            }} 
-          />
+          <Tooltip content={<CustomTooltip />} />
         </PieChart>
       </ResponsiveContainer>
     </div>
