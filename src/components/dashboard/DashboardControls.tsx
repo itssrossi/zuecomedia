@@ -6,7 +6,12 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import DateRangeSelector from "./DateRangeSelector";
 import ThemeToggle from "./ThemeToggle";
 import CurrencySelector from "./CurrencySelector";
-import { SyncStatus } from "@/hooks/useFacebookData";
+
+export interface SyncStatus {
+  isLoading: boolean;
+  last_sync_at?: string;
+  status?: string;
+}
 
 interface DashboardControlsProps {
   startDate: Date | undefined;
