@@ -7,6 +7,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "@/context/ThemeContext";
 import ThemeToggle from "./ThemeToggle";
+import CurrencySelector from "./CurrencySelector";
 
 const MobileMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -49,6 +50,13 @@ const MobileMenu = () => {
               Theme
             </span>
             <ThemeToggle />
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <span className={`text-sm font-medium ${theme === 'light' ? 'text-gray-700' : 'text-gray-300'}`}>
+              Currency
+            </span>
+            <CurrencySelector />
           </div>
 
           <Button

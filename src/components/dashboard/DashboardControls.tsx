@@ -2,8 +2,6 @@
 import { RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import DateRangeSelector from "./DateRangeSelector";
-import CurrencySelector from "./CurrencySelector";
-import ThemeToggle from "./ThemeToggle";
 import type { SyncStatus } from "@/services/facebookService";
 
 interface DashboardControlsProps {
@@ -29,7 +27,6 @@ const DashboardControls = ({
           endDate={endDate}
           onDateRangeChange={onDateRangeChange}
         />
-        <CurrencySelector />
       </div>
       
       <div className="flex items-center gap-4">
@@ -38,8 +35,6 @@ const DashboardControls = ({
             Last sync: {new Date(syncStatus.last_sync_at).toLocaleString()}
           </div>
         )}
-        
-        <ThemeToggle />
         
         <Button 
           onClick={onRefreshData} 
