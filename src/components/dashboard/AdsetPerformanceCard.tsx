@@ -13,8 +13,18 @@ interface AdsetPerformanceCardProps {
 const AdsetPerformanceCard = ({ metrics }: AdsetPerformanceCardProps) => {
   const { selectedCurrency } = useCurrency();
 
+  // Filter to only include metrics that have actual adset data (not campaign fallbacks)
+  const adsetMetrics = metrics.filter(metric => {
+    // Only include if adset_id exists and is different from campaign_id
+    // and adset_name exists and is different from campaign name
+    return metric.adset_id && 
+           metric.adset_name && 
+           metric.adset_id !== metric.campaign && 
+           metric.adset_name !== metric.campaign;
+  });
+
   // Group metrics by actual adset (using adset_id and adset_name)
-  const adsetData = metrics.reduce((acc, metric) => {
+  const adsetData = adsetMetrics.reduce((acc, metric) => {
     const key = metric.adset_id; // Use adset_id as the key
     if (!acc[key]) {
       acc[key] = {
@@ -47,18 +57,31 @@ const AdsetPerformanceCard = ({ metrics }: AdsetPerformanceCardProps) => {
     ctr: adset.impressions > 0 ? (adset.clicks / adset.impressions) * 100 : 0
   })).sort((a, b) => b.roas - a.roas);
 
-  const topAdset = adsets[0];
-
-  if (!topAdset) {
+  // If no actual adsets found, show a message
+  if (adsets.length === 0) {
     return (
-      <DashboardCard
-        title="Top Performing Ad Set"
-        value="No data"
-        icon={<TrendingUp size={20} />}
-      />
+      <div className="space-y-6">
+        <DashboardCard
+          title="Ad Set Performance"
+          value="No ad sets found"
+          icon={<TrendingUp size={20} />}
+        />
+        <div className="bg-blue-900/20 border border-blue-500/50 rounded-lg p-4">
+          <h3 className="text-blue-400 font-medium mb-2">No Ad Set Data Available</h3>
+          <p className="text-blue-200 text-sm">
+            No ad set level data found in your campaigns. This could mean:
+          </p>
+          <ul className="text-blue-200 text-sm mt-2 list-disc list-inside">
+            <li>Your campaigns don't have individual ad sets</li>
+            <li>The data sync hasn't captured ad set level information yet</li>
+            <li>Your campaigns are running at the campaign level only</li>
+          </ul>
+        </div>
+      </div>
     );
   }
 
+  const topAdset = adsets[0];
   const convertedSpend = convertCurrency(topAdset.spend, 'USD', selectedCurrency.code);
   const convertedRevenue = convertCurrency(topAdset.revenue, 'USD', selectedCurrency.code);
 
@@ -112,7 +135,9 @@ const AdsetPerformanceCard = ({ metrics }: AdsetPerformanceCardProps) => {
 
       {/* Adset Performance Table */}
       <div className="bg-zue-dark-light rounded-lg p-6 border border-gray-800 shadow-md">
-        <h3 className="text-lg font-semibold text-white mb-4">Ad Set Performance Ranking</h3>
+        <h3 className="text-lg font-semibold text-white mb-4">
+          Ad Set Performance Ranking ({adsets.length} ad sets)
+        </h3>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>

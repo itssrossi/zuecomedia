@@ -100,7 +100,7 @@ export const fetchUserAdMetrics = async (
   
   if (!allData) return [];
   
-  // Transform the data first
+  // Transform the data - only include actual adset data, no campaign fallbacks
   const transformedData = allData.map(item => ({
     ...item,
     campaign_name: item.fb_campaigns.campaign_name,
@@ -108,9 +108,10 @@ export const fetchUserAdMetrics = async (
     campaign_status: item.fb_campaigns.campaign_status,
     start_time: item.fb_campaigns.start_time,
     stop_time: item.fb_campaigns.stop_time,
-    // Use adset_id and adset_name if available, otherwise fall back to campaign data
-    adset_id: item.adset_id || item.campaign_id,
-    adset_name: item.adset_name || item.fb_campaigns.campaign_name
+    // Keep adset_id and adset_name as they are from the database
+    // Do NOT use campaign data as fallback
+    adset_id: item.adset_id || null,
+    adset_name: item.adset_name || null
   }));
   
   // If no date range specified, return all data
