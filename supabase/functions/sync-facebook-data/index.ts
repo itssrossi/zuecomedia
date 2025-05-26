@@ -25,33 +25,21 @@ serve(async (req: Request) => {
     // Create a Supabase client with the Auth context of the logged in user
     const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
     const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY') ?? '';
-    const authHeader = req.headers.get('Authorization');
+    const authHeader = req.headers.get('Authorization') ?? '';
     
     console.log('Creating Supabase client...');
-    console.log('Auth header present:', !!authHeader);
-    
-    // Create supabase client with auth context from the request
     const supabase = createClient(supabaseUrl, supabaseKey, {
       global: {
-        headers: authHeader ? { Authorization: authHeader } : {},
+        headers: { Authorization: authHeader },
       },
     });
 
     console.log('Getting user session...');
     // Get the user from the request
     const { data: { user }, error: userError } = await supabase.auth.getUser();
-    
-    if (userError) {
-      console.error('User authentication error:', userError);
-      return new Response(JSON.stringify({ error: `Authentication failed: ${userError.message}` }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-    
-    if (!user) {
-      console.error('No user found in session');
-      return new Response(JSON.stringify({ error: 'User not authenticated' }), {
+    if (userError || !user) {
+      console.error('User error:', userError);
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -298,7 +286,7 @@ async function fetchAdsetInsights(supabase, userId, campaignId, adsetId, adsetNa
       // Calculate ROAS
       const roas = spend > 0 ? revenue / spend : 0;
       
-      // Insert/update metrics in our database with adset information using the correct conflict resolution
+      // Insert/update metrics in our database with adset information
       const { error: metricsError } = await supabase.from('fb_ad_metrics').upsert({
         user_id: userId,
         campaign_id: campaignId,
@@ -315,13 +303,11 @@ async function fetchAdsetInsights(supabase, userId, campaignId, adsetId, adsetNa
         roas,
         updated_at: new Date().toISOString()
       }, {
-        onConflict: 'user_id, campaign_id, date, adset_id' // Use the new unique constraint
+        onConflict: 'user_id, campaign_id, date, adset_id'
       });
 
       if (metricsError) {
         console.error(`Error upserting adset metrics for ${insight.date_start}:`, metricsError);
-      } else {
-        console.log(`Successfully upserted adset metrics for ${adsetName} on ${insight.date_start}`);
       }
     }
     

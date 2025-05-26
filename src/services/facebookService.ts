@@ -196,11 +196,9 @@ export const saveAdAccount = async (
 
 export const triggerFacebookDataSync = async (): Promise<void> => {
   try {
-    console.log("Starting sync...");
-    
     const { data, error } = await supabase.functions.invoke('sync-facebook-data', {
       method: 'POST',
-      body: {}
+      body: {} // Add an empty body to avoid potential issues
     });
     
     if (error) {
