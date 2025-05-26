@@ -32,18 +32,10 @@ const Dashboard = () => {
     accounts,
     metrics, 
     stats, 
-    syncStatus: rawSyncStatus,
+    syncStatus,
     isLoading, 
-    isSyncing,
     triggerSync
   } = useFacebookData(formattedStartDate, formattedEndDate, selectedCampaigns);
-
-  // Transform sync status to match DashboardControls interface
-  const syncStatus = {
-    isLoading: isSyncing,
-    last_sync_at: rawSyncStatus?.last_sync_at,
-    status: rawSyncStatus?.sync_status
-  };
 
   // Use trend data hook to get chart data
   const { spendTrendData, revenueTrendData, roasTrendData, ctrTrendData } = useTrendData(metrics);

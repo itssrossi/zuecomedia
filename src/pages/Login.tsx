@@ -1,12 +1,13 @@
 
-import { useState, memo } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/AuthContext";
+import { Link } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTheme } from "@/context/ThemeContext";
 
-const Login = memo(() => {
+const Login = () => {
   // Login state
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -47,14 +48,12 @@ const Login = memo(() => {
                 src="/lovable-uploads/c5a928fa-35df-4bf0-b39d-7b83e2cbc714.png"
                 alt="Zue Co Media Light Logo"
                 className="h-12 mr-2"
-                loading="eager"
               />
             ) : (
               <img
                 src="/lovable-uploads/7ae353e4-9833-4708-a345-e1195eaace46.png"
                 alt="Zue Co Media Dark Logo"
                 className="h-12 mr-2"
-                loading="eager"
               />
             )}
             <span className="font-bold text-2xl text-white">
@@ -77,42 +76,32 @@ const Login = memo(() => {
               
               <form onSubmit={handleLogin} className="space-y-6">
                 <div className="space-y-2">
-                  <label htmlFor="email" className="text-white text-sm block">
+                  <label htmlFor="email" className="text-white text-sm">
                     Email
                   </label>
-                  <input
+                  <Input
                     id="email"
-                    name="email"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="your@email.com"
-                    className="flex h-10 w-full rounded-md border border-gray-700 bg-zue-dark px-3 py-2 text-white placeholder:text-gray-400 focus:border-zue-blue focus:outline-none focus:ring-2 focus:ring-zue-blue focus:ring-offset-2 focus:ring-offset-zue-dark disabled:cursor-not-allowed disabled:opacity-50"
+                    className="bg-zue-dark border-gray-700 text-white"
                     required
-                    autoComplete="email"
-                    autoCapitalize="none"
-                    autoCorrect="off"
-                    spellCheck="false"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label htmlFor="password" className="text-white text-sm block">
+                  <label htmlFor="password" className="text-white text-sm">
                     Password
                   </label>
-                  <input
+                  <Input
                     id="password"
-                    name="password"
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="flex h-10 w-full rounded-md border border-gray-700 bg-zue-dark px-3 py-2 text-white placeholder:text-gray-400 focus:border-zue-blue focus:outline-none focus:ring-2 focus:ring-zue-blue focus:ring-offset-2 focus:ring-offset-zue-dark disabled:cursor-not-allowed disabled:opacity-50"
+                    className="bg-zue-dark border-gray-700 text-white"
                     required
-                    autoComplete="current-password"
-                    autoCapitalize="none"
-                    autoCorrect="off"
-                    spellCheck="false"
                   />
                 </div>
 
@@ -133,84 +122,64 @@ const Login = memo(() => {
               
               <form onSubmit={handleSignup} className="space-y-4">
                 <div className="space-y-2">
-                  <label htmlFor="fullName" className="text-white text-sm block">
+                  <label htmlFor="full-name" className="text-white text-sm">
                     Full Name
                   </label>
-                  <input
-                    id="fullName"
-                    name="fullName"
+                  <Input
+                    id="full-name"
                     type="text"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     placeholder="John Doe"
-                    className="flex h-10 w-full rounded-md border border-gray-700 bg-zue-dark px-3 py-2 text-white placeholder:text-gray-400 focus:border-zue-blue focus:outline-none focus:ring-2 focus:ring-zue-blue focus:ring-offset-2 focus:ring-offset-zue-dark disabled:cursor-not-allowed disabled:opacity-50"
+                    className="bg-zue-dark border-gray-700 text-white"
                     required
-                    autoComplete="name"
-                    autoCapitalize="words"
-                    autoCorrect="off"
-                    spellCheck="false"
                   />
                 </div>
                 
                 <div className="space-y-2">
-                  <label htmlFor="signupEmail" className="text-white text-sm block">
+                  <label htmlFor="signup-email" className="text-white text-sm">
                     Email
                   </label>
-                  <input
-                    id="signupEmail"
-                    name="email"
+                  <Input
+                    id="signup-email"
                     type="email"
                     value={signupEmail}
                     onChange={(e) => setSignupEmail(e.target.value)}
                     placeholder="your@email.com"
-                    className="flex h-10 w-full rounded-md border border-gray-700 bg-zue-dark px-3 py-2 text-white placeholder:text-gray-400 focus:border-zue-blue focus:outline-none focus:ring-2 focus:ring-zue-blue focus:ring-offset-2 focus:ring-offset-zue-dark disabled:cursor-not-allowed disabled:opacity-50"
+                    className="bg-zue-dark border-gray-700 text-white"
                     required
-                    autoComplete="email"
-                    autoCapitalize="none"
-                    autoCorrect="off"
-                    spellCheck="false"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label htmlFor="signupPassword" className="text-white text-sm block">
+                  <label htmlFor="signup-password" className="text-white text-sm">
                     Password
                   </label>
-                  <input
-                    id="signupPassword"
-                    name="password"
+                  <Input
+                    id="signup-password"
                     type="password"
                     value={signupPassword}
                     onChange={(e) => setSignupPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="flex h-10 w-full rounded-md border border-gray-700 bg-zue-dark px-3 py-2 text-white placeholder:text-gray-400 focus:border-zue-blue focus:outline-none focus:ring-2 focus:ring-zue-blue focus:ring-offset-2 focus:ring-offset-zue-dark disabled:cursor-not-allowed disabled:opacity-50"
+                    className="bg-zue-dark border-gray-700 text-white"
                     required
                     minLength={6}
-                    autoComplete="new-password"
-                    autoCapitalize="none"
-                    autoCorrect="off"
-                    spellCheck="false"
                   />
                 </div>
                 
                 <div className="space-y-2">
-                  <label htmlFor="confirmPassword" className="text-white text-sm block">
+                  <label htmlFor="confirm-password" className="text-white text-sm">
                     Confirm Password
                   </label>
-                  <input
-                    id="confirmPassword"
-                    name="confirmPassword"
+                  <Input
+                    id="confirm-password"
                     type="password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="flex h-10 w-full rounded-md border border-gray-700 bg-zue-dark px-3 py-2 text-white placeholder:text-gray-400 focus:border-zue-blue focus:outline-none focus:ring-2 focus:ring-zue-blue focus:ring-offset-2 focus:ring-offset-zue-dark disabled:cursor-not-allowed disabled:opacity-50"
+                    className="bg-zue-dark border-gray-700 text-white"
                     required
                     minLength={6}
-                    autoComplete="new-password"
-                    autoCapitalize="none"
-                    autoCorrect="off"
-                    spellCheck="false"
                   />
                 </div>
 
@@ -228,8 +197,6 @@ const Login = memo(() => {
       </div>
     </div>
   );
-});
-
-Login.displayName = 'Login';
+};
 
 export default Login;
