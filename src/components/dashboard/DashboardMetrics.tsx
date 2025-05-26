@@ -36,14 +36,14 @@ const DashboardMetrics = ({
     <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       <DashboardCard
         title="Total Ad Spend"
-        value={`$${stats.totalSpend.toLocaleString()}`}
+        value={`R${stats.totalSpend.toLocaleString()}`}
         icon={<DollarSign size={20} />}
         trend={{ value: 12.5, isPositive: true }}
         chartComponent={<CampaignTrendChart data={spendTrendData} color="#3182CE" />}
       />
       <DashboardCard
         title="Total Revenue"
-        value={`$${stats.totalRevenue.toLocaleString()}`}
+        value={`R${stats.totalRevenue.toLocaleString()}`}
         icon={<TrendingUp size={20} />}
         trend={{ value: 18.3, isPositive: true }}
         chartComponent={<CampaignTrendChart data={revenueTrendData} color="#38A169" />}

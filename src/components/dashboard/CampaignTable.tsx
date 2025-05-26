@@ -109,9 +109,9 @@ const CampaignTable = ({ campaigns, isLoading }: CampaignTableProps) => {
               <TableCell className="text-right">{campaign.impressions.toLocaleString()}</TableCell>
               <TableCell className="text-right">{campaign.clicks.toLocaleString()}</TableCell>
               <TableCell className="text-right">{campaign.ctr.toFixed(2)}%</TableCell>
-              <TableCell className="text-right">${campaign.spend.toLocaleString()}</TableCell>
+              <TableCell className="text-right">R{campaign.spend.toLocaleString()}</TableCell>
               <TableCell className="text-right">{campaign.conversions.toLocaleString()}</TableCell>
-              <TableCell className="text-right">${campaign.revenue.toLocaleString()}</TableCell>
+              <TableCell className="text-right">R{campaign.revenue.toLocaleString()}</TableCell>
               <TableCell className="text-right">{campaign.roas.toFixed(2)}x</TableCell>
             </TableRow>
           ))}
