@@ -1,18 +1,23 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, LogIn } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+
 const Hero = () => {
   const navigate = useNavigate();
+  
   const handleGetStarted = () => {
-    navigate('/book-meeting');
+    window.open('https://wa.me/27750143309', '_blank');
   };
+  
   const handleLogin = () => {
     navigate('/login');
   };
-  return <section id="home" className="min-h-screen bg-zue-dark flex items-center relative overflow-hidden">
+
+  return (
+    <section id="home" className="min-h-screen bg-zue-dark flex items-center relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-zue-blue/10 to-transparent z-0" style={{
-      backgroundImage: "radial-gradient(circle at 25% 10%, rgba(14, 165, 233, 0.15) 0%, transparent 50%)"
-    }} />
+        backgroundImage: "radial-gradient(circle at 25% 10%, rgba(14, 165, 233, 0.15) 0%, transparent 50%)"
+      }} />
       
       <div className="container-custom relative z-10 pt-28">
         <div className="flex flex-col items-center text-center md:text-left md:items-start">
@@ -42,13 +47,17 @@ const Hero = () => {
         </div>
         
         <div className="mt-20 grid grid-cols-2 md:grid-cols-6 gap-4 md:gap-8">
-          {['Brand', 'Design', 'Strategy', 'Technology', 'Campaigns', 'Analytics'].map((item, index) => <div key={index} style={{
-          animationDelay: `${index * 0.1}s`
-        }} className="flex items-center justify-center p-4 bg-zue-dark-light/50 backdrop-blur-sm rounded-lg border border-white/10 animate-fade-in mx-[10px]">
+          {['Brand', 'Design', 'Strategy', 'Technology', 'Campaigns', 'Analytics'].map((item, index) => (
+            <div key={index} style={{
+              animationDelay: `${index * 0.1}s`
+            }} className="flex items-center justify-center p-4 bg-zue-dark-light/50 backdrop-blur-sm rounded-lg border border-white/10 animate-fade-in mx-[10px]">
               <span className="text-white font-medium">{item}</span>
-            </div>)}
+            </div>
+          ))}
         </div>
       </div>
-    </section>;
+    </section>
+  );
 };
+
 export default Hero;
