@@ -65,7 +65,7 @@ const Contact = () => {
                 <div>
                   <h3 className="font-semibold mb-1">Call Us</h3>
                   <p className="text-gray-300 mb-2">Mon-Fri from 8am to 5pm</p>
-                  <a href="tel:+15555555555" className="text-zue-blue hover:underline">+1 (555) 555-5555</a>
+                  <a href="tel:+27750143309" className="text-zue-blue hover:underline">+27 75 014 3309</a>
                 </div>
               </div>
             </div>
