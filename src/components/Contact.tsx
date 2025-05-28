@@ -1,8 +1,6 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Mail, Phone, MapPin } from "lucide-react";
-
 const Contact = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -10,15 +8,16 @@ const Contact = () => {
     subject: "",
     message: ""
   });
-  
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
+    const {
+      name,
+      value
+    } = e.target;
     setFormData(prevState => ({
       ...prevState,
       [name]: value
     }));
   };
-  
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("Form submitted:", formData);
@@ -32,9 +31,7 @@ const Contact = () => {
       message: ""
     });
   };
-  
-  return (
-    <section id="contact" className="section bg-zue-dark">
+  return <section id="contact" className="section bg-zue-dark">
       <div className="container-custom">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
@@ -81,7 +78,7 @@ const Contact = () => {
                 <div>
                   <h3 className="font-semibold mb-1">Visit Us</h3>
                   <p className="text-gray-300 mb-2">Come say hello at our office</p>
-                  <p className="text-zue-blue">123 Marketing St, Digital City</p>
+                  <p className="text-zue-blue">Cape Town</p>
                 </div>
               </div>
             </div>
@@ -94,54 +91,22 @@ const Contact = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">Your Name</label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    className="w-full p-3 bg-zue-dark-light border border-zue-dark rounded-lg focus:ring-2 focus:ring-zue-blue focus:border-transparent outline-none text-white"
-                    required
-                  />
+                  <input type="text" id="name" name="name" value={formData.name} onChange={handleChange} className="w-full p-3 bg-zue-dark-light border border-zue-dark rounded-lg focus:ring-2 focus:ring-zue-blue focus:border-transparent outline-none text-white" required />
                 </div>
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">Your Email</label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="w-full p-3 bg-zue-dark-light border border-zue-dark rounded-lg focus:ring-2 focus:ring-zue-blue focus:border-transparent outline-none text-white"
-                    required
-                  />
+                  <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} className="w-full p-3 bg-zue-dark-light border border-zue-dark rounded-lg focus:ring-2 focus:ring-zue-blue focus:border-transparent outline-none text-white" required />
                 </div>
               </div>
               
               <div className="mb-6">
                 <label htmlFor="subject" className="block text-sm font-medium text-gray-300 mb-2">Subject</label>
-                <input
-                  type="text"
-                  id="subject"
-                  name="subject"
-                  value={formData.subject}
-                  onChange={handleChange}
-                  className="w-full p-3 bg-zue-dark-light border border-zue-dark rounded-lg focus:ring-2 focus:ring-zue-blue focus:border-transparent outline-none text-white"
-                  required
-                />
+                <input type="text" id="subject" name="subject" value={formData.subject} onChange={handleChange} className="w-full p-3 bg-zue-dark-light border border-zue-dark rounded-lg focus:ring-2 focus:ring-zue-blue focus:border-transparent outline-none text-white" required />
               </div>
               
               <div className="mb-6">
                 <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-2">Your Message</label>
-                <textarea
-                  id="message"
-                  name="message"
-                  value={formData.message}
-                  onChange={handleChange}
-                  rows={4}
-                  className="w-full p-3 bg-zue-dark-light border border-zue-dark rounded-lg focus:ring-2 focus:ring-zue-blue focus:border-transparent outline-none text-white"
-                  required
-                ></textarea>
+                <textarea id="message" name="message" value={formData.message} onChange={handleChange} rows={4} className="w-full p-3 bg-zue-dark-light border border-zue-dark rounded-lg focus:ring-2 focus:ring-zue-blue focus:border-transparent outline-none text-white" required></textarea>
               </div>
               
               <Button type="submit" className="w-full bg-zue-blue hover:bg-zue-blue-dark text-white py-6">
@@ -151,8 +116,6 @@ const Contact = () => {
           </div>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default Contact;
