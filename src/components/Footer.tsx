@@ -33,7 +33,7 @@ const Footer = () => {
               <a href="#" className="text-gray-400 hover:text-zue-blue transition-colors">
                 <Facebook size={20} />
               </a>
-              <a href="#" className="text-gray-400 hover:text-zue-blue transition-colors">
+              <a href="https://www.instagram.com/zuecomedia" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-zue-blue transition-colors">
                 <Instagram size={20} />
               </a>
               <a href="#" className="text-gray-400 hover:text-zue-blue transition-colors">
