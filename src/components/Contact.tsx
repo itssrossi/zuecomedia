@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Mail, Phone, MapPin } from "lucide-react";
+
 const Contact = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -52,7 +53,7 @@ const Contact = () => {
                 <div>
                   <h3 className="font-semibold mb-1">Email Us</h3>
                   <p className="text-gray-300 mb-2">Our friendly team is here to help</p>
-                  <a href="mailto:hello@zueco.media" className="text-zue-blue hover:underline">hello@zueco.media</a>
+                  <a href="mailto:jrsnell@zuecomedia.com" className="text-zue-blue hover:underline">jrsnell@zuecomedia.com</a>
                 </div>
               </div>
             </div>
@@ -118,4 +119,5 @@ const Contact = () => {
       </div>
     </section>;
 };
+
 export default Contact;
