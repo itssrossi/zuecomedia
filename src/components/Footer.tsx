@@ -1,4 +1,3 @@
-
 import { Facebook, Instagram, Twitter, Linkedin } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
 
@@ -30,7 +29,7 @@ const Footer = () => {
               Elevating brands through strategic marketing and creative solutions.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="text-gray-400 hover:text-zue-blue transition-colors">
+              <a href="https://www.facebook.com/zuecomedia" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-zue-blue transition-colors">
                 <Facebook size={20} />
               </a>
               <a href="https://www.instagram.com/zuecomedia" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-zue-blue transition-colors">
