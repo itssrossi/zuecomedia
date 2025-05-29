@@ -1,28 +1,15 @@
 import { Facebook, Instagram, Twitter, Linkedin } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
-
 const Footer = () => {
-  const { theme } = useTheme();
-  
-  return (
-    <footer className="bg-zue-dark border-t border-white/10">
+  const {
+    theme
+  } = useTheme();
+  return <footer className="bg-zue-dark border-t border-white/10">
       <div className="container-custom py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="md:col-span-1">
             <a href="/" className="inline-block mb-4 flex items-center">
-              {theme === 'light' ? (
-                <img 
-                  src="/lovable-uploads/c5a928fa-35df-4bf0-b39d-7b83e2cbc714.png" 
-                  alt="Zue Co Media Light Logo" 
-                  className="h-10 mr-2"
-                />
-              ) : (
-                <img 
-                  src="/lovable-uploads/7ae353e4-9833-4708-a345-e1195eaace46.png" 
-                  alt="Zue Co Media Dark Logo" 
-                  className="h-10 mr-2"
-                />
-              )}
+              {theme === 'light' ? <img src="/lovable-uploads/c5a928fa-35df-4bf0-b39d-7b83e2cbc714.png" alt="Zue Co Media Light Logo" className="h-10 mr-2" /> : <img src="/lovable-uploads/7ae353e4-9833-4708-a345-e1195eaace46.png" alt="Zue Co Media Dark Logo" className="h-10 mr-2" />}
               <span className="font-bold text-2xl text-white">Zue<span className="text-zue-blue">Co</span> Media</span>
             </a>
             <p className="text-gray-400 mb-6">
@@ -36,10 +23,10 @@ const Footer = () => {
                 <Instagram size={20} />
               </a>
               <a href="#" className="text-gray-400 hover:text-zue-blue transition-colors">
-                <Twitter size={20} />
+                
               </a>
               <a href="#" className="text-gray-400 hover:text-zue-blue transition-colors">
-                <Linkedin size={20} />
+                
               </a>
             </div>
           </div>
@@ -85,8 +72,6 @@ const Footer = () => {
           </div>
         </div>
       </div>
-    </footer>
-  );
+    </footer>;
 };
-
 export default Footer;
