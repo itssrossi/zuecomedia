@@ -3,3 +3,6 @@ project_id = "ctwbwaznsrracvbeksqj"
 
 [functions."sync-facebook-data"]
 verify_jwt = true
+
+[functions."realtime-voice-assistant"]
+verify_jwt = false
