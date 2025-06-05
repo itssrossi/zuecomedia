@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { subDays, addDays } from "date-fns";
@@ -13,7 +12,7 @@ import DashboardControls from "@/components/dashboard/DashboardControls";
 import DashboardMetrics from "@/components/dashboard/DashboardMetrics";
 import DashboardCharts from "@/components/dashboard/DashboardCharts";
 import FacebookAccountSetup from "@/components/dashboard/FacebookAccountSetup";
-import VoiceAssistant from "@/components/dashboard/VoiceAssistant";
+import RealtimeVoiceAssistant from "@/components/dashboard/RealtimeVoiceAssistant";
 import { useTrendData } from "@/components/dashboard/DashboardTrendDataHelper";
 
 const Dashboard = () => {
@@ -134,7 +133,7 @@ const Dashboard = () => {
                   )}
                 </div>
                 <div>
-                  <VoiceAssistant adData={{ metrics, stats }} />
+                  <RealtimeVoiceAssistant adData={{ metrics, stats }} />
                 </div>
               </div>
             </section>
