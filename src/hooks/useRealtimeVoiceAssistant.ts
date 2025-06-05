@@ -180,8 +180,8 @@ export const useRealtimeVoiceAssistant = () => {
       const audioContext = new AudioContext({ sampleRate: 24000 });
       audioQueueRef.current = new AudioQueue(audioContext);
 
-      // Use the correct WebSocket URL for your Supabase project
-      const wsUrl = `wss://ctwbwaznsrracvbeksqj.functions.supabase.co/realtime-voice-assistant`;
+      // Use wss:// protocol for WebSocket connection to the edge function
+      const wsUrl = `wss://ctwbwaznsrracvbeksqj.supabase.co/functions/v1/realtime-voice-assistant`;
       console.log('Connecting to:', wsUrl);
       
       wsRef.current = new WebSocket(wsUrl);
