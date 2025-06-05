@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
@@ -22,6 +21,27 @@ serve(async (req) => {
     });
   }
 
+  // Check authorization for all requests except GET test requests
+  const isTestRequest = req.method === 'GET' && !req.headers.get("upgrade");
+  
+  if (!isTestRequest) {
+    const authHeader = req.headers.get("authorization");
+    const expectedToken = "Bearer lovable-voice-assistant-12345";
+    
+    if (authHeader !== expectedToken) {
+      console.log('Authorization failed. Expected:', expectedToken, 'Got:', authHeader);
+      return new Response(JSON.stringify({ 
+        code: 401, 
+        message: "Unauthorized - missing or invalid authorization header",
+        expected: "Bearer lovable-voice-assistant-12345"
+      }), { 
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+    console.log('Authorization successful');
+  }
+
   // Handle GET requests (for testing)
   if (req.method === 'GET') {
     const upgradeHeader = req.headers.get("upgrade") || "";
@@ -32,7 +52,7 @@ serve(async (req) => {
         status: 'Voice Assistant Edge Function is running',
         timestamp: new Date().toISOString(),
         message: 'Function is public and accessible',
-        config: 'verify_jwt = false'
+        auth: 'Custom authorization required for WebSocket connections'
       }), { 
         status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }

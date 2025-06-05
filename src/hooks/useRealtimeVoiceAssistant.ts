@@ -1,4 +1,3 @@
-
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { toast } from '@/components/ui/sonner';
 
@@ -223,11 +222,15 @@ export const useRealtimeVoiceAssistant = () => {
       const audioContext = new AudioContext({ sampleRate: 24000 });
       audioQueueRef.current = new AudioQueue(audioContext);
       
-      // Create WebSocket connection
+      // Create WebSocket connection with authorization header
       const wsUrl = 'wss://ctwbwaznsrracvbeksqj.supabase.co/functions/v1/realtime-voice-assistant';
       console.log('Connecting to WebSocket:', wsUrl);
       
-      wsRef.current = new WebSocket(wsUrl);
+      wsRef.current = new WebSocket(wsUrl, [], {
+        headers: {
+          'Authorization': 'Bearer lovable-voice-assistant-12345'
+        }
+      });
 
       wsRef.current.onopen = () => {
         console.log('=== WEBSOCKET CONNECTED ===');
