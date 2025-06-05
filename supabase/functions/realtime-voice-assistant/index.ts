@@ -8,7 +8,7 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  console.log('=== FUNCTION START ===');
+  console.log('=== EDGE FUNCTION START ===');
   console.log('Method:', req.method);
   console.log('URL:', req.url);
   console.log('Headers:', Object.fromEntries(req.headers.entries()));
@@ -16,7 +16,10 @@ serve(async (req) => {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     console.log('Handling CORS preflight');
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { 
+      status: 200,
+      headers: corsHeaders 
+    });
   }
 
   // Handle GET requests (for testing)
@@ -28,7 +31,8 @@ serve(async (req) => {
       return new Response(JSON.stringify({ 
         status: 'Voice Assistant Edge Function is running',
         timestamp: new Date().toISOString(),
-        message: 'Use WebSocket upgrade for voice functionality'
+        message: 'Function is public and accessible',
+        config: 'verify_jwt = false'
       }), { 
         status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -40,9 +44,12 @@ serve(async (req) => {
   const upgradeHeader = req.headers.get("upgrade") || "";
   if (upgradeHeader.toLowerCase() !== "websocket") {
     console.log('Not a WebSocket request, upgrade header:', upgradeHeader);
-    return new Response("WebSocket upgrade required", { 
+    return new Response(JSON.stringify({
+      error: "WebSocket upgrade required",
+      headers: Object.fromEntries(req.headers.entries())
+    }), { 
       status: 426,
-      headers: { ...corsHeaders, 'Upgrade': 'websocket' }
+      headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Upgrade': 'websocket' }
     });
   }
 
@@ -50,13 +57,16 @@ serve(async (req) => {
   const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
   if (!OPENAI_API_KEY) {
     console.error('OPENAI_API_KEY not found in environment variables');
-    return new Response(JSON.stringify({ error: "OpenAI API key not configured" }), { 
+    return new Response(JSON.stringify({ 
+      error: "OpenAI API key not configured",
+      available_env_vars: Object.keys(Deno.env.toObject())
+    }), { 
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
   }
 
-  console.log('OpenAI API key found, length:', OPENAI_API_KEY.length);
+  console.log('OpenAI API key found, proceeding with WebSocket upgrade');
 
   try {
     console.log('=== UPGRADING TO WEBSOCKET ===');
@@ -74,7 +84,8 @@ serve(async (req) => {
         socket.send(JSON.stringify({ 
           type: 'connection_established',
           status: 'connected',
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
+          message: 'Edge function WebSocket connection successful'
         }));
         console.log('Connection confirmation sent');
       } catch (error) {
@@ -94,6 +105,10 @@ serve(async (req) => {
         if (data.type === 'set_ad_data') {
           adData = data.adData;
           console.log('Ad data stored successfully');
+          socket.send(JSON.stringify({ 
+            type: 'ad_data_received',
+            status: 'success'
+          }));
           return;
         }
 
@@ -103,6 +118,10 @@ serve(async (req) => {
           openAISocket.send(JSON.stringify(data));
         } else {
           console.log('OpenAI not ready - socket state:', openAISocket?.readyState, 'session ready:', sessionReady);
+          socket.send(JSON.stringify({ 
+            type: 'warning', 
+            message: 'OpenAI connection not ready yet'
+          }));
         }
       } catch (error) {
         console.error('Error processing client message:', error);
@@ -145,7 +164,8 @@ serve(async (req) => {
           try {
             socket.send(JSON.stringify({ 
               type: 'openai_connected',
-              status: 'connected'
+              status: 'connected',
+              message: 'OpenAI Realtime API connected successfully'
             }));
           } catch (error) {
             console.error('Error sending OpenAI connected message:', error);
@@ -201,7 +221,8 @@ Focus on metrics like spend, revenue, ROAS (return on ad spend), and click-throu
               try {
                 socket.send(JSON.stringify({ 
                   type: 'session_ready',
-                  status: 'ready'
+                  status: 'ready',
+                  message: 'AI assistant is ready to chat'
                 }));
               } catch (error) {
                 console.error('Error sending session ready:', error);
@@ -209,7 +230,7 @@ Focus on metrics like spend, revenue, ROAS (return on ad spend), and click-throu
               
               // Send ad data context if available
               if (adData) {
-                console.log('Sending ad data context');
+                console.log('Sending ad data context to OpenAI');
                 try {
                   const contextMessage = {
                     type: "conversation.item.create",
@@ -261,7 +282,8 @@ Focus on metrics like spend, revenue, ROAS (return on ad spend), and click-throu
               socket.send(JSON.stringify({ 
                 type: 'openai_disconnected',
                 code: event.code,
-                reason: event.reason
+                reason: event.reason,
+                message: 'OpenAI connection closed'
               }));
             }
           } catch (error) {
@@ -287,7 +309,8 @@ Focus on metrics like spend, revenue, ROAS (return on ad spend), and click-throu
   } catch (error) {
     console.error('=== WEBSOCKET UPGRADE FAILED ===', error);
     return new Response(JSON.stringify({ 
-      error: `WebSocket upgrade failed: ${error.message}` 
+      error: `WebSocket upgrade failed: ${error.message}`,
+      stack: error.stack
     }), { 
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }

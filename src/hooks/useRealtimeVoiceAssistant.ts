@@ -1,3 +1,4 @@
+
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { toast } from '@/components/ui/sonner';
 
@@ -183,21 +184,33 @@ export const useRealtimeVoiceAssistant = () => {
       setConnectionError(null);
       setSessionReady(false);
       
-      // Test the edge function first
+      // Test the edge function first with a simple GET request
       const testUrl = 'https://ctwbwaznsrracvbeksqj.supabase.co/functions/v1/realtime-voice-assistant';
-      console.log('Testing edge function...');
+      console.log('Testing edge function accessibility...');
       
       try {
-        const testResponse = await fetch(testUrl);
+        const testResponse = await fetch(testUrl, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        
         console.log('Test response status:', testResponse.status);
+        console.log('Test response headers:', Object.fromEntries(testResponse.headers.entries()));
         
         if (!testResponse.ok) {
           const errorText = await testResponse.text();
+          console.error('Test response error:', errorText);
           throw new Error(`Edge function test failed: ${testResponse.status} - ${errorText}`);
         }
         
         const testData = await testResponse.json();
         console.log('Test response data:', testData);
+        
+        if (testData.status !== 'Voice Assistant Edge Function is running') {
+          throw new Error('Edge function test returned unexpected response');
+        }
         
       } catch (fetchError) {
         console.error('Edge function test failed:', fetchError);
@@ -239,11 +252,15 @@ export const useRealtimeVoiceAssistant = () => {
 
           switch (data.type) {
             case 'connection_established':
-              console.log('Connection confirmed');
+              console.log('Connection confirmed by server');
+              break;
+              
+            case 'ad_data_received':
+              console.log('Ad data acknowledged by server');
               break;
               
             case 'openai_connected':
-              console.log('OpenAI connected');
+              console.log('OpenAI connected successfully');
               break;
               
             case 'session_ready':
@@ -265,6 +282,10 @@ export const useRealtimeVoiceAssistant = () => {
             case 'response.audio.done':
               console.log('AI finished speaking');
               setIsAISpeaking(false);
+              break;
+              
+            case 'warning':
+              console.warn('Server warning:', data.message);
               break;
               
             case 'error':

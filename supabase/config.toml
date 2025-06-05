@@ -6,3 +6,6 @@ verify_jwt = true
 
 [functions."realtime-voice-assistant"]
 verify_jwt = false
+
+[functions."voice-assistant"]
+verify_jwt = false
