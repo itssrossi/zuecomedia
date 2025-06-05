@@ -175,69 +175,89 @@ export const useRealtimeVoiceAssistant = () => {
 
   const connect = useCallback(async (adData?: any) => {
     try {
+      console.log('Starting voice assistant connection...');
+      
       const audioContext = new AudioContext({ sampleRate: 24000 });
       audioQueueRef.current = new AudioQueue(audioContext);
 
-      // Connect to our Supabase edge function
+      // Use the correct WebSocket URL for your Supabase project
       const wsUrl = `wss://ctwbwaznsrracvbeksqj.functions.supabase.co/realtime-voice-assistant`;
+      console.log('Connecting to:', wsUrl);
+      
       wsRef.current = new WebSocket(wsUrl);
 
       wsRef.current.onopen = () => {
-        console.log('Connected to voice assistant');
+        console.log('Connected to voice assistant successfully');
         setIsConnected(true);
         
         // Send ad data if provided
         if (adData && wsRef.current) {
+          console.log('Sending ad data to assistant');
           wsRef.current.send(JSON.stringify({
             type: 'set_ad_data',
             adData
           }));
         }
 
-        // Start recording
+        // Start recording after connection is established
         startRecording();
         toast.success("Voice assistant connected! Start speaking...");
       };
 
       wsRef.current.onmessage = async (event) => {
-        const data = JSON.parse(event.data);
-        console.log('Received message:', data.type);
+        try {
+          const data = JSON.parse(event.data);
+          console.log('Received message type:', data.type);
 
-        if (data.type === 'response.audio.delta') {
-          setIsAISpeaking(true);
-          const binaryString = atob(data.delta);
-          const bytes = new Uint8Array(binaryString.length);
-          for (let i = 0; i < binaryString.length; i++) {
-            bytes[i] = binaryString.charCodeAt(i);
+          if (data.type === 'response.audio.delta') {
+            setIsAISpeaking(true);
+            const binaryString = atob(data.delta);
+            const bytes = new Uint8Array(binaryString.length);
+            for (let i = 0; i < binaryString.length; i++) {
+              bytes[i] = binaryString.charCodeAt(i);
+            }
+            await audioQueueRef.current?.addToQueue(bytes);
+          } else if (data.type === 'response.audio.done') {
+            setIsAISpeaking(false);
+          } else if (data.type === 'session.created') {
+            console.log('Session created successfully');
+          } else if (data.type === 'error') {
+            console.error('WebSocket error from server:', data.message);
+            toast.error(`Assistant error: ${data.message}`);
           }
-          await audioQueueRef.current?.addToQueue(bytes);
-        } else if (data.type === 'response.audio.done') {
-          setIsAISpeaking(false);
-        } else if (data.type === 'session.created') {
-          console.log('Session created successfully');
+        } catch (error) {
+          console.error('Error processing WebSocket message:', error);
         }
       };
 
       wsRef.current.onerror = (error) => {
-        console.error('WebSocket error:', error);
-        toast.error("Connection error. Please try again.");
-      };
-
-      wsRef.current.onclose = () => {
-        console.log('WebSocket closed');
+        console.error('WebSocket connection error:', error);
+        toast.error("Connection error. Please check your internet and try again.");
         setIsConnected(false);
         setIsListening(false);
         setIsAISpeaking(false);
       };
 
+      wsRef.current.onclose = (event) => {
+        console.log('WebSocket closed:', event.code, event.reason);
+        setIsConnected(false);
+        setIsListening(false);
+        setIsAISpeaking(false);
+        
+        if (event.code !== 1000) {
+          toast.error("Connection lost. Please try reconnecting.");
+        }
+      };
+
     } catch (error) {
-      console.error('Error connecting:', error);
-      toast.error("Failed to connect to voice assistant.");
+      console.error('Error connecting to voice assistant:', error);
+      toast.error("Failed to connect to voice assistant. Please try again.");
     }
   }, []);
 
   const startRecording = async () => {
     try {
+      console.log('Starting audio recording...');
       recorderRef.current = new AudioRecorder((audioData) => {
         if (wsRef.current?.readyState === WebSocket.OPEN) {
           const base64Audio = encodeAudioForAPI(audioData);
@@ -250,13 +270,15 @@ export const useRealtimeVoiceAssistant = () => {
 
       await recorderRef.current.start();
       setIsListening(true);
+      console.log('Audio recording started successfully');
     } catch (error) {
       console.error('Error starting recording:', error);
-      toast.error("Could not access microphone. Please check permissions.");
+      toast.error("Could not access microphone. Please check permissions and try again.");
     }
   };
 
   const disconnect = useCallback(() => {
+    console.log('Disconnecting voice assistant...');
     recorderRef.current?.stop();
     wsRef.current?.close();
     setIsConnected(false);
