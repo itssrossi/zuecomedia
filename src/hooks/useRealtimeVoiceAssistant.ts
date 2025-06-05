@@ -190,9 +190,33 @@ export const useRealtimeVoiceAssistant = () => {
       audioQueueRef.current = new AudioQueue(audioContext);
       console.log('Audio context initialized');
 
-      // Use the correct WebSocket URL format
-      const wsUrl = `wss://ctwbwaznsrracvbeksqj.supabase.co/functions/v1/realtime-voice-assistant`;
-      console.log('Connecting to WebSocket URL:', wsUrl);
+      // Try the correct Supabase WebSocket URL format
+      // For Supabase edge functions, we need to use the HTTP endpoint and upgrade to WebSocket
+      const baseUrl = 'https://ctwbwaznsrracvbeksqj.supabase.co/functions/v1/realtime-voice-assistant';
+      console.log('Attempting to connect to:', baseUrl);
+      
+      // First, let's try making an HTTP request to see if the function is accessible
+      try {
+        const testResponse = await fetch(baseUrl, {
+          method: 'GET',
+          headers: {
+            'Upgrade': 'websocket',
+            'Connection': 'Upgrade',
+            'Sec-WebSocket-Key': btoa(Math.random().toString()).substring(0, 24),
+            'Sec-WebSocket-Version': '13'
+          }
+        });
+        console.log('Test response status:', testResponse.status);
+        console.log('Test response headers:', Object.fromEntries(testResponse.headers.entries()));
+      } catch (testError) {
+        console.error('Test request failed:', testError);
+        setConnectionError('Edge function not accessible: ' + testError.message);
+        return;
+      }
+
+      // Now try WebSocket connection
+      const wsUrl = baseUrl.replace('https://', 'wss://');
+      console.log('WebSocket URL:', wsUrl);
       
       wsRef.current = new WebSocket(wsUrl);
 
@@ -238,6 +262,8 @@ export const useRealtimeVoiceAssistant = () => {
             console.error('WebSocket error from server:', data);
             setConnectionError(data.message || 'Server error');
             toast.error(`Assistant error: ${data.message}`);
+          } else if (data.type === 'connection_test') {
+            console.log('Connection test successful:', data.message);
           } else if (data.type === 'connection_closed') {
             console.log('OpenAI connection closed:', data);
             setConnectionError(`AI connection closed: ${data.reason || 'Unknown reason'}`);
@@ -249,8 +275,8 @@ export const useRealtimeVoiceAssistant = () => {
 
       wsRef.current.onerror = (error) => {
         console.error('=== WEBSOCKET ERROR ===', error);
-        setConnectionError('WebSocket connection error');
-        toast.error("Connection error. Please check your internet and try again.");
+        setConnectionError('WebSocket connection failed - check edge function deployment');
+        toast.error("Connection error. The voice assistant service may not be deployed.");
         setIsConnected(false);
         setIsListening(false);
         setIsAISpeaking(false);
@@ -265,20 +291,8 @@ export const useRealtimeVoiceAssistant = () => {
         
         // Handle different close codes
         if (event.code === 1006) {
-          setConnectionError('Connection failed - please try again');
-          toast.error("Connection lost unexpectedly. Retrying...");
-          
-          // Attempt to reconnect if not too many attempts
-          if (reconnectAttempts < maxReconnectAttempts) {
-            setReconnectAttempts(prev => prev + 1);
-            reconnectTimeoutRef.current = setTimeout(() => {
-              console.log(`Reconnect attempt ${reconnectAttempts + 1}/${maxReconnectAttempts}`);
-              connect(adData);
-            }, 2000 * (reconnectAttempts + 1)); // Exponential backoff
-          } else {
-            setConnectionError('Connection failed after multiple attempts');
-            toast.error("Unable to connect after multiple attempts. Please check your connection.");
-          }
+          setConnectionError('Connection failed - edge function may not be deployed or accessible');
+          toast.error("Unable to connect to voice assistant. Please check if the service is deployed.");
         } else if (event.code !== 1000) {
           setConnectionError(`Connection closed: ${event.reason || 'Unknown error'}`);
           toast.error("Connection lost. Please try reconnecting.");

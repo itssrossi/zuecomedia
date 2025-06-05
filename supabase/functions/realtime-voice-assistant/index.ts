@@ -3,7 +3,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, upgrade, connection, sec-websocket-key, sec-websocket-version',
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS, UPGRADE',
 };
 
@@ -17,6 +17,24 @@ serve(async (req) => {
   if (req.method === 'OPTIONS') {
     console.log('Handling CORS preflight request');
     return new Response(null, { headers: corsHeaders });
+  }
+
+  // Handle regular GET requests for testing
+  if (req.method === 'GET') {
+    const { headers } = req;
+    const upgradeHeader = headers.get("upgrade") || "";
+    
+    if (upgradeHeader.toLowerCase() !== "websocket") {
+      console.log('Regular GET request - returning test response');
+      return new Response(JSON.stringify({ 
+        status: 'Edge function is working', 
+        timestamp: new Date().toISOString(),
+        message: 'To use WebSocket, include Upgrade: websocket header'
+      }), { 
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
   }
 
   const { headers } = req;
@@ -52,11 +70,19 @@ serve(async (req) => {
 
     let openAISocket: WebSocket | null = null;
     let adData: any = null;
-    let sessionCreated = false;
 
     // Set up client WebSocket handlers
     socket.onopen = () => {
       console.log('=== CLIENT WEBSOCKET CONNECTED ===');
+      
+      // Send a test message to confirm connection
+      socket.send(JSON.stringify({ 
+        type: 'connection_test', 
+        message: 'WebSocket connection established successfully',
+        timestamp: new Date().toISOString()
+      }));
+      
+      // Start OpenAI connection
       connectToOpenAI();
     };
 
@@ -81,6 +107,11 @@ serve(async (req) => {
         }
       } catch (error) {
         console.error('Error processing client message:', error);
+        socket.send(JSON.stringify({ 
+          type: 'error', 
+          message: 'Failed to process message',
+          details: error.toString()
+        }));
       }
     };
 
@@ -114,7 +145,6 @@ serve(async (req) => {
 
         openAISocket.onopen = () => {
           console.log('=== OPENAI WEBSOCKET CONNECTED ===');
-          sessionCreated = false; // Reset session flag
         };
 
         openAISocket.onmessage = (event) => {
@@ -125,7 +155,6 @@ serve(async (req) => {
             // Handle session creation
             if (data.type === 'session.created') {
               console.log('Session created, sending configuration...');
-              sessionCreated = true;
               
               const sessionConfig = {
                 type: "session.update",
@@ -229,6 +258,13 @@ Always be ready to answer specific questions about the user's ad performance dat
 
           } catch (error) {
             console.error('Error processing OpenAI message:', error);
+            if (socket.readyState === WebSocket.OPEN) {
+              socket.send(JSON.stringify({ 
+                type: 'error', 
+                message: 'Error processing AI response',
+                details: error.toString()
+              }));
+            }
           }
         };
 
@@ -272,7 +308,7 @@ Always be ready to answer specific questions about the user's ad performance dat
 
   } catch (error) {
     console.error('=== WEBSOCKET UPGRADE ERROR ===', error);
-    return new Response("Failed to upgrade to WebSocket", { 
+    return new Response(`Failed to upgrade to WebSocket: ${error.message}`, { 
       status: 500,
       headers: corsHeaders 
     });
