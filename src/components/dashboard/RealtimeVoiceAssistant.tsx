@@ -1,5 +1,5 @@
 
-import { Volume2, Mic, MicOff, Loader2 } from "lucide-react";
+import { Volume2, Mic, MicOff, Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useRealtimeVoiceAssistant } from "@/hooks/useRealtimeVoiceAssistant";
@@ -15,6 +15,7 @@ const RealtimeVoiceAssistant = ({ adData }: RealtimeVoiceAssistantProps) => {
     isConnected,
     isListening,
     isAISpeaking,
+    connectionError,
     connect,
     disconnect
   } = useRealtimeVoiceAssistant();
@@ -28,6 +29,7 @@ const RealtimeVoiceAssistant = ({ adData }: RealtimeVoiceAssistantProps) => {
   };
 
   const getStatusText = () => {
+    if (connectionError) return `Error: ${connectionError}`;
     if (!isConnected) return "Connect to start talking";
     if (isAISpeaking) return "AI is speaking...";
     if (isListening) return "Listening... Ask me anything!";
@@ -35,6 +37,7 @@ const RealtimeVoiceAssistant = ({ adData }: RealtimeVoiceAssistantProps) => {
   };
 
   const getStatusColor = () => {
+    if (connectionError) return "text-red-400";
     if (!isConnected) return "text-gray-400";
     if (isAISpeaking) return "text-blue-400";
     if (isListening) return "text-green-400";
@@ -66,12 +69,16 @@ const RealtimeVoiceAssistant = ({ adData }: RealtimeVoiceAssistantProps) => {
           <Button
             onClick={handleToggleConnection}
             className={`w-16 h-16 rounded-full ${
-              isConnected 
-                ? 'bg-red-500 hover:bg-red-600' 
-                : 'bg-zue-blue hover:bg-blue-700'
+              connectionError
+                ? 'bg-red-500 hover:bg-red-600'
+                : isConnected 
+                  ? 'bg-red-500 hover:bg-red-600' 
+                  : 'bg-zue-blue hover:bg-blue-700'
             } text-white flex items-center justify-center`}
           >
-            {isAISpeaking ? (
+            {connectionError ? (
+              <AlertCircle size={24} />
+            ) : isAISpeaking ? (
               <Loader2 size={24} className="animate-spin" />
             ) : isConnected ? (
               <MicOff size={24} />
@@ -85,6 +92,17 @@ const RealtimeVoiceAssistant = ({ adData }: RealtimeVoiceAssistantProps) => {
           </p>
         </div>
 
+        {/* Error Details */}
+        {connectionError && (
+          <div className={`text-xs ${
+            theme === 'light' ? 'text-red-600' : 'text-red-400'
+          } bg-red-50 dark:bg-red-900/20 p-2 rounded border border-red-200 dark:border-red-800`}>
+            <p className="font-medium">Connection Issue:</p>
+            <p>{connectionError}</p>
+            <p className="mt-1 opacity-75">Try clicking the button to reconnect</p>
+          </div>
+        )}
+
         {/* Instructions */}
         <div className={`text-xs ${
           theme === 'light' ? 'text-gray-500' : 'text-gray-400'
@@ -96,7 +114,7 @@ const RealtimeVoiceAssistant = ({ adData }: RealtimeVoiceAssistantProps) => {
         </div>
 
         {/* Connection Status Indicator */}
-        {isConnected && (
+        {isConnected && !connectionError && (
           <div className="flex items-center justify-center space-x-2">
             <div className={`w-2 h-2 rounded-full ${
               isAISpeaking ? 'bg-blue-400 animate-pulse' :

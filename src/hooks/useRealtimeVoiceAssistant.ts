@@ -12,6 +12,7 @@ export class AudioRecorder {
 
   async start() {
     try {
+      console.log('Starting audio recording...');
       this.stream = await navigator.mediaDevices.getUserMedia({
         audio: {
           sampleRate: 24000,
@@ -36,6 +37,7 @@ export class AudioRecorder {
       
       this.source.connect(this.processor);
       this.processor.connect(this.audioContext.destination);
+      console.log('Audio recording started successfully');
     } catch (error) {
       console.error('Error accessing microphone:', error);
       throw error;
@@ -43,6 +45,7 @@ export class AudioRecorder {
   }
 
   stop() {
+    console.log('Stopping audio recording...');
     if (this.source) {
       this.source.disconnect();
       this.source = null;
@@ -169,26 +172,34 @@ export const useRealtimeVoiceAssistant = () => {
   const [isConnected, setIsConnected] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [isAISpeaking, setIsAISpeaking] = useState(false);
+  const [connectionError, setConnectionError] = useState<string | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const recorderRef = useRef<AudioRecorder | null>(null);
   const audioQueueRef = useRef<AudioQueue | null>(null);
+  const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const maxReconnectAttempts = 3;
+  const [reconnectAttempts, setReconnectAttempts] = useState(0);
 
   const connect = useCallback(async (adData?: any) => {
     try {
-      console.log('Starting voice assistant connection...');
+      console.log('=== STARTING VOICE ASSISTANT CONNECTION ===');
+      setConnectionError(null);
       
+      // Initialize audio context and queue
       const audioContext = new AudioContext({ sampleRate: 24000 });
       audioQueueRef.current = new AudioQueue(audioContext);
+      console.log('Audio context initialized');
 
-      // Use the correct WebSocket URL format for Supabase edge functions
+      // Use the correct WebSocket URL format
       const wsUrl = `wss://ctwbwaznsrracvbeksqj.supabase.co/functions/v1/realtime-voice-assistant`;
-      console.log('Connecting to:', wsUrl);
+      console.log('Connecting to WebSocket URL:', wsUrl);
       
       wsRef.current = new WebSocket(wsUrl);
 
       wsRef.current.onopen = () => {
-        console.log('Connected to voice assistant successfully');
+        console.log('=== WEBSOCKET CONNECTION OPENED ===');
         setIsConnected(true);
+        setReconnectAttempts(0);
         
         // Send ad data if provided
         if (adData && wsRef.current) {
@@ -207,7 +218,7 @@ export const useRealtimeVoiceAssistant = () => {
       wsRef.current.onmessage = async (event) => {
         try {
           const data = JSON.parse(event.data);
-          console.log('Received message type:', data.type);
+          console.log('Received WebSocket message:', data.type);
 
           if (data.type === 'response.audio.delta') {
             setIsAISpeaking(true);
@@ -221,9 +232,15 @@ export const useRealtimeVoiceAssistant = () => {
             setIsAISpeaking(false);
           } else if (data.type === 'session.created') {
             console.log('Session created successfully');
+          } else if (data.type === 'session.updated') {
+            console.log('Session configuration updated');
           } else if (data.type === 'error') {
-            console.error('WebSocket error from server:', data.message);
+            console.error('WebSocket error from server:', data);
+            setConnectionError(data.message || 'Server error');
             toast.error(`Assistant error: ${data.message}`);
+          } else if (data.type === 'connection_closed') {
+            console.log('OpenAI connection closed:', data);
+            setConnectionError(`AI connection closed: ${data.reason || 'Unknown reason'}`);
           }
         } catch (error) {
           console.error('Error processing WebSocket message:', error);
@@ -231,7 +248,8 @@ export const useRealtimeVoiceAssistant = () => {
       };
 
       wsRef.current.onerror = (error) => {
-        console.error('WebSocket connection error:', error);
+        console.error('=== WEBSOCKET ERROR ===', error);
+        setConnectionError('WebSocket connection error');
         toast.error("Connection error. Please check your internet and try again.");
         setIsConnected(false);
         setIsListening(false);
@@ -239,21 +257,40 @@ export const useRealtimeVoiceAssistant = () => {
       };
 
       wsRef.current.onclose = (event) => {
-        console.log('WebSocket closed:', event.code, event.reason);
+        console.log('=== WEBSOCKET CLOSED ===');
+        console.log('Close code:', event.code, 'Reason:', event.reason);
         setIsConnected(false);
         setIsListening(false);
         setIsAISpeaking(false);
         
-        if (event.code !== 1000) {
+        // Handle different close codes
+        if (event.code === 1006) {
+          setConnectionError('Connection failed - please try again');
+          toast.error("Connection lost unexpectedly. Retrying...");
+          
+          // Attempt to reconnect if not too many attempts
+          if (reconnectAttempts < maxReconnectAttempts) {
+            setReconnectAttempts(prev => prev + 1);
+            reconnectTimeoutRef.current = setTimeout(() => {
+              console.log(`Reconnect attempt ${reconnectAttempts + 1}/${maxReconnectAttempts}`);
+              connect(adData);
+            }, 2000 * (reconnectAttempts + 1)); // Exponential backoff
+          } else {
+            setConnectionError('Connection failed after multiple attempts');
+            toast.error("Unable to connect after multiple attempts. Please check your connection.");
+          }
+        } else if (event.code !== 1000) {
+          setConnectionError(`Connection closed: ${event.reason || 'Unknown error'}`);
           toast.error("Connection lost. Please try reconnecting.");
         }
       };
 
     } catch (error) {
       console.error('Error connecting to voice assistant:', error);
+      setConnectionError(error instanceof Error ? error.message : 'Unknown error');
       toast.error("Failed to connect to voice assistant. Please try again.");
     }
-  }, []);
+  }, [reconnectAttempts]);
 
   const startRecording = async () => {
     try {
@@ -273,17 +310,27 @@ export const useRealtimeVoiceAssistant = () => {
       console.log('Audio recording started successfully');
     } catch (error) {
       console.error('Error starting recording:', error);
+      setConnectionError('Microphone access denied');
       toast.error("Could not access microphone. Please check permissions and try again.");
     }
   };
 
   const disconnect = useCallback(() => {
-    console.log('Disconnecting voice assistant...');
+    console.log('=== DISCONNECTING VOICE ASSISTANT ===');
+    
+    // Clear reconnect timeout
+    if (reconnectTimeoutRef.current) {
+      clearTimeout(reconnectTimeoutRef.current);
+      reconnectTimeoutRef.current = null;
+    }
+    
     recorderRef.current?.stop();
-    wsRef.current?.close();
+    wsRef.current?.close(1000, 'User disconnected');
     setIsConnected(false);
     setIsListening(false);
     setIsAISpeaking(false);
+    setConnectionError(null);
+    setReconnectAttempts(0);
   }, []);
 
   useEffect(() => {
@@ -296,6 +343,7 @@ export const useRealtimeVoiceAssistant = () => {
     isConnected,
     isListening,
     isAISpeaking,
+    connectionError,
     connect,
     disconnect
   };
