@@ -21,25 +21,26 @@ serve(async (req) => {
     });
   }
 
-  // Check authorization for all requests except GET test requests
+  // Check authorization for WebSocket connections via URL query parameter
+  const url = new URL(req.url);
   const isTestRequest = req.method === 'GET' && !req.headers.get("upgrade");
   
   if (!isTestRequest) {
-    const authHeader = req.headers.get("authorization");
-    const expectedToken = "Bearer lovable-voice-assistant-12345";
+    const authToken = url.searchParams.get('auth');
+    const expectedToken = "lovable-voice-assistant-12345";
     
-    if (authHeader !== expectedToken) {
-      console.log('Authorization failed. Expected:', expectedToken, 'Got:', authHeader);
+    if (authToken !== expectedToken) {
+      console.log('Authorization failed. Expected:', expectedToken, 'Got:', authToken);
       return new Response(JSON.stringify({ 
         code: 401, 
-        message: "Unauthorized - missing or invalid authorization header",
-        expected: "Bearer lovable-voice-assistant-12345"
+        message: "Unauthorized - missing or invalid auth token in URL",
+        expected: "?auth=lovable-voice-assistant-12345"
       }), { 
         status: 401,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
     }
-    console.log('Authorization successful');
+    console.log('Authorization successful via query parameter');
   }
 
   // Handle GET requests (for testing)
@@ -52,7 +53,7 @@ serve(async (req) => {
         status: 'Voice Assistant Edge Function is running',
         timestamp: new Date().toISOString(),
         message: 'Function is public and accessible',
-        auth: 'Custom authorization required for WebSocket connections'
+        auth: 'Auth token required in URL query parameter for WebSocket connections'
       }), { 
         status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }

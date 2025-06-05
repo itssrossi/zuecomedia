@@ -222,15 +222,12 @@ export const useRealtimeVoiceAssistant = () => {
       const audioContext = new AudioContext({ sampleRate: 24000 });
       audioQueueRef.current = new AudioQueue(audioContext);
       
-      // Create WebSocket connection with authorization header
-      const wsUrl = 'wss://ctwbwaznsrracvbeksqj.supabase.co/functions/v1/realtime-voice-assistant';
+      // Create WebSocket connection with auth token in URL query parameter
+      // Since browsers don't support headers in WebSocket connections, we use query params
+      const wsUrl = 'wss://ctwbwaznsrracvbeksqj.supabase.co/functions/v1/realtime-voice-assistant?auth=lovable-voice-assistant-12345';
       console.log('Connecting to WebSocket:', wsUrl);
       
-      wsRef.current = new WebSocket(wsUrl, [], {
-        headers: {
-          'Authorization': 'Bearer lovable-voice-assistant-12345'
-        }
-      });
+      wsRef.current = new WebSocket(wsUrl);
 
       wsRef.current.onopen = () => {
         console.log('=== WEBSOCKET CONNECTED ===');
