@@ -1,6 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { toast } from '@/components/ui/sonner';
-import { createClient } from '@supabase/supabase-js';
 
 export class AudioRecorder {
   private stream: MediaStream | null = null;
@@ -188,24 +187,54 @@ export const useRealtimeVoiceAssistant = () => {
       const audioContext = new AudioContext({ sampleRate: 24000 });
       audioQueueRef.current = new AudioQueue(audioContext);
       
-      // Use Supabase client to get the proper authenticated URL
+      // Test edge function accessibility first
       const supabaseUrl = 'https://ctwbwaznsrracvbeksqj.supabase.co';
       const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0d2J3YXpuc3JyYWN2YmVrc3FqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM1MDkwMjIsImV4cCI6MjA0OTA4NTAyMn0.OmP8KDyxPFpOFNpSYnkLU23zt_mTnBJGhPHYNI0WBzk';
       
-      // Create WebSocket URL with proper authentication
-      const wsUrl = `wss://ctwbwaznsrracvbeksqj.supabase.co/functions/v1/realtime-voice-assistant`;
-      console.log('Connecting to:', wsUrl);
+      const testUrl = `${supabaseUrl}/functions/v1/realtime-voice-assistant`;
+      console.log('Testing edge function at:', testUrl);
       
-      wsRef.current = new WebSocket(wsUrl, [], {
-        headers: {
-          'apikey': supabaseKey,
-          'authorization': `Bearer ${supabaseKey}`
+      try {
+        const testResponse = await fetch(testUrl, {
+          method: 'GET',
+          headers: {
+            'apikey': supabaseKey,
+            'authorization': `Bearer ${supabaseKey}`
+          }
+        });
+        
+        console.log('Test response status:', testResponse.status);
+        const testData = await testResponse.text();
+        console.log('Test response:', testData);
+        
+        if (!testResponse.ok) {
+          throw new Error(`Edge function not accessible: ${testResponse.status} - ${testData}`);
         }
-      } as any);
+      } catch (fetchError) {
+        console.error('Edge function test failed:', fetchError);
+        setConnectionError('Edge function may not be accessible or deployed');
+        toast.error("Edge function not accessible. Please check deployment.");
+        return;
+      }
+      
+      // Create WebSocket URL (browsers only support url and optional protocols)
+      const wsUrl = `wss://ctwbwaznsrracvbeksqj.supabase.co/functions/v1/realtime-voice-assistant?apikey=${encodeURIComponent(supabaseKey)}`;
+      console.log('Connecting to WebSocket:', wsUrl);
+      
+      // Create WebSocket with only URL (no third parameter for headers in browsers)
+      wsRef.current = new WebSocket(wsUrl);
 
       wsRef.current.onopen = () => {
         console.log('=== WEBSOCKET CONNECTED ===');
         setIsConnected(true);
+        
+        // Send authentication after connection
+        if (wsRef.current) {
+          wsRef.current.send(JSON.stringify({
+            type: 'auth',
+            apikey: supabaseKey
+          }));
+        }
         
         // Send ad data if provided
         if (adData && wsRef.current) {
