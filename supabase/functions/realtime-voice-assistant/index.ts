@@ -84,6 +84,11 @@ serve(async (req) => {
         const data = JSON.parse(event.data);
         console.log('Message type:', data.type);
 
+        if (data.type === 'auth') {
+          console.log('Auth message received, ignoring since verify_jwt=false');
+          return;
+        }
+
         if (data.type === 'set_ad_data') {
           adData = data.adData;
           console.log('Ad data stored');
