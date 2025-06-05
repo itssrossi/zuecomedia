@@ -8,7 +8,7 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  console.log('=== EDGE FUNCTION REQUEST ===');
+  console.log('=== REALTIME VOICE ASSISTANT FUNCTION START ===');
   console.log('Method:', req.method);
   console.log('URL:', req.url);
   console.log('Headers:', Object.fromEntries(req.headers.entries()));
@@ -19,17 +19,18 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  // Handle GET requests for testing (no auth required since verify_jwt=false)
+  // Handle GET requests for testing (completely public)
   if (req.method === 'GET') {
     const upgradeHeader = req.headers.get("upgrade") || "";
     
     if (upgradeHeader.toLowerCase() !== "websocket") {
-      console.log('GET request - returning status');
+      console.log('GET request - returning status page');
       return new Response(JSON.stringify({ 
-        status: 'Edge function is working', 
+        status: 'Realtime Voice Assistant is running', 
         timestamp: new Date().toISOString(),
-        message: 'Use WebSocket upgrade for voice assistant',
-        verify_jwt: false
+        message: 'Use WebSocket upgrade for voice functionality',
+        verify_jwt: false,
+        public: true
       }), { 
         status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -51,14 +52,14 @@ serve(async (req) => {
   const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
   if (!OPENAI_API_KEY) {
     console.error('OPENAI_API_KEY not configured');
-    return new Response("API key not configured", { 
+    return new Response("Server configuration error", { 
       status: 500,
       headers: corsHeaders 
     });
   }
 
   try {
-    console.log('Upgrading to WebSocket...');
+    console.log('=== UPGRADING TO WEBSOCKET ===');
     const { socket, response } = Deno.upgradeWebSocket(req);
     
     let openAISocket: WebSocket | null = null;
@@ -66,13 +67,14 @@ serve(async (req) => {
     let sessionReady = false;
 
     socket.onopen = () => {
-      console.log('=== CLIENT CONNECTED ===');
+      console.log('=== CLIENT WEBSOCKET CONNECTED ===');
       
-      // Send immediate confirmation
+      // Send immediate connection confirmation
       socket.send(JSON.stringify({ 
         type: 'connection_established',
         status: 'connected',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        message: 'WebSocket connection successful'
       }));
       
       // Connect to OpenAI immediately
@@ -80,46 +82,50 @@ serve(async (req) => {
     };
 
     socket.onmessage = (event) => {
-      console.log('Client message received');
+      console.log('=== CLIENT MESSAGE RECEIVED ===');
       try {
         const data = JSON.parse(event.data);
         console.log('Message type:', data.type);
 
         if (data.type === 'set_ad_data') {
           adData = data.adData;
-          console.log('Ad data stored');
+          console.log('Ad data stored successfully');
           return;
         }
 
-        // Forward to OpenAI if session is ready
+        // Forward to OpenAI if ready
         if (openAISocket && openAISocket.readyState === WebSocket.OPEN && sessionReady) {
-          console.log('Forwarding to OpenAI:', data.type);
+          console.log('Forwarding message to OpenAI:', data.type);
           openAISocket.send(JSON.stringify(data));
         } else {
-          console.log('OpenAI not ready, session ready:', sessionReady);
+          console.log('OpenAI not ready - session ready:', sessionReady, 'socket state:', openAISocket?.readyState);
         }
       } catch (error) {
         console.error('Error processing client message:', error);
+        socket.send(JSON.stringify({ 
+          type: 'error', 
+          message: 'Failed to process message'
+        }));
       }
     };
 
-    socket.onclose = () => {
-      console.log('=== CLIENT DISCONNECTED ===');
+    socket.onclose = (event) => {
+      console.log('=== CLIENT WEBSOCKET DISCONNECTED ===', event.code, event.reason);
       if (openAISocket) {
         openAISocket.close();
       }
     };
 
     socket.onerror = (error) => {
-      console.error('Client socket error:', error);
+      console.error('=== CLIENT WEBSOCKET ERROR ===', error);
     };
 
     const connectToOpenAI = () => {
-      console.log('=== CONNECTING TO OPENAI ===');
+      console.log('=== CONNECTING TO OPENAI REALTIME API ===');
       
       try {
         const openAIUrl = `wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-10-01`;
-        console.log('OpenAI URL:', openAIUrl);
+        console.log('OpenAI WebSocket URL:', openAIUrl);
         
         openAISocket = new WebSocket(
           openAIUrl,
@@ -127,20 +133,21 @@ serve(async (req) => {
         );
 
         openAISocket.onopen = () => {
-          console.log('=== OPENAI CONNECTED ===');
+          console.log('=== OPENAI WEBSOCKET CONNECTED ===');
           socket.send(JSON.stringify({ 
             type: 'openai_connected',
-            status: 'connected'
+            status: 'connected',
+            message: 'Connected to OpenAI Realtime API'
           }));
         };
 
         openAISocket.onmessage = (event) => {
           try {
             const data = JSON.parse(event.data);
-            console.log('OpenAI message:', data.type);
+            console.log('=== OPENAI MESSAGE ===', data.type);
 
             if (data.type === 'session.created') {
-              console.log('Session created, configuring...');
+              console.log('OpenAI session created, configuring...');
               
               const sessionConfig = {
                 type: "session.update",
@@ -175,18 +182,20 @@ Focus on metrics like spend, revenue, ROAS (return on ad spend), and click-throu
               };
 
               openAISocket!.send(JSON.stringify(sessionConfig));
+              
             } else if (data.type === 'session.updated') {
-              console.log('Session configured successfully');
+              console.log('OpenAI session configured successfully');
               sessionReady = true;
               
               socket.send(JSON.stringify({ 
                 type: 'session_ready',
-                status: 'ready'
+                status: 'ready',
+                message: 'AI assistant is ready to help'
               }));
               
               // Send ad data context if available
               if (adData) {
-                console.log('Sending ad data context');
+                console.log('Sending ad data context to OpenAI');
                 const contextMessage = {
                   type: "conversation.item.create",
                   item: {
@@ -204,17 +213,18 @@ Focus on metrics like spend, revenue, ROAS (return on ad spend), and click-throu
               }
             }
 
-            // Forward all messages to client
+            // Forward all OpenAI messages to client
             if (socket.readyState === WebSocket.OPEN) {
               socket.send(JSON.stringify(data));
             }
+            
           } catch (error) {
             console.error('Error processing OpenAI message:', error);
           }
         };
 
         openAISocket.onerror = (error) => {
-          console.error('OpenAI socket error:', error);
+          console.error('=== OPENAI WEBSOCKET ERROR ===', error);
           socket.send(JSON.stringify({ 
             type: 'error', 
             message: 'OpenAI connection failed'
@@ -222,12 +232,18 @@ Focus on metrics like spend, revenue, ROAS (return on ad spend), and click-throu
         };
 
         openAISocket.onclose = (event) => {
-          console.log('OpenAI socket closed:', event.code, event.reason);
+          console.log('=== OPENAI WEBSOCKET CLOSED ===', event.code, event.reason);
           sessionReady = false;
+          if (socket.readyState === WebSocket.OPEN) {
+            socket.send(JSON.stringify({ 
+              type: 'openai_disconnected',
+              message: 'OpenAI connection lost'
+            }));
+          }
         };
 
       } catch (error) {
-        console.error('Error creating OpenAI socket:', error);
+        console.error('Error creating OpenAI WebSocket:', error);
         socket.send(JSON.stringify({ 
           type: 'error', 
           message: 'Failed to connect to OpenAI'
@@ -238,7 +254,7 @@ Focus on metrics like spend, revenue, ROAS (return on ad spend), and click-throu
     return response;
 
   } catch (error) {
-    console.error('WebSocket upgrade failed:', error);
+    console.error('=== WEBSOCKET UPGRADE FAILED ===', error);
     return new Response(`WebSocket upgrade failed: ${error.message}`, { 
       status: 500,
       headers: corsHeaders 
