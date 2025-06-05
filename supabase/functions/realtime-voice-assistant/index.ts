@@ -19,7 +19,7 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  // Handle GET requests for testing
+  // Handle GET requests for testing (no auth required since verify_jwt=false)
   if (req.method === 'GET') {
     const upgradeHeader = req.headers.get("upgrade") || "";
     
@@ -28,7 +28,8 @@ serve(async (req) => {
       return new Response(JSON.stringify({ 
         status: 'Edge function is working', 
         timestamp: new Date().toISOString(),
-        message: 'Use WebSocket upgrade for voice assistant'
+        message: 'Use WebSocket upgrade for voice assistant',
+        verify_jwt: false
       }), { 
         status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -74,7 +75,7 @@ serve(async (req) => {
         timestamp: new Date().toISOString()
       }));
       
-      // Connect to OpenAI
+      // Connect to OpenAI immediately
       connectToOpenAI();
     };
 
@@ -83,11 +84,6 @@ serve(async (req) => {
       try {
         const data = JSON.parse(event.data);
         console.log('Message type:', data.type);
-
-        if (data.type === 'auth') {
-          console.log('Auth message received, ignoring since verify_jwt=false');
-          return;
-        }
 
         if (data.type === 'set_ad_data') {
           adData = data.adData;

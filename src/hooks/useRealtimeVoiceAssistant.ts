@@ -1,5 +1,7 @@
+
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { toast } from '@/components/ui/sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 export class AudioRecorder {
   private stream: MediaStream | null = null;
@@ -187,10 +189,8 @@ export const useRealtimeVoiceAssistant = () => {
       const audioContext = new AudioContext({ sampleRate: 24000 });
       audioQueueRef.current = new AudioQueue(audioContext);
       
-      // Test edge function accessibility first
+      // Test edge function accessibility first (no auth headers needed since verify_jwt=false)
       const supabaseUrl = 'https://ctwbwaznsrracvbeksqj.supabase.co';
-      const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0d2J3YXpuc3JyYWN2YmVrc3FqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM1MDkwMjIsImV4cCI6MjA0OTA4NTAyMn0.OmP8KDyxPFpOFNpSYnkLU23zt_mTnBJGhPHYNI0WBzk';
-      
       const testUrl = `${supabaseUrl}/functions/v1/realtime-voice-assistant`;
       console.log('Testing edge function at:', testUrl);
       
@@ -198,8 +198,7 @@ export const useRealtimeVoiceAssistant = () => {
         const testResponse = await fetch(testUrl, {
           method: 'GET',
           headers: {
-            'apikey': supabaseKey,
-            'authorization': `Bearer ${supabaseKey}`
+            'Content-Type': 'application/json'
           }
         });
         
@@ -212,29 +211,20 @@ export const useRealtimeVoiceAssistant = () => {
         }
       } catch (fetchError) {
         console.error('Edge function test failed:', fetchError);
-        setConnectionError('Edge function may not be accessible or deployed');
+        setConnectionError('Edge function not accessible');
         toast.error("Edge function not accessible. Please check deployment.");
         return;
       }
       
-      // Create WebSocket URL (browsers only support url and optional protocols)
-      const wsUrl = `wss://ctwbwaznsrracvbeksqj.supabase.co/functions/v1/realtime-voice-assistant?apikey=${encodeURIComponent(supabaseKey)}`;
+      // Create WebSocket URL (no apikey needed since verify_jwt=false)
+      const wsUrl = `wss://ctwbwaznsrracvbeksqj.supabase.co/functions/v1/realtime-voice-assistant`;
       console.log('Connecting to WebSocket:', wsUrl);
       
-      // Create WebSocket with only URL (no third parameter for headers in browsers)
       wsRef.current = new WebSocket(wsUrl);
 
       wsRef.current.onopen = () => {
         console.log('=== WEBSOCKET CONNECTED ===');
         setIsConnected(true);
-        
-        // Send authentication after connection
-        if (wsRef.current) {
-          wsRef.current.send(JSON.stringify({
-            type: 'auth',
-            apikey: supabaseKey
-          }));
-        }
         
         // Send ad data if provided
         if (adData && wsRef.current) {
