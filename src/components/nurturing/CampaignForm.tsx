@@ -130,11 +130,9 @@ const CampaignForm = ({ onClose }: CampaignFormProps) => {
       const campaign = await createCampaign(config, messages);
 
       // Import contacts
-      const { data: { user } } = await supabase.auth.getUser();
       const contactsWithCampaign = contacts.map(c => ({
         ...c,
         campaign_id: campaign.id,
-        user_id: user!.id,
       }));
 
       const { error: contactsError } = await supabase
