@@ -2,7 +2,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 export interface CampaignConfig {
   name: string;
-  type: 'short-term' | 'long-term' | 'custom';
+  type: 'short_term' | 'long_term' | 'custom';
   description?: string;
   email_enabled: boolean;
   sms_enabled: boolean;

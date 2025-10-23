@@ -82,8 +82,8 @@ const CampaignList = ({
 
   const getTypeLabel = (type: string) => {
     switch (type) {
-      case 'short-term': return 'Short-term';
-      case 'long-term': return 'Long-term';
+      case 'short_term': return 'Short-term';
+      case 'long_term': return 'Long-term';
       case 'custom': return 'Custom';
       default: return type;
     }

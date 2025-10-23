@@ -26,7 +26,7 @@ const CampaignForm = ({ onClose }: CampaignFormProps) => {
   const [step, setStep] = useState(1);
   const [campaignConfig, setCampaignConfig] = useState<CampaignConfig>({
     name: "",
-    type: "short-term",
+    type: "short_term",
     description: "",
     email_enabled: hasResend,
     sms_enabled: hasTwilio,
@@ -46,11 +46,11 @@ const CampaignForm = ({ onClose }: CampaignFormProps) => {
   const totalSteps = 5;
   const progress = (step / totalSteps) * 100;
 
-  const handleTypeChange = (type: 'short-term' | 'long-term' | 'custom') => {
+  const handleTypeChange = (type: 'short_term' | 'long_term' | 'custom') => {
     setCampaignConfig({ ...campaignConfig, type });
     
     // Set default messages based on type
-    if (type === 'short-term') {
+    if (type === 'short_term') {
       setMessages([
         { message_type: "email", sequence_order: 1, content: "", timing_type: "immediate" },
         { message_type: "email", sequence_order: 2, content: "", timing_type: "delay", delay_value: 2, delay_unit: "days" },
@@ -58,7 +58,7 @@ const CampaignForm = ({ onClose }: CampaignFormProps) => {
         { message_type: "email", sequence_order: 4, content: "", timing_type: "delay", delay_value: 7, delay_unit: "days" },
         { message_type: "email", sequence_order: 5, content: "", timing_type: "delay", delay_value: 14, delay_unit: "days" },
       ]);
-    } else if (type === 'long-term') {
+    } else if (type === 'long_term') {
       setMessages([
         { message_type: "email", sequence_order: 1, content: "", timing_type: "immediate" },
         { message_type: "email", sequence_order: 2, content: "", timing_type: "delay", delay_value: 3, delay_unit: "days" },
@@ -176,7 +176,7 @@ const CampaignForm = ({ onClose }: CampaignFormProps) => {
             <div className="space-y-2">
               <Label>Campaign Type</Label>
               <div className="grid grid-cols-3 gap-4">
-                {(['short-term', 'long-term', 'custom'] as const).map((type) => (
+                {(['short_term', 'long_term', 'custom'] as const).map((type) => (
                   <Card
                     key={type}
                     className={`cursor-pointer transition-colors ${
@@ -188,11 +188,11 @@ const CampaignForm = ({ onClose }: CampaignFormProps) => {
                   >
                     <CardContent className="pt-6 text-center">
                       <p className="font-semibold capitalize">
-                        {type.replace('-', ' ')}
+                        {type.replace('_', ' ')}
                       </p>
                       <p className="text-sm text-muted-foreground mt-1">
-                        {type === 'short-term' && '5 messages / 2 weeks'}
-                        {type === 'long-term' && '8 messages / 2 months'}
+                        {type === 'short_term' && '5 messages / 2 weeks'}
+                        {type === 'long_term' && '8 messages / 2 months'}
                         {type === 'custom' && 'Build your own'}
                       </p>
                     </CardContent>
@@ -362,7 +362,7 @@ const CampaignForm = ({ onClose }: CampaignFormProps) => {
                 </div>
                 <div className="flex justify-between">
                   <dt className="text-muted-foreground">Type:</dt>
-                  <dd className="font-medium capitalize">{campaignConfig.type.replace('-', ' ')}</dd>
+                  <dd className="font-medium capitalize">{campaignConfig.type.replace('_', ' ')}</dd>
                 </div>
                 <div className="flex justify-between">
                   <dt className="text-muted-foreground">Messages:</dt>
