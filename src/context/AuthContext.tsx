@@ -12,6 +12,8 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, fullName: string) => Promise<void>;
   signOut: () => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
+  updatePassword: (newPassword: string) => Promise<void>;
   checkOnboardingStatus?: (userId: string) => Promise<boolean>;
 }
 
@@ -136,6 +138,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const resetPassword = async (email: string) => {
+    try {
+      const redirectUrl = `${window.location.origin}/reset-password`;
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: redirectUrl,
+      });
+      
+      if (error) throw error;
+      
+      toast.success("If an account exists, a password reset email has been sent");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to send reset email");
+    }
+  };
+
+  const updatePassword = async (newPassword: string) => {
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+      
+      if (error) throw error;
+      
+      toast.success("Password updated successfully");
+      navigate("/dashboard", { replace: true });
+    } catch (error: any) {
+      toast.error(error.message || "Failed to update password");
+    }
+  };
+
   return (
     <AuthContext.Provider value={{ 
       user, 
@@ -144,6 +176,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       signIn, 
       signUp, 
       signOut,
+      resetPassword,
+      updatePassword,
       checkOnboardingStatus
     }}>
       {children}

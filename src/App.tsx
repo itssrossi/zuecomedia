@@ -13,6 +13,7 @@ import Dashboard from "./pages/Dashboard";
 import Onboarding from "./pages/Onboarding";
 import FacebookAccountSetup from "./pages/FacebookAccountSetup";
 import CalendarBooking from "./pages/CalendarBooking";
+import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,6 +30,7 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/book-meeting" element={<CalendarBooking />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/onboarding" element={
                 <ProtectedRoute>
                   <Onboarding />

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,6 +5,14 @@ import { useAuth } from "@/context/AuthContext";
 import { Link } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTheme } from "@/context/ThemeContext";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 const Login = () => {
   // Login state
@@ -18,8 +25,13 @@ const Login = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [signupLoading, setSignupLoading] = useState(false);
+  
+  // Password reset state
+  const [resetEmail, setResetEmail] = useState("");
+  const [resetDialogOpen, setResetDialogOpen] = useState(false);
+  const [resetLoading, setResetLoading] = useState(false);
 
-  const { signIn, signUp, isLoading } = useAuth();
+  const { signIn, signUp, resetPassword, isLoading } = useAuth();
   const { theme } = useTheme();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -36,6 +48,15 @@ const Login = () => {
     setSignupLoading(true);
     await signUp(signupEmail, signupPassword, fullName);
     setSignupLoading(false);
+  };
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setResetLoading(true);
+    await resetPassword(resetEmail);
+    setResetLoading(false);
+    setResetDialogOpen(false);
+    setResetEmail("");
   };
 
   return (
@@ -112,6 +133,58 @@ const Login = () => {
                 >
                   {isLoading ? "Logging in..." : "Login"}
                 </Button>
+
+                <Dialog open={resetDialogOpen} onOpenChange={setResetDialogOpen}>
+                  <DialogTrigger asChild>
+                    <button
+                      type="button"
+                      className="text-sm text-gray-400 hover:text-zue-blue transition-colors text-center w-full mt-2"
+                    >
+                      Forgot Password?
+                    </button>
+                  </DialogTrigger>
+                  <DialogContent className="bg-zue-dark-light border-gray-800">
+                    <DialogHeader>
+                      <DialogTitle className="text-white">Reset Password</DialogTitle>
+                      <DialogDescription className="text-gray-400">
+                        Enter your email address and we'll send you a link to reset your password.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <form onSubmit={handleResetPassword} className="space-y-4">
+                      <div className="space-y-2">
+                        <label htmlFor="reset-email" className="text-white text-sm">
+                          Email
+                        </label>
+                        <Input
+                          id="reset-email"
+                          type="email"
+                          value={resetEmail}
+                          onChange={(e) => setResetEmail(e.target.value)}
+                          placeholder="your@email.com"
+                          className="bg-zue-dark border-gray-700 text-white"
+                          required
+                        />
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => setResetDialogOpen(false)}
+                          className="flex-1"
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          type="submit"
+                          className="flex-1 bg-zue-blue hover:bg-zue-blue-dark text-white"
+                          disabled={resetLoading}
+                        >
+                          {resetLoading ? "Sending..." : "Send Reset Link"}
+                        </Button>
+                      </div>
+                    </form>
+                  </DialogContent>
+                </Dialog>
               </form>
             </TabsContent>
             
