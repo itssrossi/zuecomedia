@@ -10,6 +10,7 @@ import CampaignForm from "@/components/nurturing/CampaignForm";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const LeadNurturing = () => {
   const navigate = useNavigate();
@@ -74,6 +75,37 @@ const LeadNurturing = () => {
 
   const handleViewAnalytics = (id: string) => {
     navigate(`/lead-nurturing/campaign/${id}`);
+  };
+
+  const handleSyncNow = async (id: string) => {
+    const campaign = campaigns.find(c => c.id === id);
+    if (!campaign) return;
+
+    toast.info("Syncing contacts from Google Sheet...");
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('sync-google-sheet-contacts', {
+        body: { campaign_id: id }
+      });
+
+      if (error) throw error;
+
+      const result = data?.results?.[0];
+      if (result?.status === 'success') {
+        const newContacts = result.new_contacts || 0;
+        toast.success(
+          newContacts > 0 
+            ? `✓ Synced ${newContacts} new contact${newContacts === 1 ? '' : 's'}` 
+            : "No new contacts found"
+        );
+        loadCampaigns();
+      } else if (result?.error) {
+        toast.error(`Sync failed: ${result.error}`);
+      }
+    } catch (error: any) {
+      console.error("Sync error:", error);
+      toast.error(error.message || "Failed to sync contacts");
+    }
   };
 
   if (credentialsLoading) {
@@ -157,6 +189,7 @@ const LeadNurturing = () => {
                 onResume={handleResume}
                 onDelete={handleDelete}
                 onViewAnalytics={handleViewAnalytics}
+                onSyncNow={handleSyncNow}
               />
             </TabsContent>
 

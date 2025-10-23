@@ -34,21 +34,30 @@ serve(async (req) => {
   }
 
   try {
-    console.log("Starting Google Sheets contact sync");
+    const body = req.method === "POST" ? await req.json() : {};
+    const targetCampaignId = body.campaign_id;
+
+    console.log("Starting Google Sheets contact sync", targetCampaignId ? `for campaign ${targetCampaignId}` : "for all campaigns");
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    // Fetch active campaigns with auto-sync enabled
-    const { data: campaigns, error: campaignsError } = await supabase
+    // Fetch campaigns - either specific campaign or all active campaigns with auto-sync enabled
+    let query = supabase
       .from("nurture_campaigns")
       .select("*")
-      .eq("auto_sync_enabled", true)
-      .eq("status", "active")
       .not("google_sheet_url", "is", null)
       .not("sheet_column_mappings", "is", null);
+
+    if (targetCampaignId) {
+      query = query.eq("id", targetCampaignId);
+    } else {
+      query = query.eq("auto_sync_enabled", true).eq("status", "active");
+    }
+
+    const { data: campaigns, error: campaignsError } = await query;
 
     if (campaignsError) {
       console.error("Error fetching campaigns:", campaignsError);
