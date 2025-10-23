@@ -15,6 +15,7 @@ import FacebookAccountSetup from "./pages/FacebookAccountSetup";
 import CalendarBooking from "./pages/CalendarBooking";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
+import NurturingSettings from "./pages/NurturingSettings";
 
 const queryClient = new QueryClient();
 
@@ -39,6 +40,11 @@ const App = () => (
               <Route path="/dashboard/facebook-setup" element={
                 <ProtectedRoute>
                   <FacebookAccountSetup />
+                </ProtectedRoute>
+              } />
+              <Route path="/nurturing-settings" element={
+                <ProtectedRoute>
+                  <NurturingSettings />
                 </ProtectedRoute>
               } />
               <Route 

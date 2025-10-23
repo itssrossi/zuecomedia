@@ -4,6 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useTheme } from "@/context/ThemeContext";
+import { Settings } from "lucide-react";
 
 const DashboardHeader = () => {
   const { user, signOut } = useAuth();
@@ -38,6 +39,20 @@ const DashboardHeader = () => {
               {user.email}
             </span>
           )}
+          <Button
+            variant="outline"
+            size={isMobile ? "icon" : "default"}
+            className={`
+              ${theme === 'light' 
+                ? 'border-gray-300 text-gray-700 hover:bg-gray-100' 
+                : 'border-gray-600 text-white hover:bg-zue-dark'}
+            `}
+            onClick={() => navigate("/nurturing-settings")}
+            title="Nurturing Settings"
+          >
+            <Settings className="h-4 w-4" />
+            {!isMobile && <span className="ml-2">Settings</span>}
+          </Button>
           <Button
             variant="outline"
             className={`

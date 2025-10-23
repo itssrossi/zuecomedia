@@ -261,6 +261,45 @@ export type Database = {
           },
         ]
       }
+      nurture_credentials: {
+        Row: {
+          created_at: string | null
+          google_sheets_api_key: string | null
+          id: string
+          resend_api_key: string | null
+          resend_email_from: string | null
+          twilio_account_sid: string | null
+          twilio_auth_token: string | null
+          twilio_phone_number: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          google_sheets_api_key?: string | null
+          id?: string
+          resend_api_key?: string | null
+          resend_email_from?: string | null
+          twilio_account_sid?: string | null
+          twilio_auth_token?: string | null
+          twilio_phone_number?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          google_sheets_api_key?: string | null
+          id?: string
+          resend_api_key?: string | null
+          resend_email_from?: string | null
+          twilio_account_sid?: string | null
+          twilio_auth_token?: string | null
+          twilio_phone_number?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       nurture_logs: {
         Row: {
           campaign_id: string
