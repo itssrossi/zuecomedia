@@ -79,6 +79,10 @@ export const createCampaign = async (config: CampaignConfig, messages: MessageCo
       email_enabled: config.email_enabled,
       sms_enabled: config.sms_enabled,
       status: config.status,
+      google_sheet_url: config.google_sheet_url || null,
+      google_sheet_id: config.google_sheet_id || null,
+      sheet_column_mappings: config.sheet_column_mappings || null,
+      auto_sync_enabled: config.auto_sync_enabled || false,
     })
     .select()
     .single();

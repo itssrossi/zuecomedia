@@ -1,9 +1,16 @@
-import { Mail, MessageSquare, Play, Pause, Trash2, BarChart3, RefreshCw, Sheet } from "lucide-react";
+import { Mail, MessageSquare, Play, Pause, Trash2, BarChart3, RefreshCw, Sheet, Link2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { format } from "date-fns";
+import { useState } from "react";
+import { toast } from "sonner";
+import ContactImporter from "./ContactImporter";
+import { updateCampaign } from "@/services/nurturingCampaignService";
 
 interface Campaign {
   id: string;
@@ -40,6 +47,10 @@ const CampaignList = ({
   onViewAnalytics,
   onSyncNow,
 }: CampaignListProps) => {
+  const [attachSheetDialogOpen, setAttachSheetDialogOpen] = useState(false);
+  const [selectedCampaignId, setSelectedCampaignId] = useState<string | null>(null);
+  const [sheetAutoSync, setSheetAutoSync] = useState(true);
+  const [isAttaching, setIsAttaching] = useState(false);
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -120,6 +131,47 @@ const CampaignList = ({
     return `${diffDays}d ago`;
   };
 
+  const handleAttachSheet = (campaignId: string) => {
+    setSelectedCampaignId(campaignId);
+    setSheetAutoSync(true);
+    setAttachSheetDialogOpen(true);
+  };
+
+  const handleSheetImport = async (contacts: any[], sheetUrl?: string, mappings?: any) => {
+    if (!selectedCampaignId || !sheetUrl || !mappings) {
+      toast.error("Missing required sheet information");
+      return;
+    }
+
+    setIsAttaching(true);
+    try {
+      // Extract sheet ID
+      const regex = /\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/;
+      const match = sheetUrl.match(regex);
+      const sheetId = match ? match[1] : null;
+
+      // Update campaign with sheet info
+      await updateCampaign(selectedCampaignId, {
+        google_sheet_url: sheetUrl,
+        google_sheet_id: sheetId || undefined,
+        sheet_column_mappings: mappings,
+        auto_sync_enabled: sheetAutoSync,
+      });
+
+      toast.success("Google Sheet attached! Syncing will start automatically.");
+      setAttachSheetDialogOpen(false);
+      
+      // Trigger a manual sync to immediately import contacts
+      setTimeout(() => {
+        onSyncNow(selectedCampaignId);
+      }, 500);
+    } catch (error: any) {
+      toast.error(error.message || "Failed to attach sheet");
+    } finally {
+      setIsAttaching(false);
+    }
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {campaigns.map((campaign) => {
@@ -181,6 +233,17 @@ const CampaignList = ({
                 )}
               </div>
               <div className="flex gap-2 flex-wrap">
+                {!campaign.google_sheet_url && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleAttachSheet(campaign.id)}
+                    title="Attach Google Sheet for auto-sync"
+                  >
+                    <Link2 className="h-4 w-4 mr-1" />
+                    Attach Sheet
+                  </Button>
+                )}
                 <Button
                   variant="outline"
                   size="sm"
@@ -248,6 +311,33 @@ const CampaignList = ({
           </Card>
         );
       })}
+
+      {/* Attach Sheet Dialog */}
+      <Dialog open={attachSheetDialogOpen} onOpenChange={setAttachSheetDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Attach Google Sheet</DialogTitle>
+            <DialogDescription>
+              Connect a Google Sheet to automatically sync contacts for this campaign
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <ContactImporter onImport={handleSheetImport} />
+            
+            <div className="flex items-center space-x-2 pt-4 border-t">
+              <Switch
+                id="auto-sync"
+                checked={sheetAutoSync}
+                onCheckedChange={setSheetAutoSync}
+              />
+              <Label htmlFor="auto-sync">
+                Enable auto-sync (check for new contacts every minute)
+              </Label>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
