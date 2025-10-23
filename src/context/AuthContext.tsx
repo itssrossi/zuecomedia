@@ -1,6 +1,5 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/sonner";
@@ -23,7 +22,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const navigate = useNavigate();
 
   // Simplified version - no longer checking onboarding status
   const checkOnboardingStatus = async (userId: string): Promise<boolean> => {
@@ -61,7 +59,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       toast.success("Signed in successfully");
       
       // Always go to dashboard after login - simplified approach
-      navigate("/dashboard", { replace: true });
+      window.location.href = "/dashboard";
     } catch (error: any) {
       toast.error(error.message || "Failed to sign in");
     } finally {
@@ -117,7 +115,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         toast.success("Signed up successfully");
         
         // New users are directed to onboarding but can skip to dashboard if needed
-        navigate("/onboarding", { replace: true });
+        window.location.href = "/onboarding";
       } else {
         toast.success("Signed up successfully. Please check your email for verification.");
       }
@@ -132,7 +130,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       await supabase.auth.signOut();
       toast.success("Signed out successfully");
-      navigate("/login");
+      window.location.href = "/login";
     } catch (error: any) {
       toast.error(error.message || "Failed to sign out");
     }
@@ -162,7 +160,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (error) throw error;
       
       toast.success("Password updated successfully");
-      navigate("/dashboard", { replace: true });
+      window.location.href = "/dashboard";
     } catch (error: any) {
       toast.error(error.message || "Failed to update password");
     }
