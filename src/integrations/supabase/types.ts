@@ -175,6 +175,7 @@ export type Database = {
       nurture_campaigns: {
         Row: {
           created_at: string | null
+          description: string | null
           email_enabled: boolean | null
           google_sheet_id: string | null
           google_sheet_url: string | null
@@ -188,6 +189,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
+          description?: string | null
           email_enabled?: boolean | null
           google_sheet_id?: string | null
           google_sheet_url?: string | null
@@ -201,6 +203,7 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
+          description?: string | null
           email_enabled?: boolean | null
           google_sheet_id?: string | null
           google_sheet_url?: string | null
@@ -373,10 +376,11 @@ export type Database = {
           delay_value: number
           id: string
           message_type: string
-          send_day: string | null
-          send_time: string | null
+          schedule_day: string | null
+          schedule_time: string | null
           sequence_order: number
           subject: string | null
+          timing_type: string
           updated_at: string | null
         }
         Insert: {
@@ -387,10 +391,11 @@ export type Database = {
           delay_value?: number
           id?: string
           message_type: string
-          send_day?: string | null
-          send_time?: string | null
+          schedule_day?: string | null
+          schedule_time?: string | null
           sequence_order: number
           subject?: string | null
+          timing_type?: string
           updated_at?: string | null
         }
         Update: {
@@ -401,10 +406,11 @@ export type Database = {
           delay_value?: number
           id?: string
           message_type?: string
-          send_day?: string | null
-          send_time?: string | null
+          schedule_day?: string | null
+          schedule_time?: string | null
           sequence_order?: number
           subject?: string | null
+          timing_type?: string
           updated_at?: string | null
         }
         Relationships: [
