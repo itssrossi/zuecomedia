@@ -42,6 +42,10 @@ const CampaignForm = ({ onClose }: CampaignFormProps) => {
   ]);
   const [contacts, setContacts] = useState<any[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [sheetUrl, setSheetUrl] = useState("");
+  const [sheetId, setSheetId] = useState("");
+  const [columnMappings, setColumnMappings] = useState<any>(null);
+  const [autoSyncEnabled, setAutoSyncEnabled] = useState(true);
 
   const totalSteps = 5;
   const progress = (step / totalSteps) * 100;
@@ -99,8 +103,18 @@ const CampaignForm = ({ onClose }: CampaignFormProps) => {
     })));
   };
 
-  const handleImportContacts = async (importedContacts: any[]) => {
+  const handleImportContacts = async (importedContacts: any[], url?: string, mappings?: any) => {
     setContacts(importedContacts);
+    if (url) {
+      setSheetUrl(url);
+      // Extract sheet ID from URL
+      const regex = /\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/;
+      const match = url.match(regex);
+      if (match) setSheetId(match[1]);
+    }
+    if (mappings) {
+      setColumnMappings(mappings);
+    }
     toast.success(`${importedContacts.length} contacts ready to import`);
   };
 
@@ -125,7 +139,11 @@ const CampaignForm = ({ onClose }: CampaignFormProps) => {
       // Create campaign with messages
       const config: CampaignConfig = { 
         ...campaignConfig, 
-        status: activate ? 'active' as const : 'draft' as const 
+        status: activate ? 'active' as const : 'draft' as const,
+        google_sheet_url: sheetUrl || undefined,
+        google_sheet_id: sheetId || undefined,
+        sheet_column_mappings: columnMappings || undefined,
+        auto_sync_enabled: sheetUrl && activate ? autoSyncEnabled : false,
       };
       const campaign = await createCampaign(config, messages);
 

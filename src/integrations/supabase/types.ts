@@ -174,6 +174,7 @@ export type Database = {
       }
       nurture_campaigns: {
         Row: {
+          auto_sync_enabled: boolean | null
           created_at: string | null
           description: string | null
           email_enabled: boolean | null
@@ -181,6 +182,7 @@ export type Database = {
           google_sheet_url: string | null
           id: string
           name: string
+          sheet_column_mappings: Json | null
           sms_enabled: boolean | null
           status: string
           type: string
@@ -188,6 +190,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          auto_sync_enabled?: boolean | null
           created_at?: string | null
           description?: string | null
           email_enabled?: boolean | null
@@ -195,6 +198,7 @@ export type Database = {
           google_sheet_url?: string | null
           id?: string
           name: string
+          sheet_column_mappings?: Json | null
           sms_enabled?: boolean | null
           status?: string
           type: string
@@ -202,6 +206,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          auto_sync_enabled?: boolean | null
           created_at?: string | null
           description?: string | null
           email_enabled?: boolean | null
@@ -209,6 +214,7 @@ export type Database = {
           google_sheet_url?: string | null
           id?: string
           name?: string
+          sheet_column_mappings?: Json | null
           sms_enabled?: boolean | null
           status?: string
           type?: string

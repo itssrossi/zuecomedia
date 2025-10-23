@@ -12,7 +12,7 @@ import { useNurturingCredentials } from "@/hooks/useNurturingCredentials";
 import { toast } from "sonner";
 
 interface ContactImporterProps {
-  onImport: (contacts: any[]) => void;
+  onImport: (contacts: any[], sheetUrl?: string, columnMappings?: any) => void;
 }
 
 const ContactImporter = ({ onImport }: ContactImporterProps) => {
@@ -78,7 +78,7 @@ const ContactImporter = ({ onImport }: ContactImporterProps) => {
       },
     })).filter(contact => contact.email); // Only include rows with email
 
-    onImport(contacts);
+    onImport(contacts, sheetUrl, columnMapping);
     toast.success(`Importing ${contacts.length} contacts...`);
   };
 

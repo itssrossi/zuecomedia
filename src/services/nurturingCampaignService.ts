@@ -7,6 +7,16 @@ export interface CampaignConfig {
   email_enabled: boolean;
   sms_enabled: boolean;
   status: 'draft' | 'active' | 'paused' | 'completed';
+  google_sheet_url?: string;
+  google_sheet_id?: string;
+  sheet_column_mappings?: {
+    email: number;
+    phone: number;
+    firstName: number;
+    lastName: number;
+    company: number;
+  };
+  auto_sync_enabled?: boolean;
 }
 
 export interface MessageConfig {
