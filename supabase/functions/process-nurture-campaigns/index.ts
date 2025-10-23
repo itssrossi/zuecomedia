@@ -150,8 +150,17 @@ serve(async (req) => {
               message_id: delivery.message_id,
             },
           });
+        } else if (delivery.delivery_type === 'sms') {
+          // Call send-nurture-sms function
+          await supabase.functions.invoke('send-nurture-sms', {
+            body: {
+              delivery_id: delivery.id,
+              campaign_id: delivery.campaign_id,
+              contact_id: delivery.contact_id,
+              message_id: delivery.message_id,
+            },
+          });
         }
-        // SMS sending would go here in the future
       }
     }
 
