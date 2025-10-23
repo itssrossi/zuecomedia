@@ -16,6 +16,7 @@ import CalendarBooking from "./pages/CalendarBooking";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 import NurturingSettings from "./pages/NurturingSettings";
+import LeadNurturing from "./pages/LeadNurturing";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +46,11 @@ const App = () => (
               <Route path="/nurturing-settings" element={
                 <ProtectedRoute>
                   <NurturingSettings />
+                </ProtectedRoute>
+              } />
+              <Route path="/lead-nurturing" element={
+                <ProtectedRoute>
+                  <LeadNurturing />
                 </ProtectedRoute>
               } />
               <Route 
