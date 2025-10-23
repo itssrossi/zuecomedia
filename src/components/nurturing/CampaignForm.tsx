@@ -141,7 +141,22 @@ const CampaignForm = ({ onClose }: CampaignFormProps) => {
 
       if (contactsError) throw contactsError;
 
-      toast.success(`Campaign ${activate ? 'created and activated' : 'saved as draft'}!`);
+      // Process campaign if activated
+      if (activate) {
+        const { error: processError } = await supabase.functions.invoke('process-nurture-campaigns', {
+          body: { campaign_id: campaign.id }
+        });
+
+        if (processError) {
+          console.error('Error processing campaign:', processError);
+          toast.warning('Campaign created but failed to process. Emails will be sent on next sync.');
+        } else {
+          toast.success('Campaign activated! Emails are being sent.');
+        }
+      } else {
+        toast.success('Campaign saved as draft!');
+      }
+
       navigate('/lead-nurturing');
     } catch (error: any) {
       toast.error(error.message || "Failed to create campaign");

@@ -303,6 +303,76 @@ export type Database = {
         }
         Relationships: []
       }
+      nurture_deliveries: {
+        Row: {
+          campaign_id: string
+          contact_id: string
+          created_at: string
+          delivered_at: string | null
+          delivery_type: string
+          error_message: string | null
+          external_id: string | null
+          id: string
+          message_id: string
+          scheduled_for: string
+          sent_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          campaign_id: string
+          contact_id: string
+          created_at?: string
+          delivered_at?: string | null
+          delivery_type: string
+          error_message?: string | null
+          external_id?: string | null
+          id?: string
+          message_id: string
+          scheduled_for: string
+          sent_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          campaign_id?: string
+          contact_id?: string
+          created_at?: string
+          delivered_at?: string | null
+          delivery_type?: string
+          error_message?: string | null
+          external_id?: string | null
+          id?: string
+          message_id?: string
+          scheduled_for?: string
+          sent_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "nurture_deliveries_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "nurture_campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "nurture_deliveries_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "nurture_contacts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "nurture_deliveries_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "nurture_messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       nurture_logs: {
         Row: {
           campaign_id: string
