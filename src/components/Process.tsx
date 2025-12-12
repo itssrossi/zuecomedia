@@ -16,7 +16,7 @@ const Process = () => {
     {
       icon: <Zap className="h-6 w-6 text-white" />,
       title: "Development",
-      description: "We build robust, scalable solutions implementing your designs with cutting-edge technology and best practices."
+      description: "We build robust, scalable client acquisition solutions implementing your designs with cutting-edge technology and best practices."
     },
     {
       icon: <Rocket className="h-6 w-6 text-white" />,
