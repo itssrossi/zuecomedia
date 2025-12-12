@@ -33,7 +33,7 @@ const About = () => {
                   <div className="bg-zue-blue rounded-full p-1 mr-3 mt-1">
                     <Check className="h-3 w-3 text-white" />
                   </div>
-                  <span className="text-lg text-slate-600">{item}</span>
+                  <span className="text-lg text-primary-foreground">{item}</span>
                 </div>)}
             </div>
             
