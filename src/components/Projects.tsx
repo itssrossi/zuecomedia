@@ -40,6 +40,7 @@ const projects = [
     title: "Coming Soon",
     category: "New Project",
     description: "Stay tuned for our next success story.",
+    image: "/images/coming-soon-thumbnail.png",
   },
 ];
 
