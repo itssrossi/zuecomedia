@@ -6,7 +6,8 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 
-const fullTestimonial = `Working with Zueco Media showed me what real performance marketing looks like.
+const testimonials: Record<string, string> = {
+  "Link2Pay - SaaS": `Working with Zueco Media showed me what real performance marketing looks like.
 
 We launched Link2Pay with zero brand presence, no previous users, and no existing audience — yet within the first 30 days, Zueco Media acquired over 49 new trial users for our platform.
 
@@ -14,7 +15,10 @@ The campaign was data-driven from the start. They tested multiple creatives, ref
 
 Even though our conversion from trial to paid users didn't hit where we expected, the data clearly showed the issue was with our onboarding process — not the marketing. Zueco Media delivered exactly what they promised: predictable user acquisition and validated demand.
 
-If you're trying to launch a SaaS or acquire real users quickly, Zueco Media isn't just an ad agency — they're a strategic growth partner who understands product, funnels, and performance at a deep level.`;
+If you're trying to launch a SaaS or acquire real users quickly, Zueco Media isn't just an ad agency — they're a strategic growth partner who understands product, funnels, and performance at a deep level.`,
+  "Shechem Counselling": `"Zueco Media transformed our counselling practice. Within the first month, our bookings increased significantly and we began receiving more qualified enquiries than ever before. Their communication, reporting and campaign strategy were exceptional. Highly recommended."
+— Shechem Counselling`
+};
 
 const projects = [
   {
@@ -26,9 +30,11 @@ const projects = [
     hasTestimonial: true,
   },
   {
-    title: "Retro Academy Consulting",
-    category: "Marketing • Strategy • SEO",
-    description: "Comprehensive digital marketing campaign that increased organic traffic by 150%."
+    title: "Shechem Counselling",
+    category: "Marketing • Strategy • Lead Generation",
+    description: "Zueco Media transformed our counselling practice.",
+    image: "/images/shechem-counselling-thumbnail.png",
+    hasTestimonial: true,
   },
   {
     title: "Path Branding",
@@ -99,7 +105,7 @@ const ProjectCard = ({ project, index }: { project: typeof projects[0]; index: n
           align="start"
         >
           <p className="text-sm text-gray-300 whitespace-pre-line leading-relaxed">
-            {fullTestimonial}
+            {testimonials[project.title]}
           </p>
         </HoverCardContent>
       </HoverCard>
