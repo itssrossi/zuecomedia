@@ -37,25 +37,10 @@ const projects = [
     hasTestimonial: true,
   },
   {
-    title: "Path Branding",
-    category: "Branding • Design • Strategy",
-    description: "Complete brand identity overhaul for a growing tech startup."
+    title: "Coming Soon",
+    category: "New Project",
+    description: "Stay tuned for our next success story.",
   },
-  {
-    title: "SaaS Mobile Application",
-    category: "UI/UX • Development • Product",
-    description: "Mobile app development for a subscription-based service with integrated payment system."
-  },
-  {
-    title: "University SEO Strategy",
-    category: "SEO • Content • Analytics",
-    description: "Implemented SEO strategy that doubled organic search visibility within 6 months."
-  },
-  {
-    title: "Creative Accounting Firm",
-    category: "Branding • Website • Print Design",
-    description: "Brand positioning and website design for an accounting firm targeting creative professionals."
-  }
 ];
 
 const ProjectCard = ({ project, index }: { project: typeof projects[0]; index: number }) => {
