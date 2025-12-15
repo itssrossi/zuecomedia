@@ -10,7 +10,19 @@ const Hero = () => {
     navigate('/login');
   };
   return <section id="home" className="min-h-screen bg-zue-dark flex items-center relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-zue-blue/10 to-transparent z-0" style={{
+      {/* Spline 3D Background */}
+      <div className="absolute inset-0 z-0 opacity-50">
+        <iframe 
+          src='https://my.spline.design/animatedpaperboat-pbhbytudkYfJXVCFAislvOH9/' 
+          frameBorder='0' 
+          width='100%' 
+          height='100%'
+          className="pointer-events-none"
+        />
+      </div>
+      
+      {/* Blue Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-b from-zue-blue/10 to-transparent z-[1]" style={{
       backgroundImage: "radial-gradient(circle at 25% 10%, rgba(14, 165, 233, 0.15) 0%, transparent 50%)"
     }} />
       
