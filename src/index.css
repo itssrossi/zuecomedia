@@ -70,6 +70,10 @@
     /* Keep existing dark theme variables */
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
   * {
     @apply border-border;
   }
