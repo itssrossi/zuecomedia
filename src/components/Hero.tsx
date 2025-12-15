@@ -1,23 +1,44 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, LogIn } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState, useRef } from "react";
+
 const Hero = () => {
   const navigate = useNavigate();
+  const [scrollY, setScrollY] = useState(0);
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (sectionRef.current) {
+        const rect = sectionRef.current.getBoundingClientRect();
+        if (rect.bottom > 0) {
+          setScrollY(window.scrollY * 0.3);
+        }
+      }
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
   const handleGetStarted = () => {
     window.open('https://wa.me/27750143309', '_blank');
   };
   const handleLogin = () => {
     navigate('/login');
   };
-  return <section id="home" className="min-h-screen bg-zue-dark flex items-center relative overflow-hidden">
-      {/* Spline 3D Background */}
-      <div className="absolute inset-0 z-0 opacity-50">
+  return <section ref={sectionRef} id="home" className="min-h-screen bg-zue-dark flex items-center relative overflow-hidden">
+      {/* Spline 3D Background with Parallax */}
+      <div 
+        className="absolute inset-0 z-0 opacity-50 will-change-transform"
+        style={{ transform: `translateY(${scrollY}px)` }}
+      >
         <iframe 
           src='https://my.spline.design/animatedpaperboat-pbhbytudkYfJXVCFAislvOH9/' 
           frameBorder='0' 
           width='100%' 
           height='100%'
           className="pointer-events-none"
+          loading="eager"
         />
       </div>
       
