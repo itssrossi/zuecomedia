@@ -85,6 +85,7 @@ const App = () => (
                     </ProtectedRoute>
                   } 
                 />
+                <Route path="/real-estate" element={<RealEstateLanding />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </AuthProvider>
