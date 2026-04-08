@@ -159,7 +159,22 @@ ${formData.goals}
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      <section ref={heroRef} className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        {/* Spline 3D Background with Parallax */}
+        <div 
+          className="absolute inset-0 z-0 opacity-50 will-change-transform"
+          style={{ transform: `translateY(${scrollY}px)` }}
+        >
+          <iframe 
+            src='https://my.spline.design/animatedpaperboat-pbhbytudkYfJXVCFAislvOH9/' 
+            frameBorder='0' 
+            width='100%' 
+            height='100%'
+            className="pointer-events-none"
+            loading="eager"
+          />
+        </div>
+
         <div className="absolute inset-0 bg-gradient-to-br from-background via-secondary to-background" />
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-20 left-10 w-72 h-72 bg-primary rounded-full blur-[120px]" />
