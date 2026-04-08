@@ -407,6 +407,7 @@ ${formData.goals}
             </div>
 
             <div className="bg-card border border-border rounded-xl p-8">
+              <img src={shechemLogo} alt="Shechem Counselling" className="h-10 object-contain mb-4" />
               <div className="flex gap-1 mb-4">
                 {[...Array(5)].map((_, i) => (
                   <Star
