@@ -1,5 +1,5 @@
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,10 +30,25 @@ import {
 } from "lucide-react";
 
 const RealEstateLanding = () => {
+  const heroRef = useRef<HTMLElement>(null);
   const bookingRef = useRef<HTMLDivElement>(null);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [selectedTime, setSelectedTime] = useState("");
+  const [scrollY, setScrollY] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (heroRef.current) {
+        const rect = heroRef.current.getBoundingClientRect();
+        if (rect.bottom > 0) {
+          setScrollY(window.scrollY * 0.3);
+        }
+      }
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
   const [formData, setFormData] = useState({
     name: "",
     businessName: "",
@@ -144,8 +159,26 @@ ${formData.goals}
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-background via-secondary to-background" />
+      <section ref={heroRef} className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        {/* Spline 3D Background with Parallax */}
+        <div 
+          className="absolute inset-0 z-0 opacity-50 will-change-transform"
+          style={{ transform: `translateY(${scrollY}px)` }}
+        >
+          <iframe 
+            src='https://my.spline.design/animatedpaperboat-pbhbytudkYfJXVCFAislvOH9/' 
+            frameBorder='0' 
+            width='100%' 
+            height='100%'
+            className="pointer-events-none"
+            loading="eager"
+          />
+        </div>
+
+        <div className="absolute inset-0 bg-gradient-to-br from-background via-secondary to-background z-[1]" />
+        <div className="absolute inset-0 z-[1]" style={{
+          backgroundImage: "radial-gradient(circle at 25% 10%, rgba(14, 165, 233, 0.15) 0%, transparent 50%)"
+        }} />
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-20 left-10 w-72 h-72 bg-primary rounded-full blur-[120px]" />
           <div className="absolute bottom-20 right-10 w-96 h-96 bg-primary rounded-full blur-[150px]" />
