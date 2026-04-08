@@ -17,6 +17,7 @@ import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 import NurturingSettings from "./pages/NurturingSettings";
 import LeadNurturing from "./pages/LeadNurturing";
+import RealEstateLanding from "./pages/RealEstateLanding";
 import { useEffect } from "react";
 import Lenis from "lenis";
 
