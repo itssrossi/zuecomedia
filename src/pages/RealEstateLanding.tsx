@@ -28,6 +28,8 @@ import {
   Calendar as CalendarIcon,
   Zap,
 } from "lucide-react";
+import link2payLogo from "@/assets/link2pay-logo.png";
+import shechemLogo from "@/assets/shechem-logo.png";
 
 const RealEstateLanding = () => {
   const heroRef = useRef<HTMLElement>(null);
