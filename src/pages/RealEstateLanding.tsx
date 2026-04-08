@@ -28,6 +28,8 @@ import {
   Calendar as CalendarIcon,
   Zap,
 } from "lucide-react";
+import link2payLogo from "@/assets/link2pay-logo.png";
+import shechemLogo from "@/assets/shechem-logo.png";
 
 const RealEstateLanding = () => {
   const heroRef = useRef<HTMLElement>(null);
@@ -379,6 +381,7 @@ ${formData.goals}
           {/* Testimonials */}
           <div className="grid md:grid-cols-2 gap-8">
             <div className="bg-card border border-border rounded-xl p-8">
+              <img src={link2payLogo} alt="Link2Pay" className="h-10 object-contain mb-4" />
               <div className="flex gap-1 mb-4">
                 {[...Array(5)].map((_, i) => (
                   <Star
@@ -404,6 +407,7 @@ ${formData.goals}
             </div>
 
             <div className="bg-card border border-border rounded-xl p-8">
+              <img src={shechemLogo} alt="Shechem Counselling" className="h-10 object-contain mb-4" />
               <div className="flex gap-1 mb-4">
                 {[...Array(5)].map((_, i) => (
                   <Star
