@@ -34,6 +34,7 @@ const projects = [
     category: "Marketing • Strategy • Lead Generation",
     description: "Zueco Media transformed our counselling practice.",
     image: "/images/shechem-counselling-thumbnail.png",
+    pdfLink: "/documents/shechem-counselling-testimonial.pdf",
     hasTestimonial: true,
   },
   {
