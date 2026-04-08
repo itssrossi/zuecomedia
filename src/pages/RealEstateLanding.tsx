@@ -175,7 +175,7 @@ ${formData.goals}
           />
         </div>
 
-        <div className="absolute inset-0 bg-gradient-to-br from-background via-secondary to-background z-[1]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-background/80 via-secondary/70 to-background/80 z-[1]" />
         <div className="absolute inset-0 z-[1]" style={{
           backgroundImage: "radial-gradient(circle at 25% 10%, rgba(14, 165, 233, 0.15) 0%, transparent 50%)"
         }} />
