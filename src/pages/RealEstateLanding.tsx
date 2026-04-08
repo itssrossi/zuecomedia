@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 
 const RealEstateLanding = () => {
+  const heroRef = useRef<HTMLElement>(null);
   const bookingRef = useRef<HTMLDivElement>(null);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [selectedTime, setSelectedTime] = useState("");
