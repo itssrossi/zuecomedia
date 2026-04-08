@@ -175,7 +175,10 @@ ${formData.goals}
           />
         </div>
 
-        <div className="absolute inset-0 bg-gradient-to-br from-background via-secondary to-background" />
+        <div className="absolute inset-0 bg-gradient-to-br from-background via-secondary to-background z-[1]" />
+        <div className="absolute inset-0 z-[1]" style={{
+          backgroundImage: "radial-gradient(circle at 25% 10%, rgba(14, 165, 233, 0.15) 0%, transparent 50%)"
+        }} />
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-20 left-10 w-72 h-72 bg-primary rounded-full blur-[120px]" />
           <div className="absolute bottom-20 right-10 w-96 h-96 bg-primary rounded-full blur-[150px]" />
