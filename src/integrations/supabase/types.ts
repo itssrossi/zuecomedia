@@ -10,540 +10,1250 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "13.0.5"
+    PostgrestVersion: "12.2.3 (519615d)"
   }
   public: {
     Tables: {
-      fb_ad_accounts: {
+      availability_settings: {
         Row: {
-          access_token: string
-          account_id: string
-          account_name: string
           created_at: string
+          day_of_week: number
+          end_time: string
           id: string
+          is_available: boolean | null
+          start_time: string
           updated_at: string
           user_id: string
         }
         Insert: {
-          access_token: string
-          account_id: string
-          account_name: string
           created_at?: string
+          day_of_week: number
+          end_time: string
           id?: string
+          is_available?: boolean | null
+          start_time: string
           updated_at?: string
           user_id: string
         }
         Update: {
-          access_token?: string
-          account_id?: string
-          account_name?: string
           created_at?: string
+          day_of_week?: number
+          end_time?: string
           id?: string
+          is_available?: boolean | null
+          start_time?: string
           updated_at?: string
           user_id?: string
         }
         Relationships: []
       }
-      fb_ad_metrics: {
+      booking_time_slots: {
         Row: {
-          adset_id: string | null
-          adset_name: string | null
-          campaign_id: string
-          clicks: number
-          conversions: number
-          cpc: number
+          booking_id: string | null
           created_at: string
-          ctr: number
           date: string
           id: string
-          impressions: number
-          revenue: number
-          roas: number
-          spend: number
-          updated_at: string
+          is_booked: boolean | null
+          time_slot: string
           user_id: string
         }
         Insert: {
-          adset_id?: string | null
-          adset_name?: string | null
-          campaign_id: string
-          clicks?: number
-          conversions?: number
-          cpc?: number
+          booking_id?: string | null
           created_at?: string
-          ctr?: number
           date: string
           id?: string
-          impressions?: number
-          revenue?: number
-          roas?: number
-          spend?: number
-          updated_at?: string
+          is_booked?: boolean | null
+          time_slot: string
           user_id: string
         }
         Update: {
-          adset_id?: string | null
-          adset_name?: string | null
-          campaign_id?: string
-          clicks?: number
-          conversions?: number
-          cpc?: number
+          booking_id?: string | null
           created_at?: string
-          ctr?: number
           date?: string
           id?: string
-          impressions?: number
-          revenue?: number
-          roas?: number
-          spend?: number
+          is_booked?: boolean | null
+          time_slot?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_booking_time_slots_booking_id"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      booking_transactions: {
+        Row: {
+          amount: number
+          booking_id: string
+          created_at: string
+          id: string
+          payfast_data: Json | null
+          payfast_payment_id: string | null
+          status: string
+          transaction_type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          booking_id: string
+          created_at?: string
+          id?: string
+          payfast_data?: Json | null
+          payfast_payment_id?: string | null
+          status?: string
+          transaction_type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          booking_id?: string
+          created_at?: string
+          id?: string
+          payfast_data?: Json | null
+          payfast_payment_id?: string | null
+          status?: string
+          transaction_type?: string
           updated_at?: string
           user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "fb_ad_metrics_campaign_id_fkey"
-            columns: ["campaign_id"]
+            foreignKeyName: "booking_transactions_booking_id_fkey"
+            columns: ["booking_id"]
             isOneToOne: false
-            referencedRelation: "fb_campaigns"
+            referencedRelation: "bookings"
             referencedColumns: ["id"]
           },
         ]
       }
-      fb_campaigns: {
+      bookings: {
         Row: {
-          campaign_name: string
-          campaign_status: string | null
+          amount_due: number | null
+          amount_paid: number | null
+          balance_due_at: string | null
+          booking_date: string
+          booking_time: string
           created_at: string
-          fb_campaign_id: string
+          customer_email: string
+          customer_name: string
+          customer_phone: string | null
+          duration: number | null
           id: string
-          start_time: string | null
-          stop_time: string | null
+          notes: string | null
+          payfast_payment_id: string | null
+          payment_data: Json | null
+          payment_status: string | null
+          product_ids: string[] | null
+          status: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
-          campaign_name: string
-          campaign_status?: string | null
+          amount_due?: number | null
+          amount_paid?: number | null
+          balance_due_at?: string | null
+          booking_date: string
+          booking_time: string
           created_at?: string
-          fb_campaign_id: string
+          customer_email: string
+          customer_name: string
+          customer_phone?: string | null
+          duration?: number | null
           id?: string
-          start_time?: string | null
-          stop_time?: string | null
+          notes?: string | null
+          payfast_payment_id?: string | null
+          payment_data?: Json | null
+          payment_status?: string | null
+          product_ids?: string[] | null
+          status?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
-          campaign_name?: string
-          campaign_status?: string | null
+          amount_due?: number | null
+          amount_paid?: number | null
+          balance_due_at?: string | null
+          booking_date?: string
+          booking_time?: string
           created_at?: string
-          fb_campaign_id?: string
+          customer_email?: string
+          customer_name?: string
+          customer_phone?: string | null
+          duration?: number | null
           id?: string
-          start_time?: string | null
-          stop_time?: string | null
+          notes?: string | null
+          payfast_payment_id?: string | null
+          payment_data?: Json | null
+          payment_status?: string | null
+          product_ids?: string[] | null
+          status?: string | null
           updated_at?: string
           user_id?: string
         }
         Relationships: []
       }
-      fb_sync_status: {
+      email_campaign_logs: {
         Row: {
           created_at: string
+          details: Json | null
           id: string
-          last_sync_at: string
-          sync_status: string
+          status: string
+          subscriber_id: string
+        }
+        Insert: {
+          created_at?: string
+          details?: Json | null
+          id?: string
+          status: string
+          subscriber_id: string
+        }
+        Update: {
+          created_at?: string
+          details?: Json | null
+          id?: string
+          status?: string
+          subscriber_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_campaign_logs_subscriber_id_fkey"
+            columns: ["subscriber_id"]
+            isOneToOne: false
+            referencedRelation: "email_campaign_subscribers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      email_campaign_subscribers: {
+        Row: {
+          campaign_id: string
+          created_at: string
+          id: string
+          scheduled_at: string
+          sent_at: string | null
+          status: string
           updated_at: string
           user_id: string
         }
         Insert: {
+          campaign_id: string
           created_at?: string
           id?: string
-          last_sync_at?: string
-          sync_status?: string
+          scheduled_at: string
+          sent_at?: string | null
+          status?: string
           updated_at?: string
           user_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          last_sync_at?: string
-          sync_status?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      nurture_campaigns: {
-        Row: {
-          auto_sync_enabled: boolean | null
-          created_at: string | null
-          description: string | null
-          email_enabled: boolean | null
-          google_sheet_id: string | null
-          google_sheet_url: string | null
-          id: string
-          name: string
-          sheet_column_mappings: Json | null
-          sms_enabled: boolean | null
-          status: string
-          type: string
-          updated_at: string | null
-          user_id: string
-        }
-        Insert: {
-          auto_sync_enabled?: boolean | null
-          created_at?: string | null
-          description?: string | null
-          email_enabled?: boolean | null
-          google_sheet_id?: string | null
-          google_sheet_url?: string | null
-          id?: string
-          name: string
-          sheet_column_mappings?: Json | null
-          sms_enabled?: boolean | null
-          status?: string
-          type: string
-          updated_at?: string | null
-          user_id: string
-        }
-        Update: {
-          auto_sync_enabled?: boolean | null
-          created_at?: string | null
-          description?: string | null
-          email_enabled?: boolean | null
-          google_sheet_id?: string | null
-          google_sheet_url?: string | null
-          id?: string
-          name?: string
-          sheet_column_mappings?: Json | null
-          sms_enabled?: boolean | null
-          status?: string
-          type?: string
-          updated_at?: string | null
-          user_id?: string
-        }
-        Relationships: []
-      }
-      nurture_contacts: {
-        Row: {
-          campaign_id: string
-          custom_fields: Json | null
-          email: string | null
-          first_name: string | null
-          id: string
-          imported_at: string | null
-          last_name: string | null
-          last_synced: string | null
-          phone: string | null
-          status: string
-        }
-        Insert: {
-          campaign_id: string
-          custom_fields?: Json | null
-          email?: string | null
-          first_name?: string | null
-          id?: string
-          imported_at?: string | null
-          last_name?: string | null
-          last_synced?: string | null
-          phone?: string | null
-          status?: string
         }
         Update: {
           campaign_id?: string
-          custom_fields?: Json | null
-          email?: string | null
-          first_name?: string | null
+          created_at?: string
           id?: string
-          imported_at?: string | null
-          last_name?: string | null
-          last_synced?: string | null
-          phone?: string | null
+          scheduled_at?: string
+          sent_at?: string | null
           status?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "nurture_contacts_campaign_id_fkey"
+            foreignKeyName: "email_campaign_subscribers_campaign_id_fkey"
             columns: ["campaign_id"]
             isOneToOne: false
-            referencedRelation: "nurture_campaigns"
+            referencedRelation: "email_campaigns"
             referencedColumns: ["id"]
           },
         ]
       }
-      nurture_credentials: {
+      email_campaigns: {
+        Row: {
+          created_at: string
+          delay_days: number
+          id: string
+          is_active: boolean
+          name: string
+          subject: string
+          template_content: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          delay_days: number
+          id?: string
+          is_active?: boolean
+          name: string
+          subject: string
+          template_content: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          delay_days?: number
+          id?: string
+          is_active?: boolean
+          name?: string
+          subject?: string
+          template_content?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      invoice_items: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          invoice_id: string
+          quantity: number
+          title: string
+          total_price: number
+          unit_price: number
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          invoice_id: string
+          quantity?: number
+          title: string
+          total_price: number
+          unit_price: number
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          invoice_id?: string
+          quantity?: number
+          title?: string
+          total_price?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoice_items_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invoice_reminders: {
+        Row: {
+          created_at: string
+          id: string
+          invoice_id: string
+          sent_at: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          invoice_id: string
+          sent_at?: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          invoice_id?: string
+          sent_at?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoice_reminders_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invoices: {
+        Row: {
+          auto_reminder_enabled: boolean | null
+          client_email: string | null
+          client_name: string
+          client_phone: string | null
+          created_at: string
+          delivery_address: string | null
+          delivery_date: string | null
+          delivery_fee: number | null
+          delivery_method: string | null
+          delivery_notes: string | null
+          id: string
+          invoice_number: string
+          payment_enabled: boolean | null
+          payment_instructions: string | null
+          reminder_sent_at: string | null
+          show_payfast: boolean | null
+          show_snapscan: boolean | null
+          status: string | null
+          subtotal: number
+          total_amount: number
+          updated_at: string
+          user_id: string
+          vat_amount: number | null
+          vat_enabled: boolean | null
+          whatsapp_paid_sent: boolean | null
+        }
+        Insert: {
+          auto_reminder_enabled?: boolean | null
+          client_email?: string | null
+          client_name: string
+          client_phone?: string | null
+          created_at?: string
+          delivery_address?: string | null
+          delivery_date?: string | null
+          delivery_fee?: number | null
+          delivery_method?: string | null
+          delivery_notes?: string | null
+          id?: string
+          invoice_number: string
+          payment_enabled?: boolean | null
+          payment_instructions?: string | null
+          reminder_sent_at?: string | null
+          show_payfast?: boolean | null
+          show_snapscan?: boolean | null
+          status?: string | null
+          subtotal: number
+          total_amount: number
+          updated_at?: string
+          user_id: string
+          vat_amount?: number | null
+          vat_enabled?: boolean | null
+          whatsapp_paid_sent?: boolean | null
+        }
+        Update: {
+          auto_reminder_enabled?: boolean | null
+          client_email?: string | null
+          client_name?: string
+          client_phone?: string | null
+          created_at?: string
+          delivery_address?: string | null
+          delivery_date?: string | null
+          delivery_fee?: number | null
+          delivery_method?: string | null
+          delivery_notes?: string | null
+          id?: string
+          invoice_number?: string
+          payment_enabled?: boolean | null
+          payment_instructions?: string | null
+          reminder_sent_at?: string | null
+          show_payfast?: boolean | null
+          show_snapscan?: boolean | null
+          status?: string | null
+          subtotal?: number
+          total_amount?: number
+          updated_at?: string
+          user_id?: string
+          vat_amount?: number | null
+          vat_enabled?: boolean | null
+          whatsapp_paid_sent?: boolean | null
+        }
+        Relationships: []
+      }
+      onboarding_progress: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          entered_at: string
+          id: string
+          is_completed: boolean | null
+          is_skipped: boolean | null
+          metadata: Json | null
+          onboarding_type: string | null
+          skipped_at: string | null
+          step_name: string
+          step_number: number
+          time_spent_seconds: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          entered_at?: string
+          id?: string
+          is_completed?: boolean | null
+          is_skipped?: boolean | null
+          metadata?: Json | null
+          onboarding_type?: string | null
+          skipped_at?: string | null
+          step_name: string
+          step_number: number
+          time_spent_seconds?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          entered_at?: string
+          id?: string
+          is_completed?: boolean | null
+          is_skipped?: boolean | null
+          metadata?: Json | null
+          onboarding_type?: string | null
+          skipped_at?: string | null
+          step_name?: string
+          step_number?: number
+          time_spent_seconds?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      payfast_subscriptions: {
+        Row: {
+          amount: number
+          created_at: string | null
+          email: string
+          id: string
+          invoice_id: string
+          pf_subscription_id: string | null
+          raw_data: Json | null
+          status: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          email: string
+          id?: string
+          invoice_id: string
+          pf_subscription_id?: string | null
+          raw_data?: Json | null
+          status?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          email?: string
+          id?: string
+          invoice_id?: string
+          pf_subscription_id?: string | null
+          raw_data?: Json | null
+          status?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      platform_settings: {
         Row: {
           created_at: string | null
-          google_sheets_api_key: string | null
           id: string
-          resend_api_key: string | null
-          resend_email_from: string | null
           twilio_account_sid: string | null
           twilio_auth_token: string | null
-          twilio_phone_number: string | null
+          twilio_whatsapp_number: string | null
           updated_at: string | null
-          user_id: string
+          whatsapp_api_token: string | null
+          whatsapp_phone_id: string | null
+          zoko_api_key: string | null
+          zoko_base_url: string | null
+          zoko_business_phone: string | null
         }
         Insert: {
           created_at?: string | null
-          google_sheets_api_key?: string | null
           id?: string
-          resend_api_key?: string | null
-          resend_email_from?: string | null
           twilio_account_sid?: string | null
           twilio_auth_token?: string | null
-          twilio_phone_number?: string | null
+          twilio_whatsapp_number?: string | null
           updated_at?: string | null
-          user_id: string
+          whatsapp_api_token?: string | null
+          whatsapp_phone_id?: string | null
+          zoko_api_key?: string | null
+          zoko_base_url?: string | null
+          zoko_business_phone?: string | null
         }
         Update: {
           created_at?: string | null
-          google_sheets_api_key?: string | null
           id?: string
-          resend_api_key?: string | null
-          resend_email_from?: string | null
           twilio_account_sid?: string | null
           twilio_auth_token?: string | null
-          twilio_phone_number?: string | null
+          twilio_whatsapp_number?: string | null
           updated_at?: string | null
-          user_id?: string
+          whatsapp_api_token?: string | null
+          whatsapp_phone_id?: string | null
+          zoko_api_key?: string | null
+          zoko_base_url?: string | null
+          zoko_business_phone?: string | null
         }
         Relationships: []
       }
-      nurture_deliveries: {
+      products: {
         Row: {
-          campaign_id: string
-          contact_id: string
+          category: string | null
           created_at: string
-          delivered_at: string | null
-          delivery_type: string
-          error_message: string | null
-          external_id: string | null
+          delivery_method: string | null
+          description: string | null
           id: string
-          message_id: string
-          scheduled_for: string
-          sent_at: string | null
-          status: string
+          image_url: string | null
+          inventory_enabled: boolean | null
+          is_active: boolean
+          price: number
+          product_id: string | null
+          stock_quantity: number | null
+          title: string
           updated_at: string
+          user_id: string
         }
         Insert: {
-          campaign_id: string
-          contact_id: string
+          category?: string | null
           created_at?: string
-          delivered_at?: string | null
-          delivery_type: string
-          error_message?: string | null
-          external_id?: string | null
+          delivery_method?: string | null
+          description?: string | null
           id?: string
-          message_id: string
-          scheduled_for: string
-          sent_at?: string | null
-          status?: string
+          image_url?: string | null
+          inventory_enabled?: boolean | null
+          is_active?: boolean
+          price: number
+          product_id?: string | null
+          stock_quantity?: number | null
+          title: string
           updated_at?: string
+          user_id: string
         }
         Update: {
-          campaign_id?: string
-          contact_id?: string
+          category?: string | null
           created_at?: string
-          delivered_at?: string | null
-          delivery_type?: string
-          error_message?: string | null
-          external_id?: string | null
+          delivery_method?: string | null
+          description?: string | null
           id?: string
-          message_id?: string
-          scheduled_for?: string
-          sent_at?: string | null
-          status?: string
+          image_url?: string | null
+          inventory_enabled?: boolean | null
+          is_active?: boolean
+          price?: number
+          product_id?: string | null
+          stock_quantity?: number | null
+          title?: string
           updated_at?: string
+          user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "nurture_deliveries_campaign_id_fkey"
-            columns: ["campaign_id"]
-            isOneToOne: false
-            referencedRelation: "nurture_campaigns"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "nurture_deliveries_contact_id_fkey"
-            columns: ["contact_id"]
-            isOneToOne: false
-            referencedRelation: "nurture_contacts"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "nurture_deliveries_message_id_fkey"
-            columns: ["message_id"]
-            isOneToOne: false
-            referencedRelation: "nurture_messages"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      nurture_logs: {
-        Row: {
-          campaign_id: string
-          contact_id: string
-          created_at: string | null
-          error_message: string | null
-          external_id: string | null
-          id: string
-          message_id: string
-          message_type: string
-          scheduled_for: string
-          sent_at: string | null
-          status: string
-        }
-        Insert: {
-          campaign_id: string
-          contact_id: string
-          created_at?: string | null
-          error_message?: string | null
-          external_id?: string | null
-          id?: string
-          message_id: string
-          message_type: string
-          scheduled_for: string
-          sent_at?: string | null
-          status?: string
-        }
-        Update: {
-          campaign_id?: string
-          contact_id?: string
-          created_at?: string | null
-          error_message?: string | null
-          external_id?: string | null
-          id?: string
-          message_id?: string
-          message_type?: string
-          scheduled_for?: string
-          sent_at?: string | null
-          status?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "nurture_logs_campaign_id_fkey"
-            columns: ["campaign_id"]
-            isOneToOne: false
-            referencedRelation: "nurture_campaigns"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "nurture_logs_contact_id_fkey"
-            columns: ["contact_id"]
-            isOneToOne: false
-            referencedRelation: "nurture_contacts"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "nurture_logs_message_id_fkey"
-            columns: ["message_id"]
-            isOneToOne: false
-            referencedRelation: "nurture_messages"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      nurture_messages: {
-        Row: {
-          campaign_id: string
-          content: string
-          created_at: string | null
-          delay_unit: string
-          delay_value: number
-          id: string
-          message_type: string
-          schedule_day: string | null
-          schedule_time: string | null
-          sequence_order: number
-          subject: string | null
-          timing_type: string
-          updated_at: string | null
-        }
-        Insert: {
-          campaign_id: string
-          content: string
-          created_at?: string | null
-          delay_unit?: string
-          delay_value?: number
-          id?: string
-          message_type: string
-          schedule_day?: string | null
-          schedule_time?: string | null
-          sequence_order: number
-          subject?: string | null
-          timing_type?: string
-          updated_at?: string | null
-        }
-        Update: {
-          campaign_id?: string
-          content?: string
-          created_at?: string | null
-          delay_unit?: string
-          delay_value?: number
-          id?: string
-          message_type?: string
-          schedule_day?: string | null
-          schedule_time?: string | null
-          sequence_order?: number
-          subject?: string | null
-          timing_type?: string
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "nurture_messages_campaign_id_fkey"
-            columns: ["campaign_id"]
-            isOneToOne: false
-            referencedRelation: "nurture_campaigns"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       profiles: {
         Row: {
+          accent_color: string | null
+          allow_product_selection_bookings: boolean | null
+          background_color: string | null
+          billing_failures: number | null
+          billing_start_date: string | null
+          booking_payments_enabled: boolean | null
+          business_name: string | null
+          cancelled_at: string | null
+          capitec_paylink: string | null
           created_at: string
-          email: string
+          customization_version: number | null
+          dashboard_visit_count: number | null
+          default_booking_deposit: number | null
+          default_currency: string | null
+          delivery_method: string | null
+          delivery_note: string | null
+          discount_applied: boolean | null
+          eft_details: string | null
+          email: string | null
+          first_invoice_sent_at: string | null
+          first_sign_in_completed: boolean | null
           full_name: string | null
+          glowing_invoice_tab: boolean | null
+          has_active_subscription: boolean | null
+          header_banner_url: string | null
+          hero_cta_link: string | null
+          hero_cta_text: string | null
+          hero_headline: string | null
+          hero_image_url: string | null
+          hero_subheading: string | null
           id: string
+          last_customized_at: string | null
+          last_dashboard_visit: string | null
+          logo_url: string | null
+          onboarding_choice: string | null
+          onboarding_completed: boolean | null
+          onboarding_completed_at: string | null
+          payfast_billing_token: string | null
+          payfast_link: string | null
+          payfast_merchant_id: string | null
+          payfast_merchant_key: string | null
+          payfast_passphrase: string | null
+          payment_method: string | null
+          paystack_customer_code: string | null
+          pf_subscription_id: string | null
+          primary_color: string | null
+          prompt_logo_dismissed: boolean | null
+          prompt_products_dismissed: boolean | null
+          prompt_quick_invoice_dismissed: boolean | null
+          quick_invoice_used: boolean | null
+          show_capitec: boolean | null
+          show_payfast_auto: boolean | null
+          snapscan_link: string | null
+          store_address: string | null
+          store_bio: string | null
+          store_font: string | null
+          store_handle: string | null
+          store_layout: string | null
+          store_location: string | null
+          store_visibility: boolean | null
+          subscription_amount: number | null
+          subscription_price: number | null
+          subscription_status: string | null
+          theme_preset: string | null
+          tip_popup_shown: boolean | null
+          trial_ends_at: string | null
+          trial_expired: boolean | null
+          trial_started_at: string | null
+          trial_used: boolean | null
+          updated_at: string
+          whatsapp_number: string | null
         }
         Insert: {
+          accent_color?: string | null
+          allow_product_selection_bookings?: boolean | null
+          background_color?: string | null
+          billing_failures?: number | null
+          billing_start_date?: string | null
+          booking_payments_enabled?: boolean | null
+          business_name?: string | null
+          cancelled_at?: string | null
+          capitec_paylink?: string | null
           created_at?: string
-          email: string
+          customization_version?: number | null
+          dashboard_visit_count?: number | null
+          default_booking_deposit?: number | null
+          default_currency?: string | null
+          delivery_method?: string | null
+          delivery_note?: string | null
+          discount_applied?: boolean | null
+          eft_details?: string | null
+          email?: string | null
+          first_invoice_sent_at?: string | null
+          first_sign_in_completed?: boolean | null
           full_name?: string | null
+          glowing_invoice_tab?: boolean | null
+          has_active_subscription?: boolean | null
+          header_banner_url?: string | null
+          hero_cta_link?: string | null
+          hero_cta_text?: string | null
+          hero_headline?: string | null
+          hero_image_url?: string | null
+          hero_subheading?: string | null
           id: string
+          last_customized_at?: string | null
+          last_dashboard_visit?: string | null
+          logo_url?: string | null
+          onboarding_choice?: string | null
+          onboarding_completed?: boolean | null
+          onboarding_completed_at?: string | null
+          payfast_billing_token?: string | null
+          payfast_link?: string | null
+          payfast_merchant_id?: string | null
+          payfast_merchant_key?: string | null
+          payfast_passphrase?: string | null
+          payment_method?: string | null
+          paystack_customer_code?: string | null
+          pf_subscription_id?: string | null
+          primary_color?: string | null
+          prompt_logo_dismissed?: boolean | null
+          prompt_products_dismissed?: boolean | null
+          prompt_quick_invoice_dismissed?: boolean | null
+          quick_invoice_used?: boolean | null
+          show_capitec?: boolean | null
+          show_payfast_auto?: boolean | null
+          snapscan_link?: string | null
+          store_address?: string | null
+          store_bio?: string | null
+          store_font?: string | null
+          store_handle?: string | null
+          store_layout?: string | null
+          store_location?: string | null
+          store_visibility?: boolean | null
+          subscription_amount?: number | null
+          subscription_price?: number | null
+          subscription_status?: string | null
+          theme_preset?: string | null
+          tip_popup_shown?: boolean | null
+          trial_ends_at?: string | null
+          trial_expired?: boolean | null
+          trial_started_at?: string | null
+          trial_used?: boolean | null
+          updated_at?: string
+          whatsapp_number?: string | null
         }
         Update: {
+          accent_color?: string | null
+          allow_product_selection_bookings?: boolean | null
+          background_color?: string | null
+          billing_failures?: number | null
+          billing_start_date?: string | null
+          booking_payments_enabled?: boolean | null
+          business_name?: string | null
+          cancelled_at?: string | null
+          capitec_paylink?: string | null
           created_at?: string
-          email?: string
+          customization_version?: number | null
+          dashboard_visit_count?: number | null
+          default_booking_deposit?: number | null
+          default_currency?: string | null
+          delivery_method?: string | null
+          delivery_note?: string | null
+          discount_applied?: boolean | null
+          eft_details?: string | null
+          email?: string | null
+          first_invoice_sent_at?: string | null
+          first_sign_in_completed?: boolean | null
           full_name?: string | null
+          glowing_invoice_tab?: boolean | null
+          has_active_subscription?: boolean | null
+          header_banner_url?: string | null
+          hero_cta_link?: string | null
+          hero_cta_text?: string | null
+          hero_headline?: string | null
+          hero_image_url?: string | null
+          hero_subheading?: string | null
           id?: string
+          last_customized_at?: string | null
+          last_dashboard_visit?: string | null
+          logo_url?: string | null
+          onboarding_choice?: string | null
+          onboarding_completed?: boolean | null
+          onboarding_completed_at?: string | null
+          payfast_billing_token?: string | null
+          payfast_link?: string | null
+          payfast_merchant_id?: string | null
+          payfast_merchant_key?: string | null
+          payfast_passphrase?: string | null
+          payment_method?: string | null
+          paystack_customer_code?: string | null
+          pf_subscription_id?: string | null
+          primary_color?: string | null
+          prompt_logo_dismissed?: boolean | null
+          prompt_products_dismissed?: boolean | null
+          prompt_quick_invoice_dismissed?: boolean | null
+          quick_invoice_used?: boolean | null
+          show_capitec?: boolean | null
+          show_payfast_auto?: boolean | null
+          snapscan_link?: string | null
+          store_address?: string | null
+          store_bio?: string | null
+          store_font?: string | null
+          store_handle?: string | null
+          store_layout?: string | null
+          store_location?: string | null
+          store_visibility?: boolean | null
+          subscription_amount?: number | null
+          subscription_price?: number | null
+          subscription_status?: string | null
+          theme_preset?: string | null
+          tip_popup_shown?: boolean | null
+          trial_ends_at?: string | null
+          trial_expired?: boolean | null
+          trial_started_at?: string | null
+          trial_used?: boolean | null
+          updated_at?: string
+          whatsapp_number?: string | null
         }
         Relationships: []
       }
-      user_onboarding: {
+      promo_codes: {
         Row: {
-          completed: boolean | null
+          code: string
+          created_at: string | null
+          current_uses: number | null
+          discount_amount: number
+          expires_at: string | null
+          id: string
+          is_active: boolean | null
+          max_uses: number | null
+        }
+        Insert: {
+          code: string
+          created_at?: string | null
+          current_uses?: number | null
+          discount_amount: number
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_uses?: number | null
+        }
+        Update: {
+          code?: string
+          created_at?: string | null
+          current_uses?: number | null
+          discount_amount?: number
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_uses?: number | null
+        }
+        Relationships: []
+      }
+      reward_activities: {
+        Row: {
+          activity_type: string
           created_at: string | null
           id: string
-          onboarding_data: Json | null
+          metadata: Json | null
+          points_earned: number
+          user_id: string
+        }
+        Insert: {
+          activity_type: string
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          points_earned: number
+          user_id: string
+        }
+        Update: {
+          activity_type?: string
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          points_earned?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      store_sections: {
+        Row: {
+          created_at: string
+          id: string
+          is_enabled: boolean | null
+          section_content: string | null
+          section_order: number | null
+          section_settings: Json | null
+          section_title: string | null
+          section_type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_enabled?: boolean | null
+          section_content?: string | null
+          section_order?: number | null
+          section_settings?: Json | null
+          section_title?: string | null
+          section_type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_enabled?: boolean | null
+          section_content?: string | null
+          section_order?: number | null
+          section_settings?: Json | null
+          section_title?: string | null
+          section_type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      subscription_transactions: {
+        Row: {
+          amount: number | null
+          created_at: string | null
+          id: string
+          payfast_payment_id: string | null
+          reference: string | null
+          status: string
+          transaction_type: string
           updated_at: string | null
           user_id: string
         }
         Insert: {
-          completed?: boolean | null
+          amount?: number | null
           created_at?: string | null
           id?: string
-          onboarding_data?: Json | null
+          payfast_payment_id?: string | null
+          reference?: string | null
+          status?: string
+          transaction_type: string
           updated_at?: string | null
           user_id: string
         }
         Update: {
-          completed?: boolean | null
+          amount?: number | null
           created_at?: string | null
           id?: string
-          onboarding_data?: Json | null
+          payfast_payment_id?: string | null
+          reference?: string | null
+          status?: string
+          transaction_type?: string
           updated_at?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      subscriptions: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string | null
+          id: string
+          next_billing_date: string | null
+          paystack_plan_code: string | null
+          paystack_subscription_code: string | null
+          promo_applied: boolean | null
+          start_date: string | null
+          status: string
+          trial_end_date: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency?: string | null
+          id?: string
+          next_billing_date?: string | null
+          paystack_plan_code?: string | null
+          paystack_subscription_code?: string | null
+          promo_applied?: boolean | null
+          start_date?: string | null
+          status?: string
+          trial_end_date?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string | null
+          id?: string
+          next_billing_date?: string | null
+          paystack_plan_code?: string | null
+          paystack_subscription_code?: string | null
+          promo_applied?: boolean | null
+          start_date?: string | null
+          status?: string
+          trial_end_date?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_activity: {
+        Row: {
+          created_at: string | null
+          id: string
+          last_dashboard_visit: string | null
+          last_invoice_at: string | null
+          tag: string
+          tag_updated_at: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          last_dashboard_visit?: string | null
+          last_invoice_at?: string | null
+          tag: string
+          tag_updated_at?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          last_dashboard_visit?: string | null
+          last_invoice_at?: string | null
+          tag?: string
+          tag_updated_at?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_notifications: {
+        Row: {
+          created_at: string | null
+          id: string
+          message_content: string
+          message_type: string
+          sent_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          message_content: string
+          message_type: string
+          sent_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          message_content?: string
+          message_type?: string
+          sent_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_rewards: {
+        Row: {
+          badges: string[] | null
+          created_at: string | null
+          current_streak: number | null
+          has_seen_rewards_popup: boolean | null
+          id: string
+          last_activity_date: string | null
+          longest_streak: number | null
+          points_total: number | null
+          points_weekly: number | null
+          streak_safe_date: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          badges?: string[] | null
+          created_at?: string | null
+          current_streak?: number | null
+          has_seen_rewards_popup?: boolean | null
+          id?: string
+          last_activity_date?: string | null
+          longest_streak?: number | null
+          points_total?: number | null
+          points_weekly?: number | null
+          streak_safe_date?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          badges?: string[] | null
+          created_at?: string | null
+          current_streak?: number | null
+          has_seen_rewards_popup?: boolean | null
+          id?: string
+          last_activity_date?: string | null
+          longest_streak?: number | null
+          points_total?: number | null
+          points_weekly?: number | null
+          streak_safe_date?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      whatsapp_campaign_logs: {
+        Row: {
+          created_at: string
+          details: Json | null
+          id: string
+          status: string
+          subscriber_id: string
+        }
+        Insert: {
+          created_at?: string
+          details?: Json | null
+          id?: string
+          status: string
+          subscriber_id: string
+        }
+        Update: {
+          created_at?: string
+          details?: Json | null
+          id?: string
+          status?: string
+          subscriber_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_campaign_logs_subscriber_id_fkey"
+            columns: ["subscriber_id"]
+            isOneToOne: false
+            referencedRelation: "whatsapp_campaign_subscribers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      whatsapp_campaign_subscribers: {
+        Row: {
+          campaign_id: string
+          created_at: string
+          id: string
+          scheduled_at: string
+          sent_at: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          campaign_id: string
+          created_at?: string
+          id?: string
+          scheduled_at: string
+          sent_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          campaign_id?: string
+          created_at?: string
+          id?: string
+          scheduled_at?: string
+          sent_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_campaign_subscribers_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "whatsapp_campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      whatsapp_campaigns: {
+        Row: {
+          created_at: string
+          delay_days: number
+          id: string
+          is_active: boolean
+          name: string
+          template_sid: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          delay_days: number
+          id?: string
+          is_active?: boolean
+          name: string
+          template_sid: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          delay_days?: number
+          id?: string
+          is_active?: boolean
+          name?: string
+          template_sid?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -552,7 +1262,31 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      delete_user_completely: { Args: { p_uid: string }; Returns: undefined }
+      enroll_user_in_drip_campaigns: {
+        Args: { p_user_id: string }
+        Returns: undefined
+      }
+      enroll_user_in_whatsapp_campaigns: {
+        Args: { p_user_id: string }
+        Returns: undefined
+      }
+      generate_product_id: { Args: never; Returns: string }
+      get_repeat_customers_count: {
+        Args: { p_user_id: string }
+        Returns: number
+      }
+      get_retention_stats: {
+        Args: { end_date?: string; start_date?: string }
+        Returns: {
+          active_count: number
+          at_risk_count: number
+          date: string
+          dormant_count: number
+          total_users: number
+        }[]
+      }
+      is_trial_expired: { Args: { profile_id: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
