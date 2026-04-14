@@ -58,6 +58,7 @@ const Navbar = () => {
           <a href="#projects" className="text-white hover:text-zue-blue transition-colors">Projects</a>
           <a href="#process" className="text-white hover:text-zue-blue transition-colors">Process</a>
           <a href="#contact" className="text-white hover:text-zue-blue transition-colors">Contact</a>
+          <Link to="/real-estate" className="text-white hover:text-zue-blue transition-colors">Real Estate</Link>
           <Link to="/login">
             <Button className="bg-zue-blue hover:bg-zue-blue-dark text-white ml-4 gap-2">
               <LogIn size={16} />
@@ -83,6 +84,7 @@ const Navbar = () => {
             <a href="#projects" className="text-white hover:text-zue-blue transition-colors py-2" onClick={toggleMobileMenu}>Projects</a>
             <a href="#process" className="text-white hover:text-zue-blue transition-colors py-2" onClick={toggleMobileMenu}>Process</a>
             <a href="#contact" className="text-white hover:text-zue-blue transition-colors py-2" onClick={toggleMobileMenu}>Contact</a>
+            <Link to="/real-estate" className="text-white hover:text-zue-blue transition-colors py-2" onClick={toggleMobileMenu}>Real Estate</Link>
             <Link to="/login" onClick={toggleMobileMenu}>
               <Button className="bg-zue-blue hover:bg-zue-blue-dark text-white w-full gap-2">
                 <LogIn size={16} />
