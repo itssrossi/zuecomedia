@@ -89,7 +89,7 @@ const Onboarding = () => {
       if (!user) return;
       
       try {
-        const { data, error } = await supabase
+        const { data, error } = await (supabase as any)
           .from('user_onboarding')
           .select('onboarding_data')
           .eq('user_id', user.id)
@@ -131,7 +131,7 @@ const Onboarding = () => {
       try {
         const allCompleted = updatedItems.every(item => item.completed);
         
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('user_onboarding')
           .upsert({
             user_id: user.id,
@@ -153,7 +153,7 @@ const Onboarding = () => {
       // Set onboarding as completed
       if (user) {
         try {
-          const { error } = await supabase
+          const { error } = await (supabase as any)
             .from('user_onboarding')
             .upsert({
               user_id: user.id,

@@ -13,7 +13,7 @@ export const fetchUserCredentials = async () => {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
 
-  const { data, error } = await supabase
+  const { data, error } = await (supabase as any)
     .from("nurture_credentials")
     .select("*")
     .eq("user_id", user.id)
@@ -30,7 +30,7 @@ export const saveResendCredentials = async (
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
 
-  const { error } = await supabase
+  const { error } = await (supabase as any)
     .from("nurture_credentials")
     .upsert({
       user_id: user.id,
@@ -51,7 +51,7 @@ export const saveTwilioCredentials = async (
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
 
-  const { error } = await supabase
+  const { error } = await (supabase as any)
     .from("nurture_credentials")
     .upsert({
       user_id: user.id,
@@ -69,7 +69,7 @@ export const saveGoogleSheetsCredentials = async (apiKey: string) => {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
 
-  const { error } = await supabase
+  const { error } = await (supabase as any)
     .from("nurture_credentials")
     .upsert({
       user_id: user.id,

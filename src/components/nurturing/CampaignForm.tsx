@@ -153,7 +153,7 @@ const CampaignForm = ({ onClose }: CampaignFormProps) => {
         campaign_id: campaign.id,
       }));
 
-      const { error: contactsError } = await supabase
+      const { error: contactsError } = await (supabase as any)
         .from("nurture_contacts")
         .insert(contactsWithCampaign);
 

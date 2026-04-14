@@ -99,7 +99,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         
         // For new users, create an onboarding entry but don't enforce completion
         try {
-          const { error: onboardingError } = await supabase
+          const { error: onboardingError } = await (supabase as any)
             .from('user_onboarding')
             .insert({
               user_id: data.user.id,
