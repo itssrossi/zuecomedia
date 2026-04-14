@@ -35,7 +35,7 @@ export const fetchCampaigns = async () => {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
 
-  const { data, error } = await supabase
+  const { data, error } = await (supabase as any)
     .from("nurture_campaigns")
     .select(`
       *,
@@ -50,7 +50,7 @@ export const fetchCampaigns = async () => {
 };
 
 export const fetchCampaignById = async (id: string) => {
-  const { data, error } = await supabase
+  const { data, error } = await (supabase as any)
     .from("nurture_campaigns")
     .select(`
       *,
@@ -69,7 +69,7 @@ export const createCampaign = async (config: CampaignConfig, messages: MessageCo
   if (!user) throw new Error("Not authenticated");
 
   // Create campaign
-  const { data: campaign, error: campaignError } = await supabase
+  const { data: campaign, error: campaignError } = await (supabase as any)
     .from("nurture_campaigns")
     .insert({
       user_id: user.id,
@@ -96,7 +96,7 @@ export const createCampaign = async (config: CampaignConfig, messages: MessageCo
       campaign_id: campaign.id,
     }));
 
-    const { error: messagesError } = await supabase
+    const { error: messagesError } = await (supabase as any)
       .from("nurture_messages")
       .insert(messagesWithCampaignId);
 
@@ -107,7 +107,7 @@ export const createCampaign = async (config: CampaignConfig, messages: MessageCo
 };
 
 export const updateCampaign = async (id: string, config: Partial<CampaignConfig>) => {
-  const { error } = await supabase
+  const { error } = await (supabase as any)
     .from("nurture_campaigns")
     .update(config)
     .eq("id", id);
@@ -116,7 +116,7 @@ export const updateCampaign = async (id: string, config: Partial<CampaignConfig>
 };
 
 export const deleteCampaign = async (id: string) => {
-  const { error } = await supabase
+  const { error } = await (supabase as any)
     .from("nurture_campaigns")
     .delete()
     .eq("id", id);

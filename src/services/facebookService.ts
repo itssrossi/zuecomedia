@@ -151,7 +151,7 @@ export const fetchUserAdMetrics = async (
 };
 
 export const fetchLastSyncStatus = async (): Promise<SyncStatus | null> => {
-  const { data, error } = await supabase
+  const { data, error } = await (supabase as any)
     .from('fb_sync_status')
     .select('*')
     .limit(1)
@@ -176,11 +176,11 @@ export const saveAdAccount = async (
     throw new Error("User must be logged in to save ad account");
   }
   
-  const { error } = await supabase.from('fb_ad_accounts').insert({
+  const { error } = await (supabase as any).from('fb_ad_accounts').insert({
     account_id: accountId,
     account_name: accountName,
     access_token: accessToken,
-    user_id: user.id // Add the user_id from the authenticated user
+    user_id: user.id
   });
   
   if (error) {
