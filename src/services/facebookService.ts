@@ -46,7 +46,7 @@ export interface SyncStatus {
 }
 
 export const fetchUserAdAccounts = async (): Promise<FbAdAccount[]> => {
-  const { data, error } = await supabase
+  const { data, error } = await (supabase as any)
     .from('fb_ad_accounts')
     .select('*');
   
@@ -58,7 +58,7 @@ export const fetchUserAdAccounts = async (): Promise<FbAdAccount[]> => {
 };
 
 export const fetchUserCampaigns = async (): Promise<FbCampaign[]> => {
-  const { data, error } = await supabase
+  const { data, error } = await (supabase as any)
     .from('fb_campaigns')
     .select('*');
   
@@ -76,7 +76,7 @@ export const fetchUserAdMetrics = async (
 ): Promise<FbAdMetric[]> => {
   console.log('fetchUserAdMetrics called with:', { startDate, endDate, campaignIds });
   
-  let query = supabase
+  let query = (supabase as any)
     .from('fb_ad_metrics')
     .select(`
       *,
