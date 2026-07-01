@@ -21,7 +21,7 @@ const Hero = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
   const handleGetStarted = () => {
-    window.open('https://wa.me/27750143309', '_blank');
+    window.open('https://wa.me/27625359337', '_blank');
   };
   const handleLogin = () => {
     navigate('/login');
