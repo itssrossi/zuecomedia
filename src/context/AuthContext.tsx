@@ -81,42 +81,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
       
       if (error) throw error;
-      
-      // Check if a new user was created
+
+      // Profile row is created automatically by the handle_new_user() trigger.
       if (data.user && data.session) {
-        // User is automatically signed in after signing up
         setUser(data.user);
         setSession(data.session);
-        
-        // Create entry in profiles table
+
+        // Best-effort onboarding row (ignored if it fails)
         try {
-          await supabase.from('profiles').insert({
-            id: data.user.id,
-            full_name: fullName,
-            email: email,
+          await (supabase as any).from('user_onboarding').insert({
+            user_id: data.user.id,
+            onboarding_data: [],
+            completed: false,
           });
-        } catch (profileError) {
-          console.error("Error creating profile:", profileError);
+        } catch (e) {
+          console.error("Error creating onboarding record:", e);
         }
-        
-        // For new users, create an onboarding entry but don't enforce completion
-        try {
-          const { error: onboardingError } = await (supabase as any)
-            .from('user_onboarding')
-            .insert({
-              user_id: data.user.id,
-              onboarding_data: [],
-              completed: false
-            });
-            
-          if (onboardingError) throw onboardingError;
-        } catch (onboardingError) {
-          console.error("Error creating onboarding record:", onboardingError);
-        }
-        
+
         toast.success("Signed up successfully");
-        
-        // New users are directed to onboarding but can skip to dashboard if needed
         window.location.href = "/onboarding";
       } else {
         toast.success("Signed up successfully. Please check your email for verification.");
