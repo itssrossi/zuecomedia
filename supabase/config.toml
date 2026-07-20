@@ -1,1 +1,4 @@
 project_id = "prztjpkuzhpovrpawwcu"
+
+[functions.sync-facebook-data]
+verify_jwt = false
