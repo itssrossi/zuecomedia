@@ -92,7 +92,7 @@ create table if not exists public.fb_ad_metrics (
   cpc numeric not null default 0,
   roas numeric not null default 0,
   created_at timestamptz not null default now(),
-  unique (campaign_id, date)
+  unique (user_id, campaign_id, date)
 );
 create table if not exists public.fb_sync_status (
   id uuid primary key default gen_random_uuid(),
