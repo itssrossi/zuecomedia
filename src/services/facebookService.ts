@@ -189,7 +189,7 @@ export const saveAdAccount = async (
 };
 
 export const triggerFacebookDataSync = async (): Promise<void> => {
-  try {
+  try {console.log("SESSION CHECK:", (await supabase.auth.getSession())?.data?.session?.access_token ? "TOKEN EXISTS" : "NO TOKEN");
     const { data, error } = await supabase.functions.invoke('sync-facebook-data', {
       method: 'POST',
       body: {} // Add an empty body to avoid potential issues
