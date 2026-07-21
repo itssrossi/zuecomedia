@@ -188,6 +188,31 @@ export const saveAdAccount = async (
   }
 };
 
+export const updateAdAccount = async (
+  id: string,
+  updates: { account_id?: string; account_name?: string; access_token?: string }
+): Promise<void> => {
+  const { error } = await (supabase as any)
+    .from('fb_ad_accounts')
+    .update(updates)
+    .eq('id', id);
+
+  if (error) {
+    throw new Error(`Error updating ad account: ${error.message}`);
+  }
+};
+
+export const deleteAdAccount = async (id: string): Promise<void> => {
+  const { error } = await (supabase as any)
+    .from('fb_ad_accounts')
+    .delete()
+    .eq('id', id);
+
+  if (error) {
+    throw new Error(`Error deleting ad account: ${error.message}`);
+  }
+};
+
 export const triggerFacebookDataSync = async (): Promise<void> => {
   try {console.log("SESSION CHECK:", (await supabase.auth.getSession())?.data?.session?.access_token ? "TOKEN EXISTS" : "NO TOKEN");
     const { data, error } = await supabase.functions.invoke('sync-facebook-data', {
