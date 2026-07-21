@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import { ResendConfig } from "@/components/nurturing/ResendConfig";
 import { TwilioConfig } from "@/components/nurturing/TwilioConfig";
 import { GoogleSheetsConfig } from "@/components/nurturing/GoogleSheetsConfig";
+import { FacebookAdAccountConfig } from "@/components/nurturing/FacebookAdAccountConfig";
 import { fetchUserCredentials } from "@/services/nurturingCredentialsService";
 import { useToast } from "@/hooks/use-toast";
 
@@ -49,7 +50,7 @@ const NurturingSettings = () => {
           </Button>
           <h1 className="text-3xl font-bold">Lead Nurturing Settings</h1>
           <p className="text-muted-foreground mt-2">
-            Configure your API credentials for email, SMS, and Google Sheets integration.
+            Configure your API credentials for Facebook ads, email, SMS, and Google Sheets integration.
             All credentials are encrypted and stored securely.
           </p>
         </div>
@@ -60,6 +61,8 @@ const NurturingSettings = () => {
           </div>
         ) : (
           <div className="space-y-6">
+            <FacebookAdAccountConfig />
+
             <ResendConfig
               initialApiKey={credentials?.resend_api_key}
               initialFromEmail={credentials?.resend_email_from}
