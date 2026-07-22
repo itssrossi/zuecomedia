@@ -200,6 +200,17 @@ create table if not exists public.nurture_deliveries (
   unique (campaign_id, contact_id, message_id)
 );
 
+grant select, insert, update, delete on public.nurture_credentials to authenticated;
+grant select, insert, update, delete on public.nurture_campaigns to authenticated;
+grant select, insert, update, delete on public.nurture_messages to authenticated;
+grant select, insert, update, delete on public.nurture_contacts to authenticated;
+grant select, insert, update, delete on public.nurture_deliveries to authenticated;
+grant all on public.nurture_credentials to service_role;
+grant all on public.nurture_campaigns to service_role;
+grant all on public.nurture_messages to service_role;
+grant all on public.nurture_contacts to service_role;
+grant all on public.nurture_deliveries to service_role;
+
 alter table public.nurture_credentials enable row level security;
 alter table public.nurture_campaigns   enable row level security;
 alter table public.nurture_messages    enable row level security;
