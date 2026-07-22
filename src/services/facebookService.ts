@@ -237,7 +237,7 @@ const getFunctionErrorMessage = async (error: any): Promise<string> => {
 };
 
 export const triggerFacebookDataSync = async (): Promise<void> => {
-  try {console.log("SESSION CHECK:", (await supabase.auth.getSession())?.data?.session?.access_token ? "TOKEN EXISTS" : "NO TOKEN");
+  try {
     const { data, error } = await supabase.functions.invoke('sync-facebook-data', {
       method: 'POST',
       body: {} // Add an empty body to avoid potential issues
