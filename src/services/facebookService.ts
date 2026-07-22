@@ -213,8 +213,31 @@ export const deleteAdAccount = async (id: string): Promise<void> => {
   }
 };
 
+const getFunctionErrorMessage = async (error: any): Promise<string> => {
+  if (!error) return "Unknown sync error";
+
+  try {
+    const context = error.context;
+    if (context && typeof context.text === "function") {
+      const raw = await context.text();
+      if (raw) {
+        try {
+          const parsed = JSON.parse(raw);
+          return parsed.message || parsed.error || raw;
+        } catch (_parseError) {
+          return raw;
+        }
+      }
+    }
+  } catch (readError) {
+    console.error("Could not read sync error details:", readError);
+  }
+
+  return error.message || "Unknown sync error";
+};
+
 export const triggerFacebookDataSync = async (): Promise<void> => {
-  try {console.log("SESSION CHECK:", (await supabase.auth.getSession())?.data?.session?.access_token ? "TOKEN EXISTS" : "NO TOKEN");
+  try {
     const { data, error } = await supabase.functions.invoke('sync-facebook-data', {
       method: 'POST',
       body: {} // Add an empty body to avoid potential issues
@@ -222,7 +245,8 @@ export const triggerFacebookDataSync = async (): Promise<void> => {
     
     if (error) {
       console.error("Error from edge function:", error);
-      throw new Error(`Error syncing data: ${error.message}`);
+      const details = await getFunctionErrorMessage(error);
+      throw new Error(details);
     }
     
     if (!data) {

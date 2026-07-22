@@ -122,7 +122,7 @@ export const FacebookAdAccountConfig = () => {
           >
             Generate a token
           </a>{" "}
-          with ads_read permission.
+          with ads_read, ads_management, read_insights, and business_management permissions.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -153,11 +153,11 @@ export const FacebookAdAccountConfig = () => {
                   <Textarea
                     value={d.access_token}
                     onChange={(e) => updateDraft(acc.id, "access_token", e.target.value)}
-                    placeholder="Paste new token to replace the existing one (leave blank to keep current)"
+                    placeholder="Paste a fresh long-lived token with ads_read, ads_management, read_insights, and business_management"
                     className="min-h-[80px]"
                   />
                   <p className="text-xs text-muted-foreground">
-                    For security the existing token is hidden. Enter a new one to replace it.
+                    Facebook rejected your current token if it does not include these ad account permissions.
                   </p>
                 </div>
                 <div className="flex justify-between gap-2">
@@ -211,7 +211,7 @@ export const FacebookAdAccountConfig = () => {
             <Textarea
               value={newAccessToken}
               onChange={(e) => setNewAccessToken(e.target.value)}
-              placeholder="Facebook API access token"
+              placeholder="Facebook API access token with ad account permissions"
               className="min-h-[80px]"
             />
           </div>

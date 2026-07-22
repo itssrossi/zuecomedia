@@ -12,7 +12,7 @@ interface DashboardControlsProps {
   endDate: Date | undefined;
   onDateRangeChange: (start: Date | undefined, end: Date | undefined) => void;
   onRefreshData: () => void;
-  syncStatus?: { last_sync_at: string } | null;
+  syncStatus?: { last_sync_at: string; sync_status?: string } | null;
 }
 
 const DashboardControls = ({
@@ -40,9 +40,12 @@ const DashboardControls = ({
       
       <div className={`flex items-center ${isMobile ? 'justify-between w-full' : 'space-x-4'}`}>
         {syncStatus && (
-          <span className="text-sm text-gray-300">
-            Last sync: {new Date(syncStatus.last_sync_at).toLocaleString()}
-          </span>
+          <div className="text-sm text-gray-300">
+            <span>Last sync: {new Date(syncStatus.last_sync_at).toLocaleString()}</span>
+            {syncStatus.sync_status && syncStatus.sync_status !== 'success' && (
+              <p className="max-w-md text-xs text-red-300">{syncStatus.sync_status}</p>
+            )}
+          </div>
         )}
         
         <div className="flex items-center space-x-2">

@@ -1,4 +1,5 @@
 
+import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { serve } from 'https://deno.land/std@0.177.0/http/server.ts';
 
@@ -11,10 +12,50 @@ interface FbAdAccount {
   access_token: string;
 }
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+class FacebookApiError extends Error {
+  status: number;
+  details: string;
+
+  constructor(status: number, details: string, context: string) {
+    super(formatFacebookError(status, details, context));
+    this.name = 'FacebookApiError';
+    this.status = status;
+    this.details = details;
+  }
+}
+
+function formatFacebookError(status: number, details: string, context: string) {
+  let parsedMessage = details;
+  try {
+    const parsed = JSON.parse(details);
+    parsedMessage = parsed?.error?.message || details;
+  } catch (_error) {
+    // Keep raw response text when Facebook returns a non-JSON body.
+  }
+
+  if (/ads_management|ads_read|permission/i.test(parsedMessage)) {
+    return `${context}: Facebook rejected the token because it does not have ads_read/ads_management permission for this ad account. Generate a fresh token with ads_read, ads_management, read_insights, and business_management, then update it in Settings.`;
+  }
+
+  if (/OAuth|access token|token/i.test(parsedMessage)) {
+    return `${context}: Facebook rejected the access token. Generate a fresh long-lived token and update it in Settings. Facebook said: ${parsedMessage}`;
+  }
+
+  return `${context}: Facebook API error ${status}. ${parsedMessage}`;
+}
+
+async function recordSyncStatus(supabase, userId: string, status: string) {
+  await supabase.from('fb_sync_status').delete().eq('user_id', userId);
+  const { error } = await supabase.from('fb_sync_status').insert({
+    user_id: userId,
+    last_sync_at: new Date().toISOString(),
+    sync_status: status.slice(0, 500),
+  });
+
+  if (error) {
+    console.error('Error recording sync status:', error);
+  }
+}
 
 serve(async (req: Request) => {
   // Handle CORS preflight requests
@@ -75,6 +116,7 @@ serve(async (req: Request) => {
 
     // Process each ad account
     const results = [];
+    const failures = [];
     for (const account of adAccounts) {
       console.log(`Processing account: ${account.account_id}`);
       
@@ -83,21 +125,33 @@ serve(async (req: Request) => {
         results.push(result);
       } catch (error) {
         console.error(`Error processing account ${account.account_id}:`, error);
-        results.push({ 
+        const message = error?.message || 'Unknown Facebook sync error';
+        const failure = { 
           account_id: account.account_id, 
-          error: error.message 
-        });
+          error: message,
+          status: error?.status || 500,
+        };
+        failures.push(failure);
+        results.push(failure);
       }
     }
 
-    // Update the sync status
+    if (failures.length > 0) {
+      const firstFailure = failures[0];
+      await recordSyncStatus(supabase, user.id, `failed: ${firstFailure.error}`);
+
+      return new Response(JSON.stringify({
+        error: 'Facebook sync failed',
+        message: firstFailure.error,
+        results,
+      }), {
+        status: firstFailure.status >= 400 && firstFailure.status < 600 ? firstFailure.status : 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     console.log('Updating sync status...');
-    await supabase.from('fb_sync_status').upsert({
-      user_id: user.id,
-      last_sync_at: new Date().toISOString(),
-      sync_status: 'success',
-      updated_at: new Date().toISOString()
-    });
+    await recordSyncStatus(supabase, user.id, 'success');
 
     console.log('Sync completed successfully');
     return new Response(JSON.stringify({ message: 'Sync completed successfully', results }), {
@@ -137,7 +191,7 @@ async function processAdAccount(supabase, userId, account) {
     if (!campaignsResponse.ok) {
       const errorText = await campaignsResponse.text();
       console.error(`Facebook API error: ${campaignsResponse.status} - ${errorText}`);
-      throw new Error(`Facebook API error fetching campaigns: ${campaignsResponse.status} - ${errorText}`);
+      throw new FacebookApiError(campaignsResponse.status, errorText, 'Could not fetch Facebook campaigns');
     }
     
     const campaignsData = await campaignsResponse.json();
@@ -206,11 +260,7 @@ async function fetchCampaignInsights(supabase, userId, campaignId, fbCampaignId,
     if (!insightsResponse.ok) {
       const errorText = await insightsResponse.text();
       console.error(`Facebook API error fetching insights: ${insightsResponse.status} - ${errorText}`);
-      
-      // If no insights data, create dummy data so we can see the campaign in the table
-      console.log('Creating placeholder metrics for campaign without insights data');
-      await createPlaceholderMetrics(supabase, userId, campaignId, since);
-      return;
+      throw new FacebookApiError(insightsResponse.status, errorText, 'Could not fetch Facebook insights');
     }
     
     const insightsData = await insightsResponse.json();
@@ -279,8 +329,7 @@ async function fetchCampaignInsights(supabase, userId, campaignId, fbCampaignId,
     console.log(`Successfully processed insights for campaign ${fbCampaignId}`);
   } catch (error) {
     console.error(`Error fetching insights for campaign ${fbCampaignId}:`, error);
-    // Create placeholder metrics even if there's an error
-    await createPlaceholderMetrics(supabase, userId, campaignId, new Date().toISOString().split('T')[0]);
+    throw error;
   }
 }
 
