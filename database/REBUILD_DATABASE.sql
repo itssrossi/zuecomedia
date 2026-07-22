@@ -1,7 +1,7 @@
 -- =====================================================================
 -- ZUE Comedia — Full Database Rebuild
 -- Run this ENTIRE script in the Supabase SQL Editor:
---   https://supabase.com/dashboard/project/mpzqlidtvlbijloeusuj/sql/new
+--   https://supabase.com/dashboard/project/prztjpkuzhpovrpawwcu/sql/new
 -- Safe to re-run.
 -- =====================================================================
 
@@ -16,6 +16,8 @@ create table if not exists public.profiles (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+grant select, insert, update, delete on public.profiles to authenticated;
+grant all on public.profiles to service_role;
 alter table public.profiles enable row level security;
 drop policy if exists "profiles_select_own" on public.profiles;
 create policy "profiles_select_own" on public.profiles for select using (auth.uid() = id);
@@ -47,6 +49,8 @@ create table if not exists public.user_onboarding (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+grant select, insert, update, delete on public.user_onboarding to authenticated;
+grant all on public.user_onboarding to service_role;
 alter table public.user_onboarding enable row level security;
 drop policy if exists "onboarding_select_own" on public.user_onboarding;
 create policy "onboarding_select_own" on public.user_onboarding for select using (auth.uid() = user_id);
@@ -98,8 +102,18 @@ create table if not exists public.fb_sync_status (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade,
   last_sync_at timestamptz not null default now(),
-  sync_status text not null default 'idle'
+  sync_status text not null default 'idle',
+  unique (user_id)
 );
+
+grant select, insert, update, delete on public.fb_ad_accounts to authenticated;
+grant select, insert, update, delete on public.fb_campaigns to authenticated;
+grant select, insert, update, delete on public.fb_ad_metrics to authenticated;
+grant select, insert, update, delete on public.fb_sync_status to authenticated;
+grant all on public.fb_ad_accounts to service_role;
+grant all on public.fb_campaigns to service_role;
+grant all on public.fb_ad_metrics to service_role;
+grant all on public.fb_sync_status to service_role;
 
 alter table public.fb_ad_accounts enable row level security;
 alter table public.fb_campaigns  enable row level security;
