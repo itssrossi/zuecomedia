@@ -6,6 +6,7 @@ import { ResendConfig } from "@/components/nurturing/ResendConfig";
 import { TwilioConfig } from "@/components/nurturing/TwilioConfig";
 import { GoogleSheetsConfig } from "@/components/nurturing/GoogleSheetsConfig";
 import { FacebookAdAccountConfig } from "@/components/nurturing/FacebookAdAccountConfig";
+import { ReportEmailConfig } from "@/components/dashboard/ReportEmailConfig";
 import { fetchUserCredentials } from "@/services/nurturingCredentialsService";
 import { useToast } from "@/hooks/use-toast";
 
@@ -62,6 +63,8 @@ const NurturingSettings = () => {
         ) : (
           <div className="space-y-6">
             <FacebookAdAccountConfig />
+
+            <ReportEmailConfig />
 
             <ResendConfig
               initialApiKey={credentials?.resend_api_key}
