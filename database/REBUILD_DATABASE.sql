@@ -250,3 +250,43 @@ left join public.profiles p on p.id = u.id
 where p.id is null;
 
 select 'Rebuild complete' as status;
+
+-- ========================================================
+-- Dashboard Layouts + Weekly Report
+-- ========================================================
+create table if not exists public.dashboard_layouts (
+  user_id uuid primary key references auth.users(id) on delete cascade,
+  tiles jsonb not null default '[]'::jsonb,
+  report_email text,
+  updated_at timestamptz not null default now()
+);
+
+grant select, insert, update, delete on public.dashboard_layouts to authenticated;
+grant all on public.dashboard_layouts to service_role;
+
+alter table public.dashboard_layouts enable row level security;
+
+drop policy if exists "dashboard_layouts_all_own" on public.dashboard_layouts;
+create policy "dashboard_layouts_all_own" on public.dashboard_layouts for all
+  using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+-- Weekly cron: Monday 07:00 UTC — invoke send-weekly-report with x-cron-key
+-- Requires: pg_cron + pg_net extensions, and secrets `app.settings.supabase_url`,
+-- `app.settings.service_role_key`, `app.settings.cron_secret` configured, OR replace
+-- the placeholders below with your project URL / anon+service key / chosen CRON_SECRET.
+--
+-- Example (fill in <PROJECT_REF> and <CRON_SECRET>):
+--
+-- select cron.schedule(
+--   'weekly-ad-report',
+--   '0 7 * * 1',
+--   $$
+--   select net.http_post(
+--     url:='https://<PROJECT_REF>.supabase.co/functions/v1/send-weekly-report',
+--     headers:=jsonb_build_object('Content-Type','application/json','x-cron-key','<CRON_SECRET>'),
+--     body:='{}'::jsonb
+--   );
+--   $$
+-- );
+
+select 'Dashboard layouts + weekly report setup complete' as status;
