@@ -6,6 +6,8 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import ThemeToggle from "@/components/dashboard/ThemeToggle";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "@/context/ThemeContext";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import type { FbCampaign } from "@/services/facebookService";
 
 interface DashboardControlsProps {
   startDate: Date | undefined;
@@ -13,6 +15,9 @@ interface DashboardControlsProps {
   onDateRangeChange: (start: Date | undefined, end: Date | undefined) => void;
   onRefreshData: () => void;
   syncStatus?: { last_sync_at: string; sync_status?: string } | null;
+  campaigns?: FbCampaign[];
+  selectedCampaign?: string; // "" = All
+  onCampaignChange?: (value: string) => void;
 }
 
 const DashboardControls = ({
@@ -20,7 +25,10 @@ const DashboardControls = ({
   endDate,
   onDateRangeChange,
   onRefreshData,
-  syncStatus
+  syncStatus,
+  campaigns = [],
+  selectedCampaign = "",
+  onCampaignChange,
 }: DashboardControlsProps) => {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
@@ -32,11 +40,26 @@ const DashboardControls = ({
   
   return (
     <div className={`${isMobile ? 'flex-col space-y-4' : 'flex justify-between items-center'} mb-8`}>
-      <DateRangeSelector 
-        startDate={startDate}
-        endDate={endDate}
-        onDateRangeChange={onDateRangeChange}
-      />
+      <div className={`flex ${isMobile ? 'flex-col space-y-2 w-full' : 'items-center gap-3'}`}>
+        <DateRangeSelector
+          startDate={startDate}
+          endDate={endDate}
+          onDateRangeChange={onDateRangeChange}
+        />
+        {onCampaignChange && (
+          <Select value={selectedCampaign || "all"} onValueChange={(v) => onCampaignChange(v === "all" ? "" : v)}>
+            <SelectTrigger className="min-w-[220px] bg-zue-dark-light border-gray-700 text-white">
+              <SelectValue placeholder="All Campaigns" />
+            </SelectTrigger>
+            <SelectContent className="bg-zue-dark-light border-gray-700 text-white">
+              <SelectItem value="all">All Campaigns</SelectItem>
+              {campaigns.map((c) => (
+                <SelectItem key={c.id} value={c.id}>{c.campaign_name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+      </div>
       
       <div className={`flex items-center ${isMobile ? 'justify-between w-full' : 'space-x-4'}`}>
         {syncStatus && (
