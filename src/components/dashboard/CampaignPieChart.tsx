@@ -54,6 +54,7 @@ const CampaignPieChart = ({ data, isLoading, metric, title }: CampaignPieChartPr
     }
     return value.toString();
   };
+  const metricLabel = metric === "conversions" ? "Leads" : metric.charAt(0).toUpperCase() + metric.slice(1);
 
   return (
     <Card className="bg-zue-dark-light border-gray-800">
@@ -78,7 +79,7 @@ const CampaignPieChart = ({ data, isLoading, metric, title }: CampaignPieChartPr
               ))}
             </Pie>
             <Tooltip
-              formatter={(value) => [formatTooltipValue(Number(value)), metric.charAt(0).toUpperCase() + metric.slice(1)]}
+              formatter={(value) => [formatTooltipValue(Number(value)), metricLabel]}
               contentStyle={{
                 backgroundColor: "#1F2937",
                 borderColor: "#4B5563",
