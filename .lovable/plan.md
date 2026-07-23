@@ -1,40 +1,54 @@
-## Plan: Fix Missing Signup Confirmation Emails
+## What I'll build
 
-### Diagnosis
+### 1. Cleaner dashboard + remove Voice Assistant
+- Delete `RealtimeVoiceAssistant` from `Dashboard.tsx` (component files stay on disk, just unmounted).
+- Redesign metric tiles with larger typography, better spacing, clearer hierarchy, formatted numbers (compact for large values, e.g. R12.5k).
+- Reorganize section so charts + table breathe more.
 
-Auth logs confirm signups succeed (`confirmation_sent_at` is set) and Supabase attempts to send the confirmation email. Emails are not arriving. This is a Supabase Auth email delivery issue, not an app code issue. The most common causes for this project:
+### 2. Campaign filter (single-select + All)
+- Add a `Select` dropdown in `DashboardControls` listing campaigns from `useFacebookData().campaigns` with an "All Campaigns" option.
+- Dashboard passes the chosen `campaignId` (or `[]` for all) into `useFacebookData`.
 
-1. **Default Supabase SMTP is rate-limited** — the built-in email service only allows ~2 emails/hour and is intended for testing. Repeated signups (as shown in the logs) will silently drop.
-2. **No custom SMTP configured** — for reliable delivery, a real email provider (Resend, etc.) must be set as the Auth SMTP provider.
-3. **`emailRedirectTo` is not set on `signUp`** — the current code in `AuthContext.tsx` calls `supabase.auth.signUp` without `emailRedirectTo`, so confirmation links may point to Supabase's default URL instead of the app.
-4. **Email confirmations may be disabled** in Supabase Auth settings, in which case no email is ever sent (but users still get a session).
+### 3. Conversions = Leads
+- Rename "Conversions" tile/labels to "Leads" throughout dashboard (metrics tile, pie chart title, table column). Underlying `conversions` field unchanged.
 
-### Proposed Fix
+### 4. Movable + add/remove tiles (saved per user)
+- New table `dashboard_layouts (user_id uuid PK, tiles jsonb, report_email text, updated_at timestamptz)` with RLS + grants.
+- Tile registry: spend, revenue, roas, ctr, leads, cpc, impressions, clicks, performance-chart, spend-pie, revenue-pie, leads-pie, campaign-table. Each has an id, title, size (sm/lg).
+- Use `@dnd-kit/core` + `@dnd-kit/sortable` for drag-and-drop reordering.
+- "Customize" button toggles edit mode: shows remove ✕ on each tile and an "+ Add tile" menu of hidden tiles.
+- Layout auto-saves to `dashboard_layouts` on change; loaded on mount; sensible default if none.
 
-**Step 1 — Code fix (small):**
-- Update `src/context/AuthContext.tsx` `signUp` to pass `emailRedirectTo: ${window.location.origin}/` so the confirmation link returns to the app.
+### 5. Weekly email report
+- Settings page (`NurturingSettings.tsx` or new `Settings` section): input for "Report email address" saved to `dashboard_layouts.report_email` (or profiles).
+- Edge function `send-weekly-report`:
+  - Auth via service role; accepts `{ user_id }` or runs for all users when triggered by cron.
+  - Pulls last 7 days of `fb_ad_metrics` joined with `fb_campaigns` for the user's account.
+  - Renders a branded HTML template (Zueco dark theme, metric cards, campaign table).
+  - Sends via existing Resend `RESEND_API_KEY` secret.
+- "Send Report Now" button on dashboard invokes it with current user.
+- pg_cron job runs every Monday 07:00 (UTC) invoking the function per user with a `report_email` set.
 
-**Step 2 — Configuration (user action required, guided):**
-Recommend configuring custom SMTP via **Resend** (already in the project — `RESEND_API_KEY` secret exists and Resend is used in `send-nurture-email`). Two options:
+### 6. Migration script
+- Append to `database/REBUILD_DATABASE.sql`: new table, RLS, grants, and pg_cron schedule for the Monday job. User runs it in Supabase SQL editor. Instructions include deploying `send-weekly-report`.
 
-- **Option A (recommended): Configure Resend as Supabase Auth SMTP**
-  User adds Resend SMTP credentials in Supabase Dashboard → Authentication → Emails → SMTP Settings:
-  - Host: `smtp.resend.com`
-  - Port: `465`
-  - Username: `resend`
-  - Password: the Resend API key
-  - Sender email: an address on a verified Resend domain
-  This immediately fixes delivery for signup, password reset, and magic link emails using Supabase's built-in templates.
+## Files touched
+- `src/pages/Dashboard.tsx` — remove voice assistant, wire campaign filter + customizable grid + send-report button.
+- `src/components/dashboard/DashboardControls.tsx` — add campaign `Select`.
+- `src/components/dashboard/DashboardMetrics.tsx` — refactored to render from tile registry.
+- New `src/components/dashboard/CustomizableGrid.tsx` — dnd-kit sortable grid, add/remove UI.
+- New `src/components/dashboard/tileRegistry.tsx` — tile definitions + renderers.
+- New `src/hooks/useDashboardLayout.ts` — load/save layout + report_email.
+- `src/pages/NurturingSettings.tsx` — add "Weekly Report Email" input.
+- `src/components/dashboard/CampaignTable.tsx` — rename Conversions → Leads.
+- `src/components/dashboard/CampaignPieChart.tsx` — support `metric="leads"` label.
+- New `supabase/functions/send-weekly-report/index.ts` (verify_jwt off; validates user).
+- `database/REBUILD_DATABASE.sql` — append table + cron.
+- `package.json` — add `@dnd-kit/core`, `@dnd-kit/sortable`, `@dnd-kit/utilities`.
 
-- **Option B: Scaffold Lovable-managed auth email templates**
-  Uses `scaffold_auth_email_templates` to create branded React Email templates + `auth-email-hook` edge function. Requires an email domain to be configured for the project first (currently none). More setup, but gives full branding control.
+## Manual steps you'll need to do (external Supabase)
+1. Run the appended SQL in Supabase SQL editor.
+2. In Supabase → Edge Functions, create `send-weekly-report` with Verify JWT **OFF** and paste the file's contents; ensure `RESEND_API_KEY` secret exists.
+3. Set your report email in Settings.
 
-**Step 3 — Verify:**
-- After SMTP is configured, sign up with a fresh email and confirm the message arrives.
-- Check Supabase Auth logs and (for Option A) Resend dashboard for send status.
-
-### Question
-
-Which route do you want:
-- **A**: I'll update the `signUp` code and walk you through pasting Resend SMTP into the Supabase dashboard (fastest, ~2 minutes).
-- **B**: Full Lovable-managed branded auth emails (requires setting up an email domain first).
+Ready to build?
