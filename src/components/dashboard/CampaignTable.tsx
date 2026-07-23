@@ -90,7 +90,7 @@ const CampaignTable = ({ campaigns, isLoading }: CampaignTableProps) => {
             <TableHead className="text-right">Clicks</TableHead>
             <TableHead className="text-right">CTR</TableHead>
             <TableHead className="text-right">Spend</TableHead>
-            <TableHead className="text-right">Conversions</TableHead>
+            <TableHead className="text-right">Leads</TableHead>
             <TableHead className="text-right">Revenue</TableHead>
             <TableHead className="text-right">ROAS</TableHead>
           </TableRow>
