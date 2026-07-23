@@ -122,7 +122,7 @@ async function processUser(admin: any, userId: string, overrideEmail?: string) {
     method: "POST",
     headers: { "Authorization": `Bearer ${RESEND_API_KEY}`, "Content-Type": "application/json" },
     body: JSON.stringify({
-      from: "Zueco Reports <onboarding@resend.dev>",
+      from: "Zue Co Media Reports <jrsnell@zuecomedia.com>",
       to: [toEmail],
       subject: `Weekly Ad Report — ${startStr} to ${endStr}`,
       html,
