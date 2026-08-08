@@ -348,10 +348,10 @@ ${formData.goals}
         <div className="container mx-auto max-w-5xl">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Real Results. Real Clients. <span className="text-primary">Real Growth.</span>
+              Real Spend. Real Revenue. <span className="text-primary">Real Profit.</span>
             </h2>
             <p className="text-muted-foreground">
-              Don't just take our word for it — here's what we've delivered.
+              Numbers, not promises. Here's what we've actually delivered.
             </p>
           </div>
 
@@ -359,9 +359,9 @@ ${formData.goals}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
             {[
               { stat: "4.47×", label: "Return on Ad Spend" },
-              { stat: "105+", label: "Leads Generated" },
-              { stat: "7 Days", label: "To First Results" },
-              { stat: "49+", label: "Users Acquired in 30 Days" },
+              { stat: "105+", label: "Buyers & Leads Generated" },
+              { stat: "7 Days", label: "To First Profitable Ads" },
+              { stat: "49+", label: "New Customers in 30 Days" },
             ].map((item, i) => (
               <div
                 key={i}
@@ -401,7 +401,7 @@ ${formData.goals}
               </blockquote>
               <p className="font-semibold text-foreground">— Link2Pay Team</p>
               <p className="text-sm text-primary">
-                SaaS Platform • 49 New Users in 30 Days
+                Ecommerce/SaaS • 49 New Customers in 30 Days
               </p>
             </div>
 
@@ -428,7 +428,7 @@ ${formData.goals}
                 — Shechem Counselling
               </p>
               <p className="text-sm text-primary">
-                Service Business • 4.47× ROAS in 7 Days
+                Online Business • 4.47× ROAS in 7 Days
               </p>
             </div>
           </div>
@@ -440,25 +440,23 @@ ${formData.goals}
         <div className="container mx-auto max-w-3xl text-center">
           <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 border border-primary/20 rounded-2xl p-8 md:p-12">
             <h2 className="text-2xl md:text-3xl font-bold mb-4">
-              Why We Only Take 3 New Clients Per Month
+              Why We Only Take 3 New Stores Per Month
             </h2>
             <p className="text-muted-foreground mb-6">
-              We're not a volume agency. We go deep with each client —
-              building custom strategies, testing aggressively, and optimizing
-              relentlessly. That takes bandwidth. If we took on everyone who
-              applied, quality would drop. And quality is everything in this
-              game.
+              We're not a volume agency. Every store gets its own offer rebuild,
+              creative pipeline and retention flows. That takes real bandwidth.
+              Take on everyone, and results drop. Results are the only thing we sell.
             </p>
             <p className="text-foreground font-semibold mb-6">
-              If you're serious about growing your real estate business, book
-              your free strategy call below before spots fill up.
+              If you're doing R50k+/month and want to scale profitably, grab a
+              slot below before they're gone.
             </p>
             <Button
               onClick={scrollToBooking}
               size="lg"
               className="bg-primary hover:bg-primary/90 text-primary-foreground text-lg px-8 py-6 rounded-xl shadow-lg shadow-primary/25"
             >
-              Claim Your Spot Now
+              Claim My Store Slot
             </Button>
           </div>
         </div>
@@ -469,12 +467,12 @@ ${formData.goals}
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Book Your Free <span className="text-primary">Strategy Call</span>
+              Get Your Free <span className="text-primary">Store Growth Plan</span>
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              30 minutes. No fluff. We'll analyze your current situation, show
-              you exactly how we'd generate leads for your market, and give you a
-              clear action plan — whether you work with us or not.
+              30 minutes. No pitch-fest. We'll audit your ads, offer and funnel,
+              show you exactly where the profit is leaking, and hand you the plan
+              to fix it — whether you hire us or not.
             </p>
           </div>
 
