@@ -195,23 +195,22 @@ ${formData.goals}
           </div>
 
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-black leading-tight mb-6">
-            We'll Add <span className="text-primary">R100,000+</span> In Monthly
+            Scale Your Store Without the Guesswork:
             <br />
-            Store Revenue — Or You <span className="text-primary">Don't Pay</span>.
+            Paid Ads That Deliver <span className="text-primary">Customers, Revenue & Clarity</span>.
           </h1>
 
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-4">
-            We build the paid ads, creative, and email/SMS engine that turns your
+            We build the paid ad systems, creative, and funnel strategy that turn your
             store into a{" "}
             <strong className="text-foreground">
-              profitable, predictable machine
+              profitable, predictable revenue machine
             </strong>{" "}
-            — so you stop guessing what's working and start scaling on numbers.
+            — so you stop guessing what's working and start scaling on real numbers.
           </p>
 
           <p className="text-md text-muted-foreground max-w-2xl mx-auto mb-8 italic">
-            You don't have a traffic problem. You have a math problem. We fix the
-            math: more buyers, higher AOV, more repeat orders.
+            You don't have a traffic problem. You have a targeting, creative, and conversion problem. We fix all three.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
