@@ -24,7 +24,6 @@ import {
   CheckCircle2,
   Star,
   ArrowRight,
-  Phone,
   Calendar as CalendarIcon,
   Zap,
 } from "lucide-react";
@@ -187,13 +186,6 @@ ${formData.goals}
         </div>
 
         <div className="relative z-10 container mx-auto px-4 text-center max-w-5xl">
-          <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-2 mb-6">
-            <Zap size={16} className="text-primary" />
-            <span className="text-sm text-primary font-medium">
-              Only 3 Store Slots Left This Month
-            </span>
-          </div>
-
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-black leading-tight mb-6">
             Scale Your Store Without the Guesswork:
             <br />
