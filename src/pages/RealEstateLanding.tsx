@@ -190,29 +190,28 @@ ${formData.goals}
           <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-2 mb-6">
             <Zap size={16} className="text-primary" />
             <span className="text-sm text-primary font-medium">
-              Limited Spots Available — Only Taking 3 New Clients This Month
+              Only 3 Store Slots Left This Month
             </span>
           </div>
 
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-black leading-tight mb-6">
-            Stop <span className="text-primary">Hoping</span> For Leads.
+            We'll Add <span className="text-primary">R100,000+</span> In Monthly
             <br />
-            Start <span className="text-primary">Generating</span> Them.
+            Store Revenue — Or You <span className="text-primary">Don't Pay</span>.
           </h1>
 
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-4">
-            We help real estate agents and agencies generate a{" "}
+            We build the paid ads, creative, and email/SMS engine that turns your
+            store into a{" "}
             <strong className="text-foreground">
-              predictable flow of qualified buyer and seller leads
+              profitable, predictable machine
             </strong>{" "}
-            — so you can stop relying on referrals and start scaling with
-            confidence.
+            — so you stop guessing what's working and start scaling on numbers.
           </p>
 
           <p className="text-md text-muted-foreground max-w-2xl mx-auto mb-8 italic">
-            "The goal is not to do business with everybody who needs what you
-            have. The goal is to do business with people who believe what you
-            believe." — Simon Sinek
+            You don't have a traffic problem. You have a math problem. We fix the
+            math: more buyers, higher AOV, more repeat orders.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
@@ -221,7 +220,7 @@ ${formData.goals}
               size="lg"
               className="bg-primary hover:bg-primary/90 text-primary-foreground text-lg px-8 py-6 rounded-xl shadow-lg shadow-primary/25 group"
             >
-              Book Your Free Strategy Call
+              Get My Free Store Growth Plan
               <ArrowRight
                 size={20}
                 className="ml-2 group-hover:translate-x-1 transition-transform"
@@ -236,11 +235,11 @@ ${formData.goals}
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle2 size={16} className="text-green-500" />
-              Results in 7-30 Days
+              First Profitable Ads in 7-30 Days
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle2 size={16} className="text-green-500" />
-              ROI-Focused Campaigns
+              We Only Win When ROAS Wins
             </div>
           </div>
         </div>
@@ -257,16 +256,16 @@ ${formData.goals}
       <section className="py-20 px-4 bg-secondary/30">
         <div className="container mx-auto max-w-4xl text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
-            Sound Familiar?
+            If This Is Your Store, Keep Reading
           </h2>
           <div className="grid md:grid-cols-2 gap-6 text-left">
             {[
-              "You're spending money on ads but getting low-quality leads that never convert",
-              "Your pipeline is unpredictable — some months are great, others are dead",
-              "You're relying on referrals and word-of-mouth, but it's not enough to scale",
-              "You've tried agencies before and they overpromised and underdelivered",
-              "You know digital marketing works, but you don't know who to trust",
-              "You're competing against agents with bigger budgets and more resources",
+              "You're burning ad spend and your ROAS still won't stay above breakeven",
+              "Traffic goes up, sales don't — your product pages leak buyers",
+              "Revenue swings wildly: one month R300k, the next R80k",
+              "Your CAC keeps climbing while your AOV stays flat",
+              "You're sitting on an email/SMS list that makes you almost nothing",
+              "The last agency sent pretty reports and zero profit",
             ].map((problem, i) => (
               <div
                 key={i}
@@ -278,7 +277,7 @@ ${formData.goals}
             ))}
           </div>
           <p className="mt-8 text-lg text-foreground font-semibold">
-            If any of this resonates — you're in the right place.
+            None of that is a you problem. It's an offer, creative, and follow-up problem — and all three are fixable.
           </p>
         </div>
       </section>
@@ -288,11 +287,11 @@ ${formData.goals}
         <div className="container mx-auto max-w-5xl">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Here's How We <span className="text-primary">Fill Your Pipeline</span>
+              Here's How We <span className="text-primary">Scale Your Store</span>
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              We don't just run ads. We build a complete lead generation machine
-              tailored to your market and your goals.
+              We don't "manage ads." We build the full profit engine: offer,
+              creative, funnel, and retention — measured in cash, not clicks.
             </p>
           </div>
 
@@ -300,33 +299,33 @@ ${formData.goals}
             {[
               {
                 icon: Target,
-                title: "Hyper-Targeted Campaigns",
-                desc: "We identify your ideal buyer or seller profile and put your offer directly in front of them — no wasted spend.",
+                title: "Offer Engineering",
+                desc: "We rebuild your offer, bundles and pricing so it's a no-brainer. Same traffic, more buyers, higher AOV.",
               },
               {
                 icon: Users,
-                title: "Qualified Lead Funnels",
-                desc: "Every lead goes through a qualification process so you only speak to people who are ready, willing, and able.",
+                title: "Scroll-Stopping Creative",
+                desc: "New ad angles and UGC-style creative tested weekly. Creative is the new targeting — we treat it that way.",
               },
               {
                 icon: TrendingUp,
-                title: "Data-Driven Optimization",
-                desc: "We test, iterate, and optimize weekly. Your cost-per-lead drops while quality goes up — guaranteed.",
+                title: "Profitable Paid Media",
+                desc: "Meta, Google, TikTok managed to blended MER and contribution margin — not vanity platform ROAS.",
               },
               {
                 icon: Phone,
-                title: "Done-For-You Management",
-                desc: "From ad creative to lead follow-up strategy, we handle everything so you can focus on closing deals.",
+                title: "Email & SMS Retention",
+                desc: "Abandoned cart, post-purchase, winback and campaigns that add 25-40% of revenue you're already leaving behind.",
               },
               {
                 icon: Shield,
-                title: "Transparent Reporting",
-                desc: "Weekly reports with real numbers. You'll always know exactly what's working, what we're testing, and your ROI.",
+                title: "CRO That Converts",
+                desc: "Product page, cart and checkout fixes that lift conversion rate — so every rand of ad spend goes further.",
               },
               {
                 icon: Zap,
-                title: "Fast Results",
-                desc: "Most clients see their first qualified leads within the first 7 days. No 90-day 'ramp up' excuses.",
+                title: "Numbers You Can Trust",
+                desc: "One dashboard: spend, MER, AOV, LTV, contribution profit. Weekly. No fluff, no 90-day 'ramp up' excuses.",
               },
             ].map((item, i) => (
               <div
