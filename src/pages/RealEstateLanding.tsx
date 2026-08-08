@@ -494,23 +494,23 @@ ${formData.goals}
         <div className="container mx-auto max-w-3xl text-center">
           <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 border border-primary/20 rounded-2xl p-8 md:p-12">
             <h2 className="text-2xl md:text-3xl font-bold mb-4">
-              Why We Only Take 3 New Stores Per Month
+              Built for Stores Ready to Scale
             </h2>
             <p className="text-muted-foreground mb-6">
-              We're not a volume agency. Every store gets its own offer rebuild,
-              creative pipeline and retention flows. That takes real bandwidth.
-              Take on everyone, and results drop. Results are the only thing we sell.
+              We work with a small number of ecommerce brands each month so every
+              client gets hands-on strategy, creative testing, and funnel optimization.
+              That depth is how we deliver consistent results.
             </p>
             <p className="text-foreground font-semibold mb-6">
-              If you're doing R50k+/month and want to scale profitably, grab a
-              slot below before they're gone.
+              If you're already selling and want to turn paid ads into your most
+              reliable growth channel, book a free strategy call below.
             </p>
             <Button
               onClick={scrollToBooking}
               size="lg"
               className="bg-primary hover:bg-primary/90 text-primary-foreground text-lg px-8 py-6 rounded-xl shadow-lg shadow-primary/25"
             >
-              Claim My Store Slot
+              Book My Free Strategy Call
             </Button>
           </div>
         </div>
