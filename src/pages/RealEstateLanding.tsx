@@ -337,6 +337,66 @@ ${formData.goals}
         </div>
       </section>
 
+      {/* Benefits of Running Paid Ads */}
+      <section className="py-20 px-4 bg-secondary/20">
+        <div className="container mx-auto max-w-5xl">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Why Paid Ads Are the <span className="text-primary">Fastest Growth Lever</span> for Ecommerce
+            </h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Organic content is slow. Word of mouth is unpredictable. Paid ads give you control, speed, and clarity.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {[
+              {
+                icon: Target,
+                title: "Reach the Right People Immediately",
+                desc: "Target by interest, behavior, location, and purchase intent — no more hoping the algorithm notices you.",
+              },
+              {
+                icon: TrendingUp,
+                title: "Scale What Already Works",
+                desc: "Once you find a winning offer and creative, paid ads let you turn up the spend and revenue in days, not months.",
+              },
+              {
+                icon: Shield,
+                title: "Control Your Customer Acquisition Cost",
+                desc: "Set daily budgets, test audiences, and optimize bids so every rand works harder and your margins stay healthy.",
+              },
+              {
+                icon: Zap,
+                title: "Get Real Data, Fast",
+                desc: "See exactly which ads, audiences, and products drive profit — then double down without guessing.",
+              },
+              {
+                icon: Users,
+                title: "Build a Predictable Sales Engine",
+                desc: "Turn traffic into a repeatable system: new buyers today, retargeting tomorrow, and lookalikes next week.",
+              },
+              {
+                icon: CheckCircle2,
+                title: "Outpace Competitors on Every Platform",
+                desc: "Meta, Google, TikTok — show up where your customers already scroll, shop, and search.",
+              },
+            ].map((item, i) => (
+              <div
+                key={i}
+                className="bg-card border border-border rounded-xl p-6 hover:border-primary/30 transition-all duration-300"
+              >
+                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                  <item.icon size={24} className="text-primary" />
+                </div>
+                <h3 className="text-lg font-bold mb-2">{item.title}</h3>
+                <p className="text-muted-foreground text-sm">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Results / Social Proof */}
       <section className="py-20 px-4 bg-secondary/30">
         <div className="container mx-auto max-w-5xl">
