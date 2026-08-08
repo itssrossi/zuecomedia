@@ -312,11 +312,6 @@ ${formData.goals}
                 desc: "Meta, Google, TikTok managed to blended MER and contribution margin — not vanity platform ROAS.",
               },
               {
-                icon: Phone,
-                title: "Email & SMS Retention",
-                desc: "Abandoned cart, post-purchase, winback and campaigns that add 25-40% of revenue you're already leaving behind.",
-              },
-              {
                 icon: Shield,
                 title: "CRO That Converts",
                 desc: "Product page, cart and checkout fixes that lift conversion rate — so every rand of ad spend goes further.",
