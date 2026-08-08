@@ -230,15 +230,15 @@ ${formData.goals}
           <div className="flex flex-wrap justify-center gap-8 text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
               <CheckCircle2 size={16} className="text-green-500" />
-              No Long-Term Contracts
+              Data-Driven Ad Strategy
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle2 size={16} className="text-green-500" />
-              First Profitable Ads in 7-30 Days
+              Creative Built for Conversion
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle2 size={16} className="text-green-500" />
-              We Only Win When ROAS Wins
+              Transparent Reporting on Real Metrics
             </div>
           </div>
         </div>
