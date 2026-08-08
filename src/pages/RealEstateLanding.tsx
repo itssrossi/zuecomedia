@@ -99,10 +99,10 @@ const RealEstateLanding = () => {
       date.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
 
     const details = `
-Real Estate Growth Strategy Call
+Ecommerce Growth Strategy Call
 
-Lead Type: ${formData.leadType}
-Monthly Marketing Budget: ${formData.budget}
+Store Type: ${formData.leadType}
+Monthly Ad Budget: ${formData.budget}
 Business: ${formData.businessName}
 Phone: ${formData.phone}
 Email: ${formData.email}
@@ -111,18 +111,18 @@ Goals:
 ${formData.goals}
     `.trim();
 
-    const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=Real Estate Growth Strategy Call - ${encodeURIComponent(formData.businessName)}&dates=${formatForGoogle(startDateTime)}/${formatForGoogle(endDateTime)}&details=${encodeURIComponent(details)}&add=itssrossi@icloud.com&location=Zoom (link will be sent via email)`;
+    const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=Ecommerce Growth Strategy Call - ${encodeURIComponent(formData.businessName)}&dates=${formatForGoogle(startDateTime)}/${formatForGoogle(endDateTime)}&details=${encodeURIComponent(details)}&add=itssrossi@icloud.com&location=Zoom (link will be sent via email)`;
 
     // Send email notification
-    const emailSubject = `New Real Estate Strategy Call Booking - ${formData.businessName}`;
+    const emailSubject = `New Ecommerce Strategy Call Booking - ${formData.businessName}`;
     const emailBody = `
-New booking from Real Estate Landing Page:
+New booking from Ecommerce Landing Page:
 
 Name: ${formData.name}
 Business: ${formData.businessName}
 Email: ${formData.email}
 Phone: ${formData.phone}
-Lead Type: ${formData.leadType}
+Store Type: ${formData.leadType}
 Monthly Budget: ${formData.budget}
 Date: ${format(selectedDate, "EEEE, MMMM d, yyyy")}
 Time: ${selectedTime} GMT+2
