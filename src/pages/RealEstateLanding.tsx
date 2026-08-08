@@ -24,7 +24,6 @@ import {
   CheckCircle2,
   Star,
   ArrowRight,
-  Phone,
   Calendar as CalendarIcon,
   Zap,
 } from "lucide-react";
@@ -187,31 +186,23 @@ ${formData.goals}
         </div>
 
         <div className="relative z-10 container mx-auto px-4 text-center max-w-5xl">
-          <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-2 mb-6">
-            <Zap size={16} className="text-primary" />
-            <span className="text-sm text-primary font-medium">
-              Only 3 Store Slots Left This Month
-            </span>
-          </div>
-
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-black leading-tight mb-6">
-            We'll Add <span className="text-primary">R100,000+</span> In Monthly
+            Scale Your Store Without the Guesswork:
             <br />
-            Store Revenue — Or You <span className="text-primary">Don't Pay</span>.
+            Paid Ads That Deliver <span className="text-primary">Customers, Revenue & Clarity</span>.
           </h1>
 
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-4">
-            We build the paid ads, creative, and email/SMS engine that turns your
+            We build the paid ad systems, creative, and funnel strategy that turn your
             store into a{" "}
             <strong className="text-foreground">
-              profitable, predictable machine
+              profitable, predictable revenue machine
             </strong>{" "}
-            — so you stop guessing what's working and start scaling on numbers.
+            — so you stop guessing what's working and start scaling on real numbers.
           </p>
 
           <p className="text-md text-muted-foreground max-w-2xl mx-auto mb-8 italic">
-            You don't have a traffic problem. You have a math problem. We fix the
-            math: more buyers, higher AOV, more repeat orders.
+            You don't have a traffic problem. You have a targeting, creative, and conversion problem. We fix all three.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
@@ -231,15 +222,15 @@ ${formData.goals}
           <div className="flex flex-wrap justify-center gap-8 text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
               <CheckCircle2 size={16} className="text-green-500" />
-              No Long-Term Contracts
+              Data-Driven Ad Strategy
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle2 size={16} className="text-green-500" />
-              First Profitable Ads in 7-30 Days
+              Creative Built for Conversion
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle2 size={16} className="text-green-500" />
-              We Only Win When ROAS Wins
+              Transparent Reporting on Real Metrics
             </div>
           </div>
         </div>
@@ -264,7 +255,7 @@ ${formData.goals}
               "Traffic goes up, sales don't — your product pages leak buyers",
               "Revenue swings wildly: one month R300k, the next R80k",
               "Your CAC keeps climbing while your AOV stays flat",
-              "You're sitting on an email/SMS list that makes you almost nothing",
+              "You're guessing which audiences and creative angles actually work",
               "The last agency sent pretty reports and zero profit",
             ].map((problem, i) => (
               <div
@@ -313,11 +304,6 @@ ${formData.goals}
                 desc: "Meta, Google, TikTok managed to blended MER and contribution margin — not vanity platform ROAS.",
               },
               {
-                icon: Phone,
-                title: "Email & SMS Retention",
-                desc: "Abandoned cart, post-purchase, winback and campaigns that add 25-40% of revenue you're already leaving behind.",
-              },
-              {
                 icon: Shield,
                 title: "CRO That Converts",
                 desc: "Product page, cart and checkout fixes that lift conversion rate — so every rand of ad spend goes further.",
@@ -331,6 +317,66 @@ ${formData.goals}
               <div
                 key={i}
                 className="bg-card border border-border rounded-xl p-6 hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5"
+              >
+                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                  <item.icon size={24} className="text-primary" />
+                </div>
+                <h3 className="text-lg font-bold mb-2">{item.title}</h3>
+                <p className="text-muted-foreground text-sm">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Benefits of Running Paid Ads */}
+      <section className="py-20 px-4 bg-secondary/20">
+        <div className="container mx-auto max-w-5xl">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Why Paid Ads Are the <span className="text-primary">Fastest Growth Lever</span> for Ecommerce
+            </h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Organic content is slow. Word of mouth is unpredictable. Paid ads give you control, speed, and clarity.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {[
+              {
+                icon: Target,
+                title: "Reach the Right People Immediately",
+                desc: "Target by interest, behavior, location, and purchase intent — no more hoping the algorithm notices you.",
+              },
+              {
+                icon: TrendingUp,
+                title: "Scale What Already Works",
+                desc: "Once you find a winning offer and creative, paid ads let you turn up the spend and revenue in days, not months.",
+              },
+              {
+                icon: Shield,
+                title: "Control Your Customer Acquisition Cost",
+                desc: "Set daily budgets, test audiences, and optimize bids so every rand works harder and your margins stay healthy.",
+              },
+              {
+                icon: Zap,
+                title: "Get Real Data, Fast",
+                desc: "See exactly which ads, audiences, and products drive profit — then double down without guessing.",
+              },
+              {
+                icon: Users,
+                title: "Build a Predictable Sales Engine",
+                desc: "Turn traffic into a repeatable system: new buyers today, retargeting tomorrow, and lookalikes next week.",
+              },
+              {
+                icon: CheckCircle2,
+                title: "Outpace Competitors on Every Platform",
+                desc: "Meta, Google, TikTok — show up where your customers already scroll, shop, and search.",
+              },
+            ].map((item, i) => (
+              <div
+                key={i}
+                className="bg-card border border-border rounded-xl p-6 hover:border-primary/30 transition-all duration-300"
               >
                 <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
                   <item.icon size={24} className="text-primary" />
@@ -440,23 +486,23 @@ ${formData.goals}
         <div className="container mx-auto max-w-3xl text-center">
           <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 border border-primary/20 rounded-2xl p-8 md:p-12">
             <h2 className="text-2xl md:text-3xl font-bold mb-4">
-              Why We Only Take 3 New Stores Per Month
+              Built for Stores Ready to Scale
             </h2>
             <p className="text-muted-foreground mb-6">
-              We're not a volume agency. Every store gets its own offer rebuild,
-              creative pipeline and retention flows. That takes real bandwidth.
-              Take on everyone, and results drop. Results are the only thing we sell.
+              We work with a small number of ecommerce brands each month so every
+              client gets hands-on strategy, creative testing, and funnel optimization.
+              That depth is how we deliver consistent results.
             </p>
             <p className="text-foreground font-semibold mb-6">
-              If you're doing R50k+/month and want to scale profitably, grab a
-              slot below before they're gone.
+              If you're already selling and want to turn paid ads into your most
+              reliable growth channel, book a free strategy call below.
             </p>
             <Button
               onClick={scrollToBooking}
               size="lg"
               className="bg-primary hover:bg-primary/90 text-primary-foreground text-lg px-8 py-6 rounded-xl shadow-lg shadow-primary/25"
             >
-              Claim My Store Slot
+              Book My Free Strategy Call
             </Button>
           </div>
         </div>
@@ -677,19 +723,18 @@ ${formData.goals}
       <section className="py-16 px-4">
         <div className="container mx-auto max-w-3xl text-center">
           <h2 className="text-2xl md:text-3xl font-bold mb-4">
-            Your Competitors Are Buying Your Customers Right Now.
+            Ready to Turn Paid Ads Into a Reliable Growth Channel?
           </h2>
           <p className="text-muted-foreground text-lg mb-8">
-            Every day you run break-even ads is a day someone else buys the
-            customer, keeps the lifetime value, and outbids you tomorrow. The
-            question isn't what this costs — it's what another flat quarter costs.
+            Book a free strategy call and we'll audit your current ads, offer, and funnel.
+            You'll walk away with a clear action plan — whether we work together or not.
           </p>
           <Button
             onClick={scrollToBooking}
             size="lg"
             className="bg-primary hover:bg-primary/90 text-primary-foreground text-lg px-8 py-6 rounded-xl shadow-lg shadow-primary/25"
           >
-            Get My Free Growth Plan
+            Book My Free Strategy Call
           </Button>
         </div>
       </section>
