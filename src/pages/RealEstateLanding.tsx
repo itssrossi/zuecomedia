@@ -555,7 +555,7 @@ ${formData.goals}
                     onChange={(e) =>
                       setFormData((p) => ({ ...p, businessName: e.target.value }))
                     }
-                    placeholder="Smith Realty"
+                    placeholder="Acme Apparel"
                     className="bg-background border-border"
                   />
                 </div>
@@ -569,7 +569,7 @@ ${formData.goals}
                     onChange={(e) =>
                       setFormData((p) => ({ ...p, email: e.target.value }))
                     }
-                    placeholder="john@smithrealty.com"
+                    placeholder="john@acmeapparel.com"
                     className="bg-background border-border"
                   />
                 </div>
@@ -589,7 +589,7 @@ ${formData.goals}
                 </div>
 
                 <div>
-                  <Label>What Type of Leads Do You Need? *</Label>
+                  <Label>What Best Describes Your Store? *</Label>
                   <Select
                     value={formData.leadType}
                     onValueChange={(v) =>
@@ -597,18 +597,20 @@ ${formData.goals}
                     }
                   >
                     <SelectTrigger className="bg-background border-border">
-                      <SelectValue placeholder="Select lead type" />
+                      <SelectValue placeholder="Select store type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="buyer">Buyer Leads</SelectItem>
-                      <SelectItem value="seller">Seller Leads</SelectItem>
-                      <SelectItem value="both">Both Buyer & Seller Leads</SelectItem>
+                      <SelectItem value="Under R50k/month">Doing under R50k/month</SelectItem>
+                      <SelectItem value="R50k - R250k/month">Doing R50k – R250k/month</SelectItem>
+                      <SelectItem value="R250k - R1m/month">Doing R250k – R1m/month</SelectItem>
+                      <SelectItem value="R1m+/month">Doing R1m+/month</SelectItem>
+                      <SelectItem value="Pre-launch">Pre-launch / just started</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div>
-                  <Label>Monthly Marketing Budget (for positive ROI) *</Label>
+                  <Label>Monthly Ad Budget *</Label>
                   <Select
                     value={formData.budget}
                     onValueChange={(v) =>
@@ -630,7 +632,7 @@ ${formData.goals}
 
                 <div>
                   <Label htmlFor="re-goals">
-                    What are your goals for the next 12 months?
+                    What's your revenue goal for the next 12 months?
                   </Label>
                   <Textarea
                     id="re-goals"
@@ -638,7 +640,7 @@ ${formData.goals}
                     onChange={(e) =>
                       setFormData((p) => ({ ...p, goals: e.target.value }))
                     }
-                    placeholder="e.g. Close 5 more deals per month, build a team, expand into new areas..."
+                    placeholder="e.g. Scale from R150k to R500k/month, launch a new product line, fix our ROAS..."
                     rows={4}
                     className="bg-background border-border"
                   />
@@ -659,11 +661,11 @@ ${formData.goals}
                   }
                   className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-lg py-6 rounded-xl shadow-lg shadow-primary/25"
                 >
-                  {isSubmitting ? "Booking..." : "Book My Free Strategy Call"}
+                  {isSubmitting ? "Booking..." : "Get My Free Store Growth Plan"}
                 </Button>
 
                 <p className="text-xs text-muted-foreground text-center">
-                  🔒 Your information is 100% secure and will never be shared.
+                  🔒 100% private. No spam, no sales pressure — just the plan.
                 </p>
               </div>
             </div>
@@ -675,19 +677,19 @@ ${formData.goals}
       <section className="py-16 px-4">
         <div className="container mx-auto max-w-3xl text-center">
           <h2 className="text-2xl md:text-3xl font-bold mb-4">
-            Your Competitors Are Already Running Ads.
+            Your Competitors Are Buying Your Customers Right Now.
           </h2>
           <p className="text-muted-foreground text-lg mb-8">
-            Every day you wait is another day they're capturing the leads that
-            should be yours. The question isn't whether you can afford to invest
-            in marketing — it's whether you can afford not to.
+            Every day you run break-even ads is a day someone else buys the
+            customer, keeps the lifetime value, and outbids you tomorrow. The
+            question isn't what this costs — it's what another flat quarter costs.
           </p>
           <Button
             onClick={scrollToBooking}
             size="lg"
             className="bg-primary hover:bg-primary/90 text-primary-foreground text-lg px-8 py-6 rounded-xl shadow-lg shadow-primary/25"
           >
-            Book Your Free Call Now
+            Get My Free Growth Plan
           </Button>
         </div>
       </section>
