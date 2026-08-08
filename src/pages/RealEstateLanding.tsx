@@ -731,19 +731,18 @@ ${formData.goals}
       <section className="py-16 px-4">
         <div className="container mx-auto max-w-3xl text-center">
           <h2 className="text-2xl md:text-3xl font-bold mb-4">
-            Your Competitors Are Buying Your Customers Right Now.
+            Ready to Turn Paid Ads Into a Reliable Growth Channel?
           </h2>
           <p className="text-muted-foreground text-lg mb-8">
-            Every day you run break-even ads is a day someone else buys the
-            customer, keeps the lifetime value, and outbids you tomorrow. The
-            question isn't what this costs — it's what another flat quarter costs.
+            Book a free strategy call and we'll audit your current ads, offer, and funnel.
+            You'll walk away with a clear action plan — whether we work together or not.
           </p>
           <Button
             onClick={scrollToBooking}
             size="lg"
             className="bg-primary hover:bg-primary/90 text-primary-foreground text-lg px-8 py-6 rounded-xl shadow-lg shadow-primary/25"
           >
-            Get My Free Growth Plan
+            Book My Free Strategy Call
           </Button>
         </div>
       </section>
