@@ -263,7 +263,7 @@ ${formData.goals}
               "Traffic goes up, sales don't — your product pages leak buyers",
               "Revenue swings wildly: one month R300k, the next R80k",
               "Your CAC keeps climbing while your AOV stays flat",
-              "You're sitting on an email/SMS list that makes you almost nothing",
+              "You're guessing which audiences and creative angles actually work",
               "The last agency sent pretty reports and zero profit",
             ].map((problem, i) => (
               <div
