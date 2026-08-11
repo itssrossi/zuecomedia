@@ -31,6 +31,7 @@ export interface FbAdMetric {
   ctr: number;
   cpc: number;
   roas: number;
+  messaging_conversations?: number;
   campaign_name?: string; // For joined queries
   campaign?: string; // Add this property to match AdMetric type
   campaign_status?: string; // Add campaign status
@@ -44,6 +45,37 @@ export interface SyncStatus {
   last_sync_at: string;
   sync_status: string;
 }
+
+export interface FbAd {
+  id: string;
+  fb_ad_id: string;
+  campaign_id: string | null;
+  ad_name: string | null;
+  ad_status: string | null;
+  campaign_name: string | null;
+  image_url: string | null;
+  thumbnail_url: string | null;
+  body_copy: string | null;
+  title: string | null;
+  impressions: number;
+  clicks: number;
+  spend: number;
+  ctr: number;
+  messaging_conversations: number;
+}
+
+export const fetchUserAds = async (campaignIds?: string[]): Promise<FbAd[]> => {
+  let query = (supabase as any).from('fb_ads').select('*');
+  if (campaignIds && campaignIds.length > 0) {
+    query = query.in('campaign_id', campaignIds);
+  }
+  const { data, error } = await query;
+  if (error) {
+    console.error('Error fetching ads:', error.message);
+    return [];
+  }
+  return data || [];
+};
 
 export const fetchUserAdAccounts = async (): Promise<FbAdAccount[]> => {
   const { data, error } = await (supabase as any)
