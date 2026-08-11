@@ -8,6 +8,7 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuIte
 import { ALL_TILES, TileId } from "@/hooks/useDashboardLayout";
 import { TILE_META, renderTile } from "./tileRegistry";
 import type { AdMetric, DashboardStats } from "@/hooks/useFacebookData";
+import type { FbAd } from "@/services/facebookService";
 
 interface Props {
   tiles: TileId[];
@@ -15,6 +16,7 @@ interface Props {
   metrics: AdMetric[];
   stats: DashboardStats;
   isLoading: boolean;
+  ads: FbAd[];
   trends: {
     spendTrendData: { name: string; value: number }[];
     revenueTrendData: { name: string; value: number }[];
@@ -60,10 +62,10 @@ const SortableTile = ({ id, editing, onRemove, children, size }: { id: string; e
   );
 };
 
-const CustomizableGrid = ({ tiles, onChange, metrics, stats, isLoading, trends }: Props) => {
+const CustomizableGrid = ({ tiles, onChange, metrics, stats, isLoading, trends, ads }: Props) => {
   const [editing, setEditing] = useState(false);
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
-  const ctx = { metrics, stats, isLoading, trends };
+  const ctx = { metrics, stats, isLoading, trends, ads };
 
   const availableToAdd = useMemo(() => ALL_TILES.filter((t) => !tiles.includes(t)), [tiles]);
 
