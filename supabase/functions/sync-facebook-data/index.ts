@@ -231,10 +231,100 @@ async function processAdAccount(supabase, userId, account) {
       await fetchCampaignInsights(supabase, userId, campaignId, campaign.id, account.access_token);
     }
 
+    // Fetch ad-level creatives + performance (used for the "Top performing ad" tile)
+    try {
+      await fetchAdCreatives(supabase, userId, formattedAccountId, account.access_token);
+    } catch (creativeError) {
+      console.error('Error fetching ad creatives (non-fatal):', creativeError);
+    }
+
     return { message: `Processed account ${account.account_id} successfully` };
   } catch (error) {
     console.error(`Error in processAdAccount for ${account.account_id}:`, error);
     throw error;
+  }
+}
+
+const MESSAGING_ACTION_TYPES = [
+  'onsite_conversion.messaging_conversation_started_7d',
+  'onsite_conversion.total_messaging_connection',
+  'onsite_conversion.messaging_first_reply',
+];
+
+function countMessagingActions(actions: any[] | undefined): number {
+  if (!actions) return 0;
+  let best = 0;
+  for (const action of actions) {
+    if (MESSAGING_ACTION_TYPES.includes(action.action_type)) {
+      best = Math.max(best, parseInt(action.value || '0'));
+    }
+  }
+  return best;
+}
+
+// Fetch ads with their creative (image + copy) and last-30-day insights
+async function fetchAdCreatives(supabase, userId, formattedAccountId, accessToken) {
+  const endDate = new Date();
+  const startDate = new Date();
+  startDate.setDate(startDate.getDate() - 30);
+  const since = startDate.toISOString().split('T')[0];
+  const until = endDate.toISOString().split('T')[0];
+
+  const fields = [
+    'id',
+    'name',
+    'status',
+    'campaign{id,name}',
+    'creative{body,title,image_url,thumbnail_url,object_story_spec}',
+    `insights.time_range({"since":"${since}","until":"${until}"}){impressions,clicks,spend,ctr,actions}`,
+  ].join(',');
+
+  const url = `${FB_API_BASE_URL}/${formattedAccountId}/ads?fields=${encodeURIComponent(fields)}&limit=100&access_token=${accessToken}`;
+  const res = await fetch(url);
+  if (!res.ok) {
+    const errorText = await res.text();
+    throw new FacebookApiError(res.status, errorText, 'Could not fetch Facebook ads');
+  }
+  const json = await res.json();
+  const ads = json.data || [];
+  console.log(`Found ${ads.length} ads`);
+
+  for (const ad of ads) {
+    const insight = ad.insights?.data?.[0];
+    const creative = ad.creative || {};
+    const linkData = creative.object_story_spec?.link_data || creative.object_story_spec?.video_data || {};
+
+    let campaignUuid = null;
+    if (ad.campaign?.id) {
+      const { data: campaignRow } = await supabase
+        .from('fb_campaigns')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('fb_campaign_id', ad.campaign.id)
+        .maybeSingle();
+      campaignUuid = campaignRow?.id || null;
+    }
+
+    const { error } = await supabase.from('fb_ads').upsert({
+      user_id: userId,
+      campaign_id: campaignUuid,
+      fb_ad_id: ad.id,
+      ad_name: ad.name || null,
+      ad_status: ad.status || null,
+      campaign_name: ad.campaign?.name || null,
+      image_url: creative.image_url || linkData.picture || null,
+      thumbnail_url: creative.thumbnail_url || null,
+      body_copy: creative.body || linkData.message || null,
+      title: creative.title || linkData.name || null,
+      impressions: parseInt(insight?.impressions || '0'),
+      clicks: parseInt(insight?.clicks || '0'),
+      spend: parseFloat(insight?.spend || '0'),
+      ctr: parseFloat(insight?.ctr || '0'),
+      messaging_conversations: countMessagingActions(insight?.actions),
+      updated_at: new Date().toISOString(),
+    }, { onConflict: 'user_id, fb_ad_id' });
+
+    if (error) console.error(`Error upserting ad ${ad.id}:`, error);
   }
 }
 
@@ -283,6 +373,7 @@ async function fetchCampaignInsights(supabase, userId, campaignId, fbCampaignId,
       // Extract conversions and revenue from actions
       let conversions = 0;
       let revenue = 0;
+      const messagingConversations = countMessagingActions(insight.actions);
       
       if (insight.actions) {
         for (const action of insight.actions) {
@@ -316,6 +407,7 @@ async function fetchCampaignInsights(supabase, userId, campaignId, fbCampaignId,
         ctr,
         cpc,
         roas,
+        messaging_conversations: messagingConversations,
         updated_at: new Date().toISOString()
       }, {
         onConflict: 'user_id, campaign_id, date'
