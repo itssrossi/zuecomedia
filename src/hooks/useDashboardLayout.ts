@@ -10,6 +10,9 @@ export type TileId =
   | "cpc"
   | "impressions"
   | "clicks"
+  | "whatsapp-messages"
+  | "cost-per-whatsapp"
+  | "top-ad"
   | "performance-chart"
   | "spend-pie"
   | "revenue-pie"
@@ -36,6 +39,9 @@ export const ALL_TILES: TileId[] = [
   "cpc",
   "impressions",
   "clicks",
+  "whatsapp-messages",
+  "cost-per-whatsapp",
+  "top-ad",
   "performance-chart",
   "spend-pie",
   "revenue-pie",

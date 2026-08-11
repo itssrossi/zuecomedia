@@ -1,12 +1,14 @@
 import { ReactNode } from "react";
-import { DollarSign, TrendingUp, BarChart4, MousePointerClick, Users, Eye, MousePointer, Target, PieChart, LineChart, Table as TableIcon } from "lucide-react";
+import { DollarSign, TrendingUp, BarChart4, MousePointerClick, Users, Eye, MousePointer, Target, PieChart, LineChart, Table as TableIcon, MessageCircle, Trophy } from "lucide-react";
 import DashboardCard from "@/components/dashboard/DashboardCard";
 import CampaignTrendChart from "@/components/dashboard/CampaignTrendChart";
 import MetricPieChart from "@/components/dashboard/MetricPieChart";
 import PerformanceChart from "@/components/dashboard/PerformanceChart";
 import CampaignPieChart from "@/components/dashboard/CampaignPieChart";
 import CampaignTable from "@/components/dashboard/CampaignTable";
+import TopAdCard from "@/components/dashboard/TopAdCard";
 import type { AdMetric, DashboardStats } from "@/hooks/useFacebookData";
+import type { FbAd } from "@/services/facebookService";
 import type { TileId } from "@/hooks/useDashboardLayout";
 
 const fmtMoney = (n: number) => {
@@ -36,6 +38,9 @@ export const TILE_META: Record<TileId, TileMeta> = {
   cpc:              { id: "cpc",               title: "Average CPC",     icon: <Target size={16} />,            size: "sm" },
   impressions:      { id: "impressions",       title: "Impressions",     icon: <Eye size={16} />,               size: "sm" },
   clicks:           { id: "clicks",            title: "Clicks",          icon: <MousePointer size={16} />,      size: "sm" },
+  "whatsapp-messages":  { id: "whatsapp-messages",  title: "WhatsApp Messages",       icon: <MessageCircle size={16} />, size: "sm" },
+  "cost-per-whatsapp":  { id: "cost-per-whatsapp",  title: "Cost per WhatsApp Msg",   icon: <MessageCircle size={16} />, size: "sm" },
+  "top-ad":             { id: "top-ad",             title: "Top Performing Ad",       icon: <Trophy size={16} />,        size: "lg" },
   "performance-chart": { id: "performance-chart", title: "Campaign Performance", icon: <LineChart size={16} />, size: "lg" },
   "spend-pie":      { id: "spend-pie",         title: "Spend Distribution",   icon: <PieChart size={16} />,     size: "lg" },
   "revenue-pie":    { id: "revenue-pie",       title: "Revenue Distribution", icon: <PieChart size={16} />,     size: "lg" },
@@ -47,6 +52,7 @@ interface Ctx {
   metrics: AdMetric[];
   stats: DashboardStats;
   isLoading: boolean;
+  ads: FbAd[];
   trends: {
     spendTrendData: { name: string; value: number }[];
     revenueTrendData: { name: string; value: number }[];
@@ -56,7 +62,7 @@ interface Ctx {
 }
 
 export const renderTile = (id: TileId, ctx: Ctx): ReactNode => {
-  const { stats, metrics, isLoading, trends } = ctx;
+  const { stats, metrics, isLoading, trends, ads } = ctx;
   const totalLeads = metrics.reduce((s, m) => s + Number(m.conversions || 0), 0);
   switch (id) {
     case "spend":
@@ -75,6 +81,12 @@ export const renderTile = (id: TileId, ctx: Ctx): ReactNode => {
       return <DashboardCard title="Impressions" value={fmtNum(stats.totalImpressions)} icon={<Eye size={20} />} />;
     case "clicks":
       return <DashboardCard title="Clicks" value={fmtNum(stats.totalClicks)} icon={<MousePointer size={20} />} />;
+    case "whatsapp-messages":
+      return <DashboardCard title="WhatsApp Messages" value={fmtNum(stats.totalMessages)} icon={<MessageCircle size={20} />} />;
+    case "cost-per-whatsapp":
+      return <DashboardCard title="Cost per WhatsApp Msg" value={`R${stats.costPerMessage.toFixed(2)}`} icon={<MessageCircle size={20} />} />;
+    case "top-ad":
+      return <TopAdCard ads={ads} isLoading={isLoading} />;
     case "performance-chart":
       return <PerformanceChart data={metrics} isLoading={isLoading} />;
     case "spend-pie":

@@ -36,6 +36,7 @@ const Dashboard = () => {
     accounts,
     campaigns,
     metrics, 
+    ads,
     stats, 
     syncStatus,
     isLoading, 
@@ -162,6 +163,7 @@ const Dashboard = () => {
               tiles={tiles}
               onChange={updateTiles}
               metrics={metrics}
+              ads={ads}
               stats={stats}
               isLoading={isLoading}
               trends={{ spendTrendData, revenueTrendData, roasTrendData, ctrTrendData }}

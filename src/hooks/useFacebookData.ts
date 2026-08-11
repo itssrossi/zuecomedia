@@ -7,7 +7,9 @@ import {
   fetchUserAdMetrics,
   fetchLastSyncStatus,
   triggerFacebookDataSync,
-  FbAdMetric
+  fetchUserAds,
+  FbAdMetric,
+  FbAd
 } from '@/services/facebookService';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from '@/components/ui/sonner';
@@ -20,6 +22,8 @@ export interface DashboardStats {
   averageCtr: number;
   averageRoas: number;
   averageCpc: number;
+  totalMessages: number;
+  costPerMessage: number;
 }
 
 // Define AdMetric type to match what the components expect
@@ -35,6 +39,7 @@ export interface AdMetric {
   cpc: number;
   roas: number;
   date: string;
+  messaging_conversations: number;
   status: string | null; // Make this required and allow null
   start_time: string | null; // Make this required and allow null
   stop_time: string | null; // Make this required and allow null
@@ -54,6 +59,7 @@ const convertToAdMetric = (metrics: FbAdMetric[]): AdMetric[] => {
     cpc: metric.cpc,
     roas: metric.roas,
     date: metric.date,
+    messaging_conversations: Number(metric.messaging_conversations || 0),
     status: metric.campaign_status || null,
     start_time: metric.start_time || null,
     stop_time: metric.stop_time || null
@@ -70,7 +76,9 @@ export const useFacebookData = (startDate?: string, endDate?: string, campaignId
     totalClicks: 0,
     averageCtr: 0,
     averageRoas: 0,
-    averageCpc: 0
+    averageCpc: 0,
+    totalMessages: 0,
+    costPerMessage: 0
   });
 
   // Query for ad accounts
@@ -94,6 +102,13 @@ export const useFacebookData = (startDate?: string, endDate?: string, campaignId
     enabled: !!user
   });
 
+  // Query for ad-level creatives (top performing ad tile)
+  const adsQuery = useQuery({
+    queryKey: ['fbAds', user?.id, campaignIds],
+    queryFn: () => fetchUserAds(campaignIds),
+    enabled: !!user
+  });
+
   // Query for sync status - more frequent polling when syncing
   const syncStatusQuery = useQuery({
     queryKey: ['syncStatus', user?.id],
@@ -111,6 +126,7 @@ export const useFacebookData = (startDate?: string, endDate?: string, campaignId
       const totalRevenue = metrics.reduce((sum, metric) => sum + Number(metric.revenue), 0);
       const totalImpressions = metrics.reduce((sum, metric) => sum + metric.impressions, 0);
       const totalClicks = metrics.reduce((sum, metric) => sum + metric.clicks, 0);
+      const totalMessages = metrics.reduce((sum, metric) => sum + Number((metric as any).messaging_conversations || 0), 0);
       
       // Calculate averages
       const avgCtr = totalImpressions > 0 
@@ -132,7 +148,9 @@ export const useFacebookData = (startDate?: string, endDate?: string, campaignId
         totalClicks,
         averageCtr: avgCtr,
         averageRoas: avgRoas,
-        averageCpc: avgCpc
+        averageCpc: avgCpc,
+        totalMessages,
+        costPerMessage: totalMessages > 0 ? totalSpend / totalMessages : 0
       });
     }
   }, [metricsQuery.data]);
@@ -156,6 +174,7 @@ export const useFacebookData = (startDate?: string, endDate?: string, campaignId
           metricsQuery.refetch(),
           accountsQuery.refetch(),
           campaignsQuery.refetch(),
+          adsQuery.refetch(),
           syncStatusQuery.refetch()
         ]);
         
@@ -179,6 +198,7 @@ export const useFacebookData = (startDate?: string, endDate?: string, campaignId
     accounts: accountsQuery.data || [],
     campaigns: campaignsQuery.data || [],
     metrics: adMetrics, // Return the converted metrics
+    ads: (adsQuery.data || []) as FbAd[],
     rawMetrics: metricsQuery.data || [], // Also provide raw metrics if needed
     syncStatus: syncStatusQuery.data,
     stats,
