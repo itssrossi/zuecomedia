@@ -242,6 +242,7 @@ async function processAdAccount(supabase, userId, account) {
 }
 
 const MESSAGING_ACTION_TYPES = [
+  "messaging_conversation_started_7d",
   'onsite_conversion.messaging_conversation_started_7d',
   'onsite_conversion.total_messaging_connection',
   'onsite_conversion.messaging_first_reply',
