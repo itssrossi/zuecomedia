@@ -39,7 +39,9 @@ const Dashboard = () => {
     ads,
     stats, 
     syncStatus,
-    isLoading, 
+    isLoading,
+    isError,
+    error,
     triggerSync
   } = useFacebookData(formattedStartDate, formattedEndDate, selectedCampaign ? [selectedCampaign] : []);
 
@@ -146,6 +148,15 @@ const Dashboard = () => {
           selectedCampaign={selectedCampaign}
           onCampaignChange={setSelectedCampaign}
         />
+
+        {isError && (
+          <div className="bg-red-950/30 border border-red-500/50 rounded-lg p-4 mb-6" role="alert">
+            <h3 className="text-red-300 font-medium mb-1">Facebook data could not be loaded</h3>
+            <p className="text-red-200 text-sm">
+              {error instanceof Error ? error.message : "Check your Facebook connection and run Refresh again."}
+            </p>
+          </div>
+        )}
 
         {accounts.length === 0 ? (
           <FacebookAccountSetup onSuccess={handleAccountConnected} />

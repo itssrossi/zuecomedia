@@ -65,14 +65,14 @@ export interface FbAd {
 }
 
 export const fetchUserAds = async (campaignIds?: string[]): Promise<FbAd[]> => {
-  let query = (supabase as any).from('fb_ads').select('*');
+  let query = (supabase as any).from('fb_ads').select('*').order('ctr', { ascending: false });
   if (campaignIds && campaignIds.length > 0) {
     query = query.in('campaign_id', campaignIds);
   }
   const { data, error } = await query;
   if (error) {
     console.error('Error fetching ads:', error.message);
-    return [];
+    throw new Error(`Error fetching Facebook ads: ${error.message}`);
   }
   return data || [];
 };

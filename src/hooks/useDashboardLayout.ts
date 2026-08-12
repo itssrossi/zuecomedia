@@ -24,6 +24,9 @@ export const DEFAULT_TILES: TileId[] = [
   "revenue",
   "leads",
   "roas",
+  "whatsapp-messages",
+  "cost-per-whatsapp",
+  "top-ad",
   "performance-chart",
   "spend-pie",
   "leads-pie",
@@ -66,7 +69,24 @@ export const useDashboardLayout = () => {
         .eq("user_id", user.id)
         .maybeSingle();
       if (data) {
-        if (Array.isArray(data.tiles) && data.tiles.length) setTiles(data.tiles as TileId[]);
+        if (Array.isArray(data.tiles) && data.tiles.length) {
+          const validTiles = data.tiles.filter((tile: unknown): tile is TileId =>
+            typeof tile === "string" && ALL_TILES.includes(tile as TileId)
+          );
+          const newFacebookTiles: TileId[] = ["whatsapp-messages", "cost-per-whatsapp", "top-ad"];
+          const upgradedTiles = [
+            ...validTiles,
+            ...newFacebookTiles.filter((tile) => !validTiles.includes(tile)),
+          ];
+          setTiles(upgradedTiles);
+
+          if (upgradedTiles.length !== validTiles.length) {
+            await (supabase as any)
+              .from("dashboard_layouts")
+              .update({ tiles: upgradedTiles, updated_at: new Date().toISOString() })
+              .eq("user_id", user.id);
+          }
+        }
         if (data.report_email) setReportEmail(data.report_email);
       }
       setIsLoading(false);
