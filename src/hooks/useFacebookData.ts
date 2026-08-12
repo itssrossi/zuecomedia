@@ -202,9 +202,9 @@ export const useFacebookData = (startDate?: string, endDate?: string, campaignId
     rawMetrics: metricsQuery.data || [], // Also provide raw metrics if needed
     syncStatus: syncStatusQuery.data,
     stats,
-    isLoading: accountsQuery.isLoading || campaignsQuery.isLoading || metricsQuery.isLoading,
-    isError: accountsQuery.isError || campaignsQuery.isError || metricsQuery.isError,
-    error: accountsQuery.error || campaignsQuery.error || metricsQuery.error,
+    isLoading: accountsQuery.isLoading || campaignsQuery.isLoading || metricsQuery.isLoading || adsQuery.isLoading,
+    isError: accountsQuery.isError || campaignsQuery.isError || metricsQuery.isError || adsQuery.isError,
+    error: accountsQuery.error || campaignsQuery.error || metricsQuery.error || adsQuery.error,
     triggerSync,
     isSyncing
   };

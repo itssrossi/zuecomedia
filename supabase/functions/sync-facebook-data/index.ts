@@ -232,13 +232,9 @@ async function processAdAccount(supabase, userId, account) {
     }
 
     // Fetch ad-level creatives + performance (used for the "Top performing ad" tile)
-    try {
-      await fetchAdCreatives(supabase, userId, formattedAccountId, account.access_token);
-    } catch (creativeError) {
-      console.error('Error fetching ad creatives (non-fatal):', creativeError);
-    }
+    const adsProcessed = await fetchAdCreatives(supabase, userId, formattedAccountId, account.access_token);
 
-    return { message: `Processed account ${account.account_id} successfully` };
+    return { message: `Processed account ${account.account_id} successfully`, ads_processed: adsProcessed };
   } catch (error) {
     console.error(`Error in processAdAccount for ${account.account_id}:`, error);
     throw error;
@@ -274,6 +270,7 @@ async function fetchAdCreatives(supabase, userId, formattedAccountId, accessToke
     'id',
     'name',
     'status',
+    'effective_status',
     'campaign{id,name}',
     'creative{body,title,image_url,thumbnail_url,object_story_spec}',
     `insights.time_range({"since":"${since}","until":"${until}"}){impressions,clicks,spend,ctr,actions}`,
@@ -289,6 +286,7 @@ async function fetchAdCreatives(supabase, userId, formattedAccountId, accessToke
   const ads = json.data || [];
   console.log(`Found ${ads.length} ads`);
 
+  let processed = 0;
   for (const ad of ads) {
     const insight = ad.insights?.data?.[0];
     const creative = ad.creative || {};
@@ -310,7 +308,7 @@ async function fetchAdCreatives(supabase, userId, formattedAccountId, accessToke
       campaign_id: campaignUuid,
       fb_ad_id: ad.id,
       ad_name: ad.name || null,
-      ad_status: ad.status || null,
+      ad_status: ad.effective_status || ad.status || null,
       campaign_name: ad.campaign?.name || null,
       image_url: creative.image_url || linkData.picture || null,
       thumbnail_url: creative.thumbnail_url || null,
@@ -324,8 +322,13 @@ async function fetchAdCreatives(supabase, userId, formattedAccountId, accessToke
       updated_at: new Date().toISOString(),
     }, { onConflict: 'user_id, fb_ad_id' });
 
-    if (error) console.error(`Error upserting ad ${ad.id}:`, error);
+    if (error) {
+      throw new Error(`Could not save Facebook ad ${ad.id}: ${error.message}`);
+    }
+    processed += 1;
   }
+
+  return processed;
 }
 
 // Fetch campaign insights from Facebook API
@@ -414,7 +417,7 @@ async function fetchCampaignInsights(supabase, userId, campaignId, fbCampaignId,
       });
 
       if (metricsError) {
-        console.error(`Error upserting metrics for ${insight.date_start}:`, metricsError);
+        throw new Error(`Could not save Facebook metrics for ${insight.date_start}: ${metricsError.message}`);
       }
     }
     
