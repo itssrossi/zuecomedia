@@ -95,8 +95,32 @@ create table if not exists public.fb_ad_metrics (
   ctr numeric not null default 0,
   cpc numeric not null default 0,
   roas numeric not null default 0,
+  messaging_conversations bigint not null default 0,
   created_at timestamptz not null default now(),
   unique (user_id, campaign_id, date)
+);
+alter table public.fb_ad_metrics
+  add column if not exists messaging_conversations bigint not null default 0;
+create table if not exists public.fb_ads (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  campaign_id uuid references public.fb_campaigns(id) on delete cascade,
+  fb_ad_id text not null,
+  ad_name text,
+  ad_status text,
+  campaign_name text,
+  image_url text,
+  thumbnail_url text,
+  body_copy text,
+  title text,
+  impressions bigint not null default 0,
+  clicks bigint not null default 0,
+  spend numeric not null default 0,
+  ctr numeric not null default 0,
+  messaging_conversations bigint not null default 0,
+  updated_at timestamptz not null default now(),
+  created_at timestamptz not null default now(),
+  unique (user_id, fb_ad_id)
 );
 create table if not exists public.fb_sync_status (
   id uuid primary key default gen_random_uuid(),
@@ -110,20 +134,23 @@ grant select, insert, update, delete on public.fb_ad_accounts to authenticated;
 grant select, insert, update, delete on public.fb_campaigns to authenticated;
 grant select, insert, update, delete on public.fb_ad_metrics to authenticated;
 grant select, insert, update, delete on public.fb_sync_status to authenticated;
+grant select, insert, update, delete on public.fb_ads to authenticated;
 grant all on public.fb_ad_accounts to service_role;
 grant all on public.fb_campaigns to service_role;
 grant all on public.fb_ad_metrics to service_role;
 grant all on public.fb_sync_status to service_role;
+grant all on public.fb_ads to service_role;
 
 alter table public.fb_ad_accounts enable row level security;
 alter table public.fb_campaigns  enable row level security;
 alter table public.fb_ad_metrics enable row level security;
 alter table public.fb_sync_status enable row level security;
+alter table public.fb_ads enable row level security;
 
 do $$
 declare t text;
 begin
-  foreach t in array array['fb_ad_accounts','fb_campaigns','fb_ad_metrics','fb_sync_status']
+  foreach t in array array['fb_ad_accounts','fb_campaigns','fb_ad_metrics','fb_sync_status','fb_ads']
   loop
     execute format('drop policy if exists "%1$s_all_own" on public.%1$s', t);
     execute format('create policy "%1$s_all_own" on public.%1$s for all using (auth.uid() = user_id) with check (auth.uid() = user_id)', t);

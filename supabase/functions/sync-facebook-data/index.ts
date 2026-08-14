@@ -4,7 +4,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { serve } from 'https://deno.land/std@0.177.0/http/server.ts';
 
 // Define the API URL and headers for Facebook API
-const FB_API_VERSION = 'v19.0';
+const FB_API_VERSION = 'v24.0';
 const FB_API_BASE_URL = `https://graph.facebook.com/${FB_API_VERSION}`;
 
 interface FbAdAccount {
@@ -259,6 +259,25 @@ function countMessagingActions(actions: any[] | undefined): number {
   return best;
 }
 
+async function fetchAllFacebookPages(url: string, context: string): Promise<any[]> {
+  const rows: any[] = [];
+  let nextUrl: string | null = url;
+
+  while (nextUrl) {
+    const response = await fetch(nextUrl);
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new FacebookApiError(response.status, errorText, context);
+    }
+
+    const payload = await response.json();
+    rows.push(...(payload.data || []));
+    nextUrl = payload.paging?.next || null;
+  }
+
+  return rows;
+}
+
 // Fetch ads with their creative (image + copy) and last-30-day insights
 async function fetchAdCreatives(supabase, userId, formattedAccountId, accessToken) {
   const endDate = new Date();
@@ -267,29 +286,43 @@ async function fetchAdCreatives(supabase, userId, formattedAccountId, accessToke
   const since = startDate.toISOString().split('T')[0];
   const until = endDate.toISOString().split('T')[0];
 
-  const fields = [
+  const adFields = [
     'id',
     'name',
     'status',
     'effective_status',
     'campaign{id,name}',
     'creative{body,title,image_url,thumbnail_url,object_story_spec}',
-    `insights.time_range({"since":"${since}","until":"${until}"}){impressions,clicks,spend,ctr,actions}`,
   ].join(',');
 
-  const url = `${FB_API_BASE_URL}/${formattedAccountId}/ads?fields=${encodeURIComponent(fields)}&limit=100&access_token=${accessToken}`;
-  const res = await fetch(url);
-  if (!res.ok) {
-    const errorText = await res.text();
-    throw new FacebookApiError(res.status, errorText, 'Could not fetch Facebook ads');
-  }
-  const json = await res.json();
-  const ads = json.data || [];
+  const adsParams = new URLSearchParams({
+    fields: adFields,
+    limit: '100',
+    access_token: accessToken,
+  });
+  const ads = await fetchAllFacebookPages(
+    `${FB_API_BASE_URL}/${formattedAccountId}/ads?${adsParams.toString()}`,
+    'Could not fetch Facebook ads',
+  );
   console.log(`Found ${ads.length} ads`);
+
+  const insightsParams = new URLSearchParams({
+    fields: 'ad_id,ad_name,campaign_id,campaign_name,impressions,clicks,spend,ctr,actions',
+    level: 'ad',
+    time_range: JSON.stringify({ since, until }),
+    limit: '500',
+    access_token: accessToken,
+  });
+  const adInsights = await fetchAllFacebookPages(
+    `${FB_API_BASE_URL}/${formattedAccountId}/insights?${insightsParams.toString()}`,
+    'Could not fetch Facebook ad insights',
+  );
+  const insightsByAdId = new Map(adInsights.map((insight) => [insight.ad_id, insight]));
+  console.log(`Found performance data for ${adInsights.length} ads`);
 
   let processed = 0;
   for (const ad of ads) {
-    const insight = ad.insights?.data?.[0];
+    const insight = insightsByAdId.get(ad.id);
     const creative = ad.creative || {};
     const linkData = creative.object_story_spec?.link_data || creative.object_story_spec?.video_data || {};
 
@@ -310,7 +343,7 @@ async function fetchAdCreatives(supabase, userId, formattedAccountId, accessToke
       fb_ad_id: ad.id,
       ad_name: ad.name || null,
       ad_status: ad.effective_status || ad.status || null,
-      campaign_name: ad.campaign?.name || null,
+      campaign_name: ad.campaign?.name || insight?.campaign_name || null,
       image_url: creative.image_url || linkData.picture || null,
       thumbnail_url: creative.thumbnail_url || null,
       body_copy: creative.body || linkData.message || null,
