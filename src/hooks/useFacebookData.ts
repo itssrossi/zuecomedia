@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { 
   fetchUserAdAccounts,
@@ -69,6 +69,7 @@ const convertToAdMetric = (metrics: FbAdMetric[]): AdMetric[] => {
 export const useFacebookData = (startDate?: string, endDate?: string, campaignIds?: string[]) => {
   const { user } = useAuth();
   const [isSyncing, setIsSyncing] = useState(false);
+  const hasAttemptedAdRecovery = useRef(false);
   const [stats, setStats] = useState<DashboardStats>({
     totalSpend: 0,
     totalRevenue: 0,
@@ -190,6 +191,26 @@ export const useFacebookData = (startDate?: string, endDate?: string, campaignId
       toast.error(`Failed to sync: ${error.message || "Unknown error"}`);
     }
   };
+
+  // Existing accounts created before ad-level reporting was added have an empty
+  // fb_ads table. Recover once per dashboard visit instead of leaving the tile blank
+  // until the user happens to run a manual sync.
+  useEffect(() => {
+    if (
+      hasAttemptedAdRecovery.current ||
+      accountsQuery.isLoading ||
+      adsQuery.isLoading ||
+      accountsQuery.isError ||
+      adsQuery.isError ||
+      (accountsQuery.data?.length || 0) === 0 ||
+      (adsQuery.data?.length || 0) > 0
+    ) {
+      return;
+    }
+
+    hasAttemptedAdRecovery.current = true;
+    void triggerSync();
+  }, [accountsQuery.data, accountsQuery.isError, accountsQuery.isLoading, adsQuery.data, adsQuery.isError, adsQuery.isLoading]);
 
   // Convert FbAdMetric to AdMetric for components that expect AdMetric
   const adMetrics: AdMetric[] = metricsQuery.data ? convertToAdMetric(metricsQuery.data) : [];
