@@ -97,10 +97,13 @@ create table if not exists public.fb_ad_metrics (
   roas numeric not null default 0,
   messaging_conversations bigint not null default 0,
   created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
   unique (user_id, campaign_id, date)
 );
 alter table public.fb_ad_metrics
   add column if not exists messaging_conversations bigint not null default 0;
+alter table public.fb_ad_metrics
+  add column if not exists updated_at timestamptz not null default now();
 create table if not exists public.fb_ads (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade,
