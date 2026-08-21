@@ -491,7 +491,7 @@ ${formData.goals}
           />
           <div>
             <h2 className="text-2xl md:text-3xl font-bold mb-4">
-              You'll Be Speaking Directly With Me
+              You'll Be Speaking Directly With the Founder
             </h2>
             <p className="text-muted-foreground mb-4">
               I'm John Ross, founder of Zue Co Media. I personally run the audits — no junior
