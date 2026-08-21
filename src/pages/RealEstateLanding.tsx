@@ -15,20 +15,28 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import {
   ChevronDown,
   Clock,
-  TrendingUp,
-  Users,
   Target,
-  Shield,
   CheckCircle2,
   Star,
   ArrowRight,
   Calendar as CalendarIcon,
   Zap,
+  ShoppingBag,
+  ShoppingCart,
+  Smartphone,
+  RefreshCw,
 } from "lucide-react";
 import link2payLogo from "@/assets/link2pay-logo.png";
 import shechemLogo from "@/assets/shechem-logo.png";
+import founderPhoto from "@/assets/founder.jpg.asset.json";
 
 const RealEstateLanding = () => {
   const heroRef = useRef<HTMLElement>(null);
@@ -53,6 +61,7 @@ const RealEstateLanding = () => {
   const [formData, setFormData] = useState({
     name: "",
     businessName: "",
+    storeUrl: "",
     email: "",
     phone: "",
     leadType: "",
@@ -82,7 +91,8 @@ const RealEstateLanding = () => {
       !formData.phone ||
       !formData.leadType ||
       !formData.budget ||
-      !formData.businessName
+      !formData.businessName ||
+      !formData.storeUrl
     ) {
       toast.error("Please fill in all required fields");
       return;
@@ -103,6 +113,7 @@ Ecommerce Growth Strategy Call
 Store Type: ${formData.leadType}
 Monthly Ad Budget: ${formData.budget}
 Business: ${formData.businessName}
+Store URL: ${formData.storeUrl}
 Phone: ${formData.phone}
 Email: ${formData.email}
 
@@ -119,6 +130,7 @@ New booking from Ecommerce Landing Page:
 
 Name: ${formData.name}
 Business: ${formData.businessName}
+Store URL: ${formData.storeUrl}
 Email: ${formData.email}
 Phone: ${formData.phone}
 Store Type: ${formData.leadType}
@@ -149,6 +161,7 @@ ${formData.goals}
     setFormData({
       name: "",
       businessName: "",
+      storeUrl: "",
       email: "",
       phone: "",
       leadType: "",
