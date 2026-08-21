@@ -86,7 +86,6 @@ const RealEstateLanding = () => {
     const slots = [];
     for (let hour = 8; hour < 17; hour++) {
       slots.push(`${hour.toString().padStart(2, "0")}:00`);
-      slots.push(`${hour.toString().padStart(2, "0")}:30`);
     }
     return slots;
   })();
