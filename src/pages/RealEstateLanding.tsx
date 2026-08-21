@@ -15,20 +15,28 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import {
   ChevronDown,
   Clock,
-  TrendingUp,
-  Users,
   Target,
-  Shield,
   CheckCircle2,
   Star,
   ArrowRight,
   Calendar as CalendarIcon,
   Zap,
+  ShoppingBag,
+  ShoppingCart,
+  Smartphone,
+  RefreshCw,
 } from "lucide-react";
 import link2payLogo from "@/assets/link2pay-logo.png";
 import shechemLogo from "@/assets/shechem-logo.png";
+import founderPhoto from "@/assets/founder.jpg.asset.json";
 
 const RealEstateLanding = () => {
   const heroRef = useRef<HTMLElement>(null);
