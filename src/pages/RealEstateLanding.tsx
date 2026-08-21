@@ -36,7 +36,7 @@ import {
 } from "lucide-react";
 import link2payLogo from "@/assets/link2pay-logo.png";
 import shechemLogo from "@/assets/shechem-logo.png";
-import founderPhoto from "@/assets/founder.jpg.asset.json";
+import founderPhoto from "@/assets/founder.jpg";
 
 const RealEstateLanding = () => {
   const heroRef = useRef<HTMLElement>(null);
@@ -101,7 +101,8 @@ const RealEstateLanding = () => {
       !formData.leadType ||
       !formData.budget ||
       !formData.businessName ||
-      !formData.storeUrl
+      !formData.storeUrl ||
+      !formData.goals.trim()
     ) {
       toast.error("Please fill in all required fields");
       return;
@@ -111,7 +112,7 @@ const RealEstateLanding = () => {
 
     const [hour, minute] = selectedTime.split(":").map(Number);
     const startDateTime = setMinutes(setHours(selectedDate, hour), minute);
-    const endDateTime = new Date(startDateTime.getTime() + 30 * 60 * 1000);
+    const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000);
 
     const formatForGoogle = (date: Date) =>
       date.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
@@ -484,7 +485,7 @@ ${formData.goals}
       <section className="py-20 px-4 bg-secondary/20">
         <div className="container mx-auto max-w-4xl grid md:grid-cols-[280px_1fr] gap-8 items-center">
           <img
-            src={founderPhoto.url}
+            src={founderPhoto}
             alt="John Ross Snell, founder of Zue Co Media"
             className="w-full max-w-[280px] mx-auto rounded-2xl object-cover border border-border"
             loading="lazy"
@@ -589,7 +590,7 @@ ${formData.goals}
             <h2 className="text-2xl md:text-3xl font-bold mb-6">
               There's Nothing To Lose By Finding Out.
             </h2>
-            <p className="text-3xl font-black text-primary mb-4">FREE</p>
+            <p className="text-2xl md:text-3xl font-black text-primary mb-4">The audit is free.</p>
             <p className="text-muted-foreground mb-6">
               No upfront payment. No long-term contract. No obligation to work with us.
             </p>
@@ -615,7 +616,7 @@ ${formData.goals}
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto mb-6">
               We'll review your traffic, ads, store and customer journey and identify the biggest
-              opportunities we see. Book your free 15–30 minute growth audit.
+              opportunities we see. Book your free 1-hour growth audit.
             </p>
             <div className="grid sm:grid-cols-5 gap-3 max-w-4xl mx-auto text-left">
               {[
@@ -788,7 +789,7 @@ ${formData.goals}
 
                 <div>
                   <Label htmlFor="re-goals">
-                    What would you most like to improve right now?
+                    What would you most like to improve right now? *
                   </Label>
                   <Textarea
                     id="re-goals"
@@ -812,7 +813,8 @@ ${formData.goals}
                     !formData.leadType ||
                     !formData.budget ||
                     !formData.businessName ||
-                    !formData.storeUrl
+                    !formData.storeUrl ||
+                    !formData.goals.trim()
                   }
                   className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-lg py-6 rounded-xl shadow-lg shadow-primary/25"
                 >
@@ -874,7 +876,7 @@ ${formData.goals}
           </Button>
           <p className="text-sm text-primary font-medium mt-6">Ads + Conversion + Strategy</p>
           <p className="text-xs text-muted-foreground mt-1">
-            Free audit. 15–30 minutes. No obligation.
+            Free audit. 1 hour. No obligation.
           </p>
         </div>
       </section>
