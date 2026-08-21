@@ -47,16 +47,25 @@ const RealEstateLanding = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
+    let frame = 0;
     const handleScroll = () => {
-      if (heroRef.current) {
-        const rect = heroRef.current.getBoundingClientRect();
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        const el = heroRef.current;
+        if (!el) return;
+        const rect = el.getBoundingClientRect();
+        // Only animate while the hero is still on screen.
         if (rect.bottom > 0) {
           setScrollY(window.scrollY * 0.3);
         }
-      }
+      });
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (frame) cancelAnimationFrame(frame);
+    };
   }, []);
   const [formData, setFormData] = useState({
     name: "",

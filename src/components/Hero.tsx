@@ -9,16 +9,24 @@ const Hero = () => {
   const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
+    let frame = 0;
     const handleScroll = () => {
-      if (sectionRef.current) {
-        const rect = sectionRef.current.getBoundingClientRect();
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        const el = sectionRef.current;
+        if (!el) return;
+        const rect = el.getBoundingClientRect();
         if (rect.bottom > 0) {
           setScrollY(window.scrollY * 0.3);
         }
-      }
+      });
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (frame) cancelAnimationFrame(frame);
+    };
   }, []);
   const handleGetStarted = () => {
     window.open('https://wa.me/27625359337', '_blank');
