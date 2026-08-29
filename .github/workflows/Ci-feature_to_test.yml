@@ -1,16 +1,16 @@
-name: CI
+name: Ci-feature_to_test
 
 on:
   pull_request:
-    branches: [ main ]
+    branches: [ test ]
 
 jobs:
   test:
-    if: github.head_ref == 'test'
+    if: github.head_ref == 'feature/test-ci'
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout test
+      - name: Checkout feature/test-ci
         uses: actions/checkout@v4
 
       - name: Set up Node.js
@@ -19,7 +19,7 @@ jobs:
           node-version: '20'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Run tests
         run: npm test
