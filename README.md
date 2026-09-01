@@ -1,73 +1,42 @@
-# Welcome to your Lovable project
+#Deploying a azure web application using CI/CD with monitoring capabilities - Project 1
 
-## Project info
+##Overview
 
-**URL**: https://lovable.dev/projects/81a61f47-c86f-4e1b-b2a6-a61956cabac0
+For this project I wanted to deploy a basic development environment that has the capabilities for having for the following environments:
 
-## How can I edit this code?
+- Feature
+- Testing
+- Production 
 
-There are several ways of editing your application.
+My reasoning for having 3 environments is to separate deployments from the production environment to ensure that new features can be thoroughly tested before being deployed to the production environment which in turn can reduced bugs, errors and downtime for the application making it more reliable.
 
-**Use Lovable**
+The use of CI/CD was implemented between each environment using GitHub Actions.
+The reasoning for doing this is to ensure that commits are automatically tested in a clean environment before being merged via a pull request.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/81a61f47-c86f-4e1b-b2a6-a61956cabac0) and start prompting.
+I have also made the decision to deploy the test-branch to the azure web app to provide an interactive environment for developers when their code can be deployed and ran and interacted with to see how the implementation will affect the production environment.
 
-Changes made via Lovable will be committed automatically to this repo.
+Monitoring has also been implemented for the production web app and for the test-mode application to monitor usage.
 
-**Use your preferred IDE**
+In this project I have used a mock business that I have created using Lovable.dev to speed up the development process to have workable code to put into the azure environment.
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+##The resources that has been deployed :
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+###The structural diagram: 
 
-Follow these steps:
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+##My decisions making process when selecting the resources :
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+#The problems I have encountered:
 
-# Step 3: Install the necessary dependencies.
-npm i
+##Using application insights with Node.js:
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+##Adjust to managed identity to ensure the key vault can be accessed by the application :
 
-**Edit a file directly in GitHub**
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+##The CI/Cd (yaml):
 
-**Use GitHub Codespaces**
+##What I would do differently and how I would adjust it in future : 
+In future I would implement deployment slots rather then deploy an entire set of resources for the testing environment
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
 
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/81a61f47-c86f-4e1b-b2a6-a61956cabac0) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+I would also deploy lifecycles rules for the production pipeline with not to be deleted rule
