@@ -140,6 +140,7 @@ jobs:
       with:
         name: node-app
         path: ./dist
+        
   deploy:
     permissions:
       contents: none
