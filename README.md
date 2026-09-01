@@ -111,15 +111,12 @@ on:
   push:
     branches: [ "test" ]
   workflow_dispatch:
-
 env:
   AZURE_WEBAPP_NAME: yebo-webapp    # application's name
   AZURE_WEBAPP_PACKAGE_PATH: './dist'      # path web app project
   NODE_VERSION: '20.x'                # node version
-
 permissions:
   contents: read
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -143,7 +140,6 @@ jobs:
       with:
         name: node-app
         path: ./dist
-
   deploy:
     permissions:
       contents: none
@@ -179,25 +175,12 @@ Deployment Slots
 In the current implementation, I deployed a separate Azure Web App environment for testing.
 In the future, I would consider using Azure App Service Deployment Slots instead of deploying an entirely separate set of resources for the testing environment.
 
-### For example:
-
-Azure Web App
-│
-├── Staging / Testing Slot
-│
-└── Production Slot
-
 This would allow me to test deployments within a staging environment before swapping the tested version into production.
 It would also reduce duplicated infrastructure and could make the overall architecture more cost-effective and easier to manage.
 
 Production Lifecycle Protection
 
 I would also implement stronger lifecycle protection for production resources.
-For example, when using Terraform, I could use lifecycle rules such as:
-
-lifecycle {
-  prevent_destroy = true
-}
 
 This would help prevent critical production resources from accidentally being destroyed during Terraform operations.
 I would also look at implementing additional safeguards within the production deployment pipeline, such as approval requirements before production deployments are allowed to proceed.
