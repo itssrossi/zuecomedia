@@ -171,7 +171,7 @@ The intention was to create a repeatable deployment process where code could be 
 ### What I Would Do Differently and How I Would Adjust It in Future
 Although the current implementation successfully separates the different environments, there are several improvements I would make in a future version of the project.
 
-Deployment Slots
+### Deployment Slots
 
 In the current implementation, I deployed a separate Azure Web App environment for testing.
 In the future, I would consider using Azure App Service Deployment Slots instead of deploying an entirely separate set of resources for the testing environment.
@@ -179,7 +179,7 @@ In the future, I would consider using Azure App Service Deployment Slots instead
 This would allow me to test deployments within a staging environment before swapping the tested version into production.
 It would also reduce duplicated infrastructure and could make the overall architecture more cost-effective and easier to manage.
 
-Production Lifecycle Protection
+### Production Lifecycle Protection
 
 I would also implement stronger lifecycle protection for production resources.
 
