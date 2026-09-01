@@ -141,7 +141,7 @@ jobs:
         name: node-app
         path: ./dist
         
-deploy:
+        deploy:
     permissions:
       contents: none
     runs-on: ubuntu-latest
