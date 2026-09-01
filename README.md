@@ -29,7 +29,7 @@ ZCM-RG
 - Zuecomedia-test-id-bd7a
   - Managed Identity
 - Zuecomedia-test
-  - App Service
+ - App Service
 
 ### Production Environment
 - ZueCoMedia-id-afc9
