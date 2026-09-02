@@ -107,6 +107,7 @@ This provided a more secure solution because authentication is handled by Azure 
 
 ## The CI/CD (YAML)
 
+
 on:
   push:
     branches: [ "test" ]
