@@ -61,22 +61,22 @@ Chosen to keep all the Azure resources for this project together in one place.
 I used yebo in southafricanorth so the infrastructure stays organised and can easily be managed or removed as a single environment.
 
 ### Service plan (azurerm_service_plan.plan)
-os_type = "Windows" — chosen because the application is running as a Windows Web App.
-sku_name = "F1" — chosen because this is a testing/learning environment and the free tier is enough for the expected workload. The limitations, such as no Always On and limited CPU time, are acceptable here.
+os_type = "Windows" - chosen because the application is running as a Windows Web App.
+sku_name = "F1" - chosen because this is a testing/learning environment and the free tier is enough for the expected workload. The limitations, such as no Always On and limited CPU time, are acceptable here.
 
 ### Web app (azurerm_windows_web_app.webapp)
-System-assigned identity — chosen so the application can access Azure services such as Key Vault without storing credentials in the code. This also allowed the RBAC setup to work properly.
-always_on = false — set this way because the F1 plan doesn't support Always On. This also fixed the deployment error encountered earlier.
-Basic authentication enabled — chosen because the GitHub Actions pipeline currently deploys using an Azure publish profile rather than OIDC.
-Application Insights settings — included so application monitoring and telemetry are connected automatically when the app is deployed.
+System-assigned identity - chosen so the application can access Azure services such as Key Vault without storing credentials in the code. This also allowed the RBAC setup to work properly.
+always_on = false - set this way because the F1 plan doesn't support Always On. This also fixed the deployment error encountered earlier.
+Basic authentication enabled - chosen because the GitHub Actions pipeline currently deploys using an Azure publish profile rather than OIDC.
+Application Insights settings - included so application monitoring and telemetry are connected automatically when the app is deployed.
 
 ### Log Analytics workspace (azurerm_log_analytics_workspace)
-sku = "PerGB2018" — chosen because it's the supported SKU for a new workspace and provides enough capacity for this small test environment.
+sku = "PerGB2018" - chosen because it's the supported SKU for a new workspace and provides enough capacity for this small test environment.
 It was also needed because the Application Insights setup uses a workspace-based configuration.
 
 ### Application Insights (azurerm_application_insights.appinsights)
 
-application_type = "Node.JS" — chosen to match the application runtime.
+application_type = "Node.JS" - chosen to match the application runtime.
 
 Connected to the Log Analytics workspace so application telemetry has a central place to be stored and analysed.
 Chosen because it gives useful visibility into requests, errors, exceptions, and application performance without adding unnecessary infrastructure for a small project.
